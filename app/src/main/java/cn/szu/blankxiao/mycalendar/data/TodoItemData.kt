@@ -7,4 +7,4 @@ import java.util.Date
  * @description TodoItem
  * @date 2025-11-03 21:36
  */
-data class TodoItemData(val desc: String, val date: Date)
+data class TodoItemData(val title: String, val date: Date, val desc: String)

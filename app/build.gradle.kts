@@ -49,6 +49,14 @@ dependencies {
 	implementation(libs.androidx.compose.ui.graphics)
 	implementation(libs.androidx.compose.ui.tooling.preview)
 	implementation(libs.androidx.compose.material3)
+
+	// 日历组件依赖
+	implementation(libs.calendar)
+	// implementation(libs.kalendar)
+	// implementation(libs.kalendar.foundation)
+	// 时间
+	// implementation(libs.kotlinx.datetime)
+
 	testImplementation(libs.junit)
 	androidTestImplementation(libs.androidx.junit)
 	androidTestImplementation(libs.androidx.espresso.core)

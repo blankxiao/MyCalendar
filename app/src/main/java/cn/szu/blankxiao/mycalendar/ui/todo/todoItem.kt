@@ -34,9 +34,7 @@ import java.util.Locale
  */
 
 const val checkedColor = 0xFF6200EE
-
 const val uncheckedColor = 0xFF757575
-
 val normalFontColor = 0xFF9E9E9E
 val pastFontColor = 0xFF212121
 
@@ -93,7 +91,7 @@ fun TodoItem(
 			) {
 				// 描述文本
 				Text(
-					text = itemData.desc,
+					text = itemData.title,
 					fontSize = 16.sp,
 					fontWeight = FontWeight.Medium,
 					color = if (isChecked.value) {
@@ -120,6 +118,6 @@ fun TodoItem(
 @Composable()
 @Preview(showBackground = true)
 fun PreviewTodoItem() {
-	TodoItem(TodoItemData("吃饭", Date()), onChecked = {})
+	TodoItem(TodoItemData("吃饭", Date(), ""), onChecked = {})
 }
 
