@@ -50,7 +50,7 @@ fun MonthViewCalendar(
 	modifier: Modifier = Modifier,
 	monthDelta: Long = 100,
 	selectedDate: LocalDate = LocalDate.now(),
-	onSelectDate: (LocalDate) -> Unit
+	onDateSelected: (LocalDate) -> Unit
 ) {
 	Log.d(TAG, "重组 - selectedDate = $selectedDate")
 
@@ -104,7 +104,7 @@ fun MonthViewCalendar(
 					isCurrentMonth = day.position == DayPosition.MonthDate,
 					onClick = {
 						Log.d(TAG, "点击日期 - ${day.date}")
-						onSelectDate(day.date)
+						onDateSelected(day.date)
 					}
 				)
 			}
@@ -164,7 +164,7 @@ fun PreviewMonthViewCalendar() {
 	MyCalendarTheme {
 		MonthViewCalendar(
 			selectedDate = selectedDate,
-			onSelectDate = { newDate ->
+			onDateSelected = { newDate ->
 				selectedDate = newDate
 			}
 		)
