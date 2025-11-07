@@ -78,19 +78,19 @@ data class CustomColors(
 
 // ==================== 浅色主题自定义颜色 ====================
 val LightCustomColors = CustomColors(
-    // 日历 - 选中状态
-    calendarSelectedBackground = SkyBlue,           // 柔和天蓝
-    calendarSelectedText = FixedWhite,              // 白色文字
+    // 日历 - 选中状态（最醒目：深色背景 + 白色文字）
+    calendarSelectedBackground = SkyBlue,           // 天蓝色背景
+    calendarSelectedText = FixedWhite,              // 白色文字（高对比度）
     
     // 日历 - 今天标记
     // TODO 显示问题
     calendarTodayBackground = LightSkyBlue,         // 极浅蓝背景
-    calendarTodayBorder = SkyBlue,                  // 天蓝边框
-    calendarTodayText = FixedWhite,                // 深蓝文字
+    calendarTodayBorder = SkyBlue,                  // 天蓝色边框（突出）
+    calendarTodayText = DeepSkyBlue,                // 深蓝色文字（高对比度）
     
-    // 日历 - 普通日期
-    calendarNormalText = CharcoalGray,              // 炭灰色（主要文字）
-    calendarOtherMonthText = SilverGray,            // 银灰色（弱化文字）
+    // 日历 - 普通日期（标准：透明背景 + 深色文字）
+    calendarNormalText = CharcoalGray,              // 炭灰色（清晰可读）
+    calendarOtherMonthText = SilverGray,            // 银灰色（明显弱化）
     calendarWeekendText = MediumGray,               // 中灰色（周末）
     
     // 日历 - 标题和导航
@@ -138,18 +138,18 @@ val LightCustomColors = CustomColors(
 
 // ==================== 深色主题配色方案 ====================
 val DarkCustomColors = CustomColors(
-    // 日历 - 选中状态
-    calendarSelectedBackground = BrightBlue,        // 明亮蓝
-    calendarSelectedText = DeepCharcoal,            // 深炭色文字
+    // 日历 - 选中状态（最醒目：亮色背景 + 深色文字）
+    calendarSelectedBackground = BrightBlue,        // 明亮蓝背景
+    calendarSelectedText = DeepCharcoal,            // 深炭色文字（高对比度）
     
-    // 日历 - 今天标记
+    // 日历 - 今天标记（次醒目：深色背景 + 亮色文字 + 边框）
     calendarTodayBackground = DarkBlue,             // 深蓝背景
-    calendarTodayBorder = BrightBlue,               // 明亮蓝边框
-    calendarTodayText = PaleBlue,                   // 淡蓝色文字
+    calendarTodayBorder = BrightBlue,               // 明亮蓝边框（突出）
+    calendarTodayText = LightGray,                  // 浅灰文字（高对比度）
     
-    // 日历 - 普通日期
-    calendarNormalText = LightGray,                 // 浅灰色（主要文字）
-    calendarOtherMonthText = DimGray,               // 暗灰色（弱化文字）
+    // 日历 - 普通日期（标准：透明背景 + 浅色文字）
+    calendarNormalText = LightGray,                 // 浅灰色（清晰可读）
+    calendarOtherMonthText = DimGray,               // 暗灰色（明显弱化）
     calendarWeekendText = NeutralGray,              // 中性灰（周末）
     
     // 日历 - 标题和导航

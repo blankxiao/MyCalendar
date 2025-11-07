@@ -53,7 +53,7 @@ fun MonthViewCalendar(
 	onSelectDate: (LocalDate) -> Unit
 ) {
 	Log.d(TAG, "重组 - selectedDate = $selectedDate")
-	
+
 	// 当前月份
 	val currentMonth = remember { YearMonth.now() }
 	// 开始月份
@@ -74,6 +74,7 @@ fun MonthViewCalendar(
 
 	Column(
 		modifier = modifier
+			.fillMaxWidth()
 			.background(customColors.calendarBackground)
 			.padding(Dimensions.Padding.medium)
 	) {
@@ -96,9 +97,7 @@ fun MonthViewCalendar(
 			modifier = Modifier.fillMaxWidth(),
 			dayContent = { day ->
 				val isSelected = day.date == selectedDate
-				// 🔍 日志：DayCell 状态
-				Log.d(TAG, "📅 DayCell - date=${day.date}, isSelected=$isSelected")
-				
+
 				DayCell(
 					day = day.date,
 					isSelected = isSelected,
@@ -161,7 +160,7 @@ fun MonthTitle(
 @Preview(showBackground = true)
 fun PreviewMonthViewCalendar() {
 	var selectedDate by remember { mutableStateOf(LocalDate.now()) }
-	
+
 	MyCalendarTheme {
 		MonthViewCalendar(
 			selectedDate = selectedDate,

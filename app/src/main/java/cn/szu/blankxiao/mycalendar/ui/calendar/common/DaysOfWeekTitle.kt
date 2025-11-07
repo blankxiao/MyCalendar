@@ -3,7 +3,6 @@ package cn.szu.blankxiao.mycalendar.ui.calendar.common
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -11,7 +10,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
 import cn.szu.blankxiao.mycalendar.ui.theme.Typography
 import cn.szu.blankxiao.mycalendar.ui.theme.customColors
 
@@ -25,8 +23,7 @@ import cn.szu.blankxiao.mycalendar.ui.theme.customColors
 fun DaysOfWeekTitle(modifier: Modifier = Modifier) {
 	Row(
 		modifier = modifier
-			.fillMaxWidth()
-			.padding(Dimensions.Padding.small),
+			.fillMaxWidth(),
 		horizontalArrangement = Arrangement.SpaceEvenly,
 		verticalAlignment = Alignment.CenterVertically
 	) {
