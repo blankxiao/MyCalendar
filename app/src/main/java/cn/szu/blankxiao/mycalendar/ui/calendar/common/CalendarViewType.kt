@@ -1,4 +1,4 @@
-package cn.szu.blankxiao.mycalendar.ui.calendar
+package cn.szu.blankxiao.mycalendar.ui.calendar.common
 
 /**
  * @author BlankXiao

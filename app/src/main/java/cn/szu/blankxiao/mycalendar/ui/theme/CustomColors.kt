@@ -83,9 +83,10 @@ val LightCustomColors = CustomColors(
     calendarSelectedText = FixedWhite,              // 白色文字
     
     // 日历 - 今天标记
+    // TODO 显示问题
     calendarTodayBackground = LightSkyBlue,         // 极浅蓝背景
     calendarTodayBorder = SkyBlue,                  // 天蓝边框
-    calendarTodayText = DeepSkyBlue,                // 深蓝文字
+    calendarTodayText = FixedWhite,                // 深蓝文字
     
     // 日历 - 普通日期
     calendarNormalText = CharcoalGray,              // 炭灰色（主要文字）
