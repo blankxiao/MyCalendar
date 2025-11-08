@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
+import cn.szu.blankxiao.mycalendar.ui.theme.MyCalendarTheme
 import cn.szu.blankxiao.mycalendar.ui.theme.Typography
 import cn.szu.blankxiao.mycalendar.ui.theme.customColors
 import java.time.LocalDate
@@ -83,5 +84,7 @@ fun DayCell(
 @Composable
 @Preview(showBackground = true)
 fun PreviewDayCell() {
-	DayCell(LocalDate.now(), isSelected = false, isCurrentMonth = true) { }
+	MyCalendarTheme {
+		DayCell(LocalDate.now(), isSelected = false, isCurrentMonth = true) { }
+	}
 }
