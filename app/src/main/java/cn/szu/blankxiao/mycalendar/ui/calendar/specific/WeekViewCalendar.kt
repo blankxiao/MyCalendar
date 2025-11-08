@@ -58,7 +58,8 @@ fun WeekViewCalendar(
 	val endDate = remember { currentDate.plusWeeks(weekDelta) }
 
 	val state = rememberWeekCalendarState(
-		startDate = startDate, endDate = endDate,
+		startDate = startDate,
+		endDate = endDate,
 		firstVisibleWeekDate = currentDate,
 		firstDayOfWeek = DayOfWeek.MONDAY
 	)
@@ -94,11 +95,9 @@ fun WeekViewCalendar(
 
 @Composable
 fun WeekHeader(
-	curWeek: Week,
-	onPreviousWeek: () -> Unit,
-	onNextWeek: () -> Unit,
-	modifier: Modifier = Modifier
+	curWeek: Week, onPreviousWeek: () -> Unit, onNextWeek: () -> Unit, modifier: Modifier = Modifier
 ) {
+	val customColors = MaterialTheme.customColors
 	Row(
 		modifier = modifier.fillMaxWidth(),
 		horizontalArrangement = Arrangement.Center,
@@ -106,7 +105,11 @@ fun WeekHeader(
 	) {
 
 		IconButton(onClick = onPreviousWeek) {
-			Icon(Icons.AutoMirrored.Default.KeyboardArrowLeft, "上一周")
+			Icon(
+				Icons.AutoMirrored.Default.KeyboardArrowLeft,
+				"上一周",
+				tint = customColors.calendarNavigationIcon
+			)
 		}
 
 		Text(
@@ -116,7 +119,11 @@ fun WeekHeader(
 		)
 
 		IconButton(onClick = onNextWeek) {
-			Icon(Icons.AutoMirrored.Default.KeyboardArrowRight, "下一周")
+			Icon(
+				Icons.AutoMirrored.Default.KeyboardArrowRight,
+				"下一周",
+				tint = customColors.calendarNavigationIcon
+			)
 		}
 	}
 }
