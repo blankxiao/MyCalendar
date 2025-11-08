@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.HorizontalDivider
@@ -21,7 +20,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -63,21 +61,6 @@ fun TodoList(
 			.fillMaxWidth()
 			.background(customColors.todoListBackground)
 	) {
-		// 顶部拖拽指示器（为 BottomSheet 准备）
-		Box(
-			modifier = Modifier
-				.fillMaxWidth()
-				.padding(vertical = Dimensions.Padding.small),
-			contentAlignment = Alignment.Center
-		) {
-			Box(
-				modifier = Modifier
-					.size(width = 40.dp, height = 4.dp)
-					.clip(RoundedCornerShape(2.dp))
-					.background(customColors.bottomSheetHandle)
-			)
-		}
-
 		// 标题区域
 		Column(
 			modifier = Modifier

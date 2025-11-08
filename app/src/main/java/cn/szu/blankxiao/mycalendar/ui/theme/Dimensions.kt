@@ -31,6 +31,7 @@ object Dimensions {
 	
 	// ==================== 圆角半径 ====================
 	object CornerRadius {
+		val none: Dp = 0.dp				// 无圆角
 		val small: Dp = 8.dp            // 小圆角
 		val medium: Dp = 12.dp          // 中圆角（标准）
 		val large: Dp = 16.dp           // 大圆角
@@ -40,6 +41,7 @@ object Dimensions {
 	
 	// ==================== 阴影高度 ====================
 	object Elevation {
+		val none: Dp = 0.dp				// 无阴影
 		val minimal: Dp = 1.dp          // 极轻阴影
 		val small: Dp = 2.dp            // 小阴影（标准）
 		val medium: Dp = 4.dp           // 中阴影
@@ -61,6 +63,7 @@ object Dimensions {
 	object Divider {
 		val thickness: Dp = 1.dp        // 分割线厚度
 		val thicknessBold: Dp = 2.dp    // 加粗分割线
+		val thicknessLarge: Dp = 4.dp
 	}
 }
 
