@@ -10,21 +10,27 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cn.szu.blankxiao.mycalendar.data.TodoItemData
-import java.text.SimpleDateFormat
-import java.util.Date
+import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
+import cn.szu.blankxiao.mycalendar.ui.theme.MyCalendarTheme
+import cn.szu.blankxiao.mycalendar.ui.theme.Typography
+import cn.szu.blankxiao.mycalendar.ui.theme.customColors
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 /**
@@ -33,34 +39,30 @@ import java.util.Locale
  * @date 2025-11-03 21:06
  */
 
-const val checkedColor = 0xFF6200EE
-const val uncheckedColor = 0xFF757575
-val normalFontColor = 0xFF9E9E9E
-val pastFontColor = 0xFF212121
-
+private const val TAG = "TodoItem"
 
 @Composable
 fun TodoItem(
 	itemData: TodoItemData,
+	modifier: Modifier = Modifier,
 	onChecked: () -> Unit,
-	modifier: Modifier = Modifier
 ) {
-	val isChecked = remember { mutableStateOf(false) }
 
+	val customColors = MaterialTheme.customColors
 	// 日期格式化
-	val dateFormatter = remember { SimpleDateFormat("yyyy年MM月dd日", Locale.CHINA) }
-	val formattedDate = dateFormatter.format(itemData.date)
+	val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy年MM月dd日", Locale.CHINA) }
+	val formattedDate = itemData.date.format(dateFormatter)
 
 	Card(
 		modifier = modifier
 			.fillMaxWidth()
-			.padding(horizontal = 16.dp, vertical = 8.dp),
-		shape = RoundedCornerShape(12.dp),
+			.padding(horizontal = Dimensions.Padding.medium, vertical = Dimensions.Padding.tiny),
+		shape = RoundedCornerShape(Dimensions.CornerRadius.medium),
 		colors = CardDefaults.cardColors(
-			containerColor = Color.White
+			containerColor = customColors.todoCardBackground
 		),
 		elevation = CardDefaults.cardElevation(
-			defaultElevation = 2.dp
+			defaultElevation = Dimensions.Elevation.small
 		)
 	) {
 		Row(
@@ -71,43 +73,38 @@ fun TodoItem(
 			verticalAlignment = Alignment.CenterVertically
 		) {
 			Checkbox(
-				checked = isChecked.value,
-				onCheckedChange = { checked ->
-					isChecked.value = checked
+				checked = itemData.isChecked, onCheckedChange = { checked ->
 					onChecked()
-				},
-				colors = CheckboxDefaults.colors(
-					checkedColor = Color(checkedColor),
-					uncheckedColor = Color(uncheckedColor),
-					checkmarkColor = Color.White
+				}, colors = CheckboxDefaults.colors(
+					checkedColor = customColors.todoCheckboxChecked,
+					uncheckedColor = customColors.todoCheckboxUnchecked,
+					checkmarkColor = customColors.todoCheckboxCheckmark
 				)
 			)
 
 			Column(
 				modifier = Modifier
 					.weight(1f)
-					.padding(start = 8.dp),
-				verticalArrangement = Arrangement.spacedBy(4.dp)
+					.padding(start = Dimensions.Padding.tiny),
+				verticalArrangement = Arrangement.spacedBy(Dimensions.Padding.tiny)
 			) {
 				// 描述文本
 				Text(
 					text = itemData.title,
-					fontSize = 16.sp,
+					style = Typography.titleSmall,
 					fontWeight = FontWeight.Medium,
-					color = if (isChecked.value) {
-						Color(normalFontColor)
+					color = if (itemData.isChecked) {
+						customColors.todoCompletedText
 					} else {
-						Color(pastFontColor)
+						customColors.todoUncompletedText
 					},
 					// 划线
-					textDecoration = if (isChecked.value) TextDecoration.LineThrough else TextDecoration.None
+					textDecoration = if (itemData.isChecked) TextDecoration.LineThrough else TextDecoration.None
 				)
-				
+
 				// 日期文本
 				Text(
-					text = formattedDate,
-					fontSize = 14.sp,
-					color = Color(uncheckedColor)
+					text = formattedDate, fontSize = 14.sp, color = customColors.todoDateText
 				)
 			}
 		}
@@ -118,6 +115,11 @@ fun TodoItem(
 @Composable()
 @Preview(showBackground = true)
 fun PreviewTodoItem() {
-	TodoItem(TodoItemData("吃饭", Date(), ""), onChecked = {})
+	var isChecked by remember { mutableStateOf(false) }
+	MyCalendarTheme {
+		TodoItem(TodoItemData("吃饭", LocalDate.now(), "", false)) {
+			isChecked = !isChecked
+		}
+	}
 }
 

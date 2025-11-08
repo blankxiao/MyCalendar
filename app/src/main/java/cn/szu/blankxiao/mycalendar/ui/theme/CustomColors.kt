@@ -48,7 +48,8 @@ data class CustomColors(
     // TodoRelate 复选框
     val todoCheckboxChecked: Color,             // 复选框选中颜色
     val todoCheckboxUnchecked: Color,           // 复选框未选中颜色
-    
+    val todoCheckboxCheckmark: Color,           // 复选框未选中颜色
+
     // TodoRelate 卡片
     val todoCardBackground: Color,              // TodoRelate 卡片背景
     val todoCardElevation: Color,               // TodoRelate 卡片阴影（可选）
@@ -57,7 +58,12 @@ data class CustomColors(
     val todoUrgent: Color,                      // 紧急任务标记
     val todoImportant: Color,                   // 重要任务标记
     val todoNormal: Color,                      // 普通任务标记
-    
+
+    // TodoList 整体
+    val todoListBackground: Color,              // TodoList 整体背景
+    val todoListTitleText: Color,               // TodoList 标题文字
+    val todoListEmptyText: Color,               // 空状态提示文字
+
     // ==================== 通用 UI 颜色 ====================
     
     // 按钮状态
@@ -110,7 +116,8 @@ val LightCustomColors = CustomColors(
     // TodoRelate - 复选框
     todoCheckboxChecked = SkyBlue,                  // 天蓝色（选中）
     todoCheckboxUnchecked = LightBorderGray,        // 浅边框灰（未选中）
-    
+    todoCheckboxCheckmark = FixedWhite,           // 白色
+
     // TodoRelate - 卡片
     todoCardBackground = PureWhite,                 // 纯白背景
     todoCardElevation = SilverGray,                 // 银灰色（轻阴影）
@@ -119,6 +126,11 @@ val LightCustomColors = CustomColors(
     todoUrgent = SoftRed,                           // 柔和红（紧急）
     todoImportant = WarmOrange,                     // 暖橙色（重要）
     todoNormal = MintGreen,                         // 薄荷绿（普通）
+    
+    // TodoList - 整体
+    todoListBackground = SoftBackground,            // 柔和浅灰背景（区别于卡片的纯白）
+    todoListTitleText = CharcoalGray,               // 炭灰色（标题）
+    todoListEmptyText = MediumGray,                 // 中灰色（空状态提示）
     
     // 通用 - 按钮
     buttonPrimaryBackground = SkyBlue,              // 天蓝色（主按钮）
@@ -169,7 +181,8 @@ val DarkCustomColors = CustomColors(
     // TodoRelate - 复选框
     todoCheckboxChecked = BrightBlue,               // 明亮蓝（选中）
     todoCheckboxUnchecked = DarkBorderGray,         // 深边框灰（未选中）
-    
+    todoCheckboxCheckmark = FixedBlack,           // 白色
+
     // TodoRelate - 卡片
     todoCardBackground = DarkCharcoal,              // 深灰背景
     todoCardElevation = DeepCharcoal,               // 深炭色（中等阴影）
@@ -178,6 +191,11 @@ val DarkCustomColors = CustomColors(
     todoUrgent = SoftRed,                           // 柔和红（紧急）
     todoImportant = BrightOrange,                   // 明亮橙（重要）
     todoNormal = LimeGreen,                         // 柠檬绿（普通）
+    
+    // TodoList - 整体
+    todoListBackground = SlateGray,                 // 石板灰背景（区别于卡片的深灰）
+    todoListTitleText = LightGray,                  // 浅灰色（标题）
+    todoListEmptyText = NeutralGray,                // 中性灰（空状态提示）
     
     // 通用 - 按钮
     buttonPrimaryBackground = BrightBlue,           // 明亮蓝（主按钮）
