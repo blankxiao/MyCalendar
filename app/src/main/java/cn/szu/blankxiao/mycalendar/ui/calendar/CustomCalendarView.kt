@@ -61,7 +61,7 @@ fun CustomCalendarView(
 		)
 
 		when (currentViewType) {
-			CalendarViewType.MONTH -> MonthViewCalendar(selectedDate = selectedDate) {
+			CalendarViewType.MONTH -> MonthViewCalendar(selectedDate = selectedDate, date2TodoDataList = mapOf()) {
 				onDateSelected(it)
 			}
 

@@ -38,6 +38,9 @@ data class CustomColors(
     val calendarBackground: Color,              // 日历整体背景
     val calendarDivider: Color,                 // 分割线颜色
     
+    // 日历待办指示点
+    val calendarTodoDot: Color,                 // 待办事项指示点颜色
+    
     // ==================== TodoRelate 相关颜色 ====================
     
     // TodoRelate 项状态
@@ -108,6 +111,9 @@ val LightCustomColors = CustomColors(
     calendarBackground = PureWhite,                 // 纯白背景
     calendarDivider = PaleBorderGray,               // 极浅灰分割线
     
+    // 日历 - 待办指示点（低调的灰色）
+    calendarTodoDot = MediumGray,                   // 中灰色小点（低调）
+    
     // TodoRelate - 任务状态
     todoUncompletedText = CharcoalGray,             // 炭灰色（醒目）
     todoCompletedText = MediumGray,                 // 中灰色（弱化）
@@ -172,6 +178,9 @@ val DarkCustomColors = CustomColors(
     // 日历 - 背景和分割线
     calendarBackground = DarkCharcoal,              // 深灰背景
     calendarDivider = DeepBorderGray,               // 深边框灰分割线
+    
+    // 日历 - 待办指示点（柔和的灰色）
+    calendarTodoDot = NeutralGray,                  // 中性灰小点（柔和）
     
     // TodoRelate - 任务状态
     todoUncompletedText = LightGray,                // 浅灰色（醒目）

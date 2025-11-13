@@ -11,6 +11,7 @@ object Dimensions {
 	
 	// ==================== 间距系统 ====================
 	object Spacing {
+		val tiny: Dp = 2.dp      		// 超小间距
 		val extraSmall: Dp = 4.dp      // 超小间距
 		val small: Dp = 8.dp            // 小间距
 		val medium: Dp = 16.dp          // 中间距（标准）
@@ -32,6 +33,7 @@ object Dimensions {
 	// ==================== 圆角半径 ====================
 	object CornerRadius {
 		val none: Dp = 0.dp				// 无圆角
+		val tiny: Dp = 4.dp				// 极小圆角
 		val small: Dp = 8.dp            // 小圆角
 		val medium: Dp = 12.dp          // 中圆角（标准）
 		val large: Dp = 16.dp           // 大圆角
@@ -57,6 +59,15 @@ object Dimensions {
 		val large: Dp = 32.dp
 		val extraLarge: Dp = 48.dp
 		val huge: Dp = 64.dp
+	}
+
+	object Size {
+		val extraTiny: Dp = 2.dp
+		val tiny: Dp = 4.dp
+		val small: Dp = 8.dp
+		val medium: Dp = 16.dp          // 标准图标
+		val large: Dp = 32.dp
+		val extraLarge: Dp = 64.dp
 	}
 
 	// ==================== 分割线 ====================

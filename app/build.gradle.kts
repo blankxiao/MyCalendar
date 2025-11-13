@@ -56,6 +56,9 @@ dependencies {
 	// implementation(libs.kalendar.foundation)
 	// 时间
 	// implementation(libs.kotlinx.datetime)
+	
+	// 农历库
+	implementation("cn.6tail:lunar:1.7.0")
 
 	testImplementation(libs.junit)
 	androidTestImplementation(libs.androidx.junit)

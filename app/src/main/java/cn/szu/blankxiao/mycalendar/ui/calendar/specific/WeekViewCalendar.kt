@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import cn.szu.blankxiao.mycalendar.data.exampleTodoItemList
 import cn.szu.blankxiao.mycalendar.ui.calendar.common.DayCell
 import cn.szu.blankxiao.mycalendar.ui.calendar.common.DaysOfWeekTitle
 import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
@@ -85,7 +86,7 @@ fun WeekViewCalendar(
 		DaysOfWeekTitle()
 
 		WeekCalendar(state = state, modifier = Modifier.fillMaxWidth(), dayContent = { day ->
-			DayCell(day.date, day.date == selectedDate, true) {
+			DayCell(day.date, day.date == selectedDate, true, hasTodo = true, todoDataList = exampleTodoItemList) {
 				onDateSelected(day.date)
 				Log.d(TAG, "WeekViewCalendar: selectedDate新值 $selectedDate")
 			}

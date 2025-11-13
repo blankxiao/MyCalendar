@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import cn.szu.blankxiao.mycalendar.data.TodoItemData
 import cn.szu.blankxiao.mycalendar.ui.calendar.common.DayCell
 import cn.szu.blankxiao.mycalendar.ui.calendar.common.DaysOfWeekTitle
 import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
@@ -49,7 +50,8 @@ private const val TAG = "MonthViewCalendar"
 fun MonthViewCalendar(
 	modifier: Modifier = Modifier,
 	monthDelta: Long = 100,
-	selectedDate: LocalDate = LocalDate.now(),
+	selectedDate: LocalDate,
+	date2TodoDataList: Map<LocalDate, List<TodoItemData>>,
 	onDateSelected: (LocalDate) -> Unit
 ) {
 	Log.d(TAG, "重组 - selectedDate = $selectedDate")
@@ -76,7 +78,7 @@ fun MonthViewCalendar(
 		modifier = modifier
 			.fillMaxWidth()
 			.background(customColors.calendarBackground)
-			.padding(Dimensions.Padding.medium)
+			.padding(Dimensions.Padding.small)
 	) {
 		MonthTitle(currentMonth = state.firstVisibleMonth.yearMonth, onPreviousMonth = {
 			// 协程启动动画
@@ -98,15 +100,19 @@ fun MonthViewCalendar(
 			dayContent = { day ->
 				val isSelected = day.date == selectedDate
 
+				val currentDayTodo = date2TodoDataList[day.date]
+				val showSpot = currentDayTodo != null && !isSelected
+				val isCurrentMonth = day.position == DayPosition.MonthDate
 				DayCell(
 					day = day.date,
 					isSelected = isSelected,
-					isCurrentMonth = day.position == DayPosition.MonthDate,
-					onClick = {
-						Log.d(TAG, "点击日期 - ${day.date}")
-						onDateSelected(day.date)
-					}
-				)
+					isCurrentMonth = isCurrentMonth,
+					hasTodo = showSpot,
+					todoDataList = currentDayTodo
+				) {
+					Log.d(TAG, "点击日期 - ${day.date}")
+					onDateSelected(day.date)
+				}
 			}
 		)
 	}
@@ -164,6 +170,7 @@ fun PreviewMonthViewCalendar() {
 	MyCalendarTheme {
 		MonthViewCalendar(
 			selectedDate = selectedDate,
+			date2TodoDataList = mapOf(),
 			onDateSelected = { newDate ->
 				selectedDate = newDate
 			}
