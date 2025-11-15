@@ -87,9 +87,9 @@ fun ThreeStateBottomSheet(
 	// 三种状态对应的高度比例（从底部算起）
 	val getHeightForState: (BottomSheetState) -> Float = { state ->
 		when (state) {
-			BottomSheetState.EXPANDED -> screenHeightPx * 2f / 3f      // 抽屉占 2/3
-			BottomSheetState.HALF -> screenHeightPx / 2f               // 各占一半
-			BottomSheetState.COLLAPSED -> screenHeightPx * 0.15f       // 抽屉占 15%
+			BottomSheetState.EXPANDED -> screenHeightPx * 0.6f      // 抽屉占 60%
+			BottomSheetState.HALF -> screenHeightPx * 0.4f          // 抽屉占 40%
+			BottomSheetState.COLLAPSED -> screenHeightPx * 0.15f    // 抽屉占 15%
 		}
 	}
 	
@@ -120,17 +120,18 @@ fun ThreeStateBottomSheet(
 			.fillMaxSize()
 			.background(customColors.calendarBackground)
 	) {
-		// 主内容区域（上半部分）
+		// 主内容区域（上半部分）- 高度 = 屏幕高度 - sheet高度（自适应）
 		Box(
 			modifier = Modifier
 				.fillMaxWidth()
 				.height(mainContentHeight)
-				.background(customColors.calendarBackground)
+				.background(customColors.calendarBackground),
+			contentAlignment = Alignment.TopCenter
 		) {
 			mainContent(currentState)
 		}
 		
-		// 底部抽屉（下半部分）- 使用 Box 代替 Surface 避免底部阴影
+		// 底部抽屉（下半部分）- 固定高度，由拖拽控制
 		Box(
 			modifier = Modifier
 				.fillMaxWidth()

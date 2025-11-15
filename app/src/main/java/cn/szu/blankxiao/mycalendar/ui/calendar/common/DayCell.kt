@@ -50,6 +50,7 @@ fun DayCell(
 	isCurrentMonth: Boolean,
 	hasTodo: Boolean,
 	todoDataList: List<TodoItemData>?,
+	showTodoContent: Boolean = false,  // 是否显示 todo 详细内容（展开状态）
 	onClick: () -> Unit,
 ) {
 	val isToday = day == LocalDate.now()
@@ -134,7 +135,7 @@ fun DayCell(
 		}
 
 		// TodoData 内容（在圆圈外部）
-		if (!todoDataList.isNullOrEmpty()) {
+		if (showTodoContent && !todoDataList.isNullOrEmpty()) {
 			Column(
 				modifier = Modifier
 					.padding(top = Dimensions.Padding.tiny)

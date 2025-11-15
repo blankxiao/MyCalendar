@@ -27,6 +27,7 @@ fun MainScreen(
 	onStateChange: (BottomSheetState) -> Unit,
 	onDateSelected: (LocalDate) -> Unit,
 	todoDataList: List<TodoItemData>,
+	date2TodoDataList: Map<LocalDate, List<TodoItemData>>,  // 新增：日期到 todo 列表的映射
 	selectedDate: LocalDate,
 ) {
 	ThreeStateBottomSheet(
@@ -34,18 +35,23 @@ fun MainScreen(
 		onStateChange = onStateChange,
 		mainContent = { state ->
 			when (state) {
-				BottomSheetState.HALF -> MonthViewCalendar(
-					selectedDate = selectedDate,
-					onDateSelected = onDateSelected,
-					date2TodoDataList = mapOf()
-				)
-
+				// COLLAPSED 状态：月视图 + 显示 todo 详情
 				BottomSheetState.COLLAPSED -> MonthViewCalendar(
 					selectedDate = selectedDate,
 					onDateSelected = onDateSelected,
-					date2TodoDataList = mapOf()
+					date2TodoDataList = date2TodoDataList,
+					showTodoContent = true
 				)
 
+				// HALF 状态：月视图，不显示 todo 详情
+				BottomSheetState.HALF -> MonthViewCalendar(
+					selectedDate = selectedDate,
+					onDateSelected = onDateSelected,
+					date2TodoDataList = date2TodoDataList,
+					showTodoContent = false
+				)
+
+				// EXPANDED 状态：周视图
 				BottomSheetState.EXPANDED -> WeekViewCalendar(
 					selectedDate = selectedDate,
 					onDateSelected = onDateSelected
@@ -71,7 +77,8 @@ fun PreviewMainScreen() {
 			selectedDate = selectedDate,
 			onStateChange = { currentSheetState = it },
 			onDateSelected = { selectedDate = it },
-			todoDataList = todoDataList
+			todoDataList = todoDataList,
+			date2TodoDataList = mapOf()
 		)
 
 	}

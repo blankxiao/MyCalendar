@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -70,6 +71,7 @@ fun WeekViewCalendar(
 	Column(
 		modifier = modifier
 			.fillMaxWidth()
+			.fillMaxHeight()  // 🎯 填充可用高度
 			.background(customColors.calendarBackground)
 			.padding(Dimensions.Padding.medium)
 	) {
@@ -85,7 +87,12 @@ fun WeekViewCalendar(
 
 		DaysOfWeekTitle()
 
-		WeekCalendar(state = state, modifier = Modifier.fillMaxWidth(), dayContent = { day ->
+		WeekCalendar(
+			state = state,
+			modifier = Modifier
+				.fillMaxWidth()
+				.weight(1f),  // 🎯 使用 weight 填充剩余空间
+			dayContent = { day ->
 			DayCell(day.date, day.date == selectedDate, true, hasTodo = true, todoDataList = exampleTodoItemList) {
 				onDateSelected(day.date)
 				Log.d(TAG, "WeekViewCalendar: selectedDate新值 $selectedDate")

@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -52,6 +53,7 @@ fun MonthViewCalendar(
 	monthDelta: Long = 100,
 	selectedDate: LocalDate,
 	date2TodoDataList: Map<LocalDate, List<TodoItemData>>,
+	showTodoContent: Boolean = false,  // 是否在日期格子中显示 todo 内容
 	onDateSelected: (LocalDate) -> Unit
 ) {
 	Log.d(TAG, "重组 - selectedDate = $selectedDate")
@@ -77,6 +79,7 @@ fun MonthViewCalendar(
 	Column(
 		modifier = modifier
 			.fillMaxWidth()
+			.fillMaxHeight()  // 🎯 填充可用高度
 			.background(customColors.calendarBackground)
 			.padding(Dimensions.Padding.small)
 	) {
@@ -96,7 +99,9 @@ fun MonthViewCalendar(
 
 		HorizontalCalendar(
 			state = state,
-			modifier = Modifier.fillMaxWidth(),
+			modifier = Modifier
+				.fillMaxWidth()
+				.weight(1f),  // 🎯 使用 weight 填充剩余空间
 			dayContent = { day ->
 				val isSelected = day.date == selectedDate
 
@@ -108,7 +113,8 @@ fun MonthViewCalendar(
 					isSelected = isSelected,
 					isCurrentMonth = isCurrentMonth,
 					hasTodo = showSpot,
-					todoDataList = currentDayTodo
+					todoDataList = currentDayTodo,
+					showTodoContent = showTodoContent
 				) {
 					Log.d(TAG, "点击日期 - ${day.date}")
 					onDateSelected(day.date)
