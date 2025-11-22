@@ -71,7 +71,7 @@ fun WeekViewCalendar(
 	Column(
 		modifier = modifier
 			.fillMaxWidth()
-			.fillMaxHeight()  // 🎯 填充可用高度
+			.fillMaxHeight()
 			.background(customColors.calendarBackground)
 			.padding(Dimensions.Padding.medium)
 	) {
@@ -91,7 +91,7 @@ fun WeekViewCalendar(
 			state = state,
 			modifier = Modifier
 				.fillMaxWidth()
-				.weight(1f),  // 🎯 使用 weight 填充剩余空间
+				.weight(1f),
 			dayContent = { day ->
 			DayCell(day.date, day.date == selectedDate, true, hasTodo = true, todoDataList = exampleTodoItemList) {
 				onDateSelected(day.date)

@@ -79,7 +79,7 @@ fun MonthViewCalendar(
 	Column(
 		modifier = modifier
 			.fillMaxWidth()
-			.fillMaxHeight()  // 🎯 填充可用高度
+			.fillMaxHeight()
 			.background(customColors.calendarBackground)
 			.padding(Dimensions.Padding.small)
 	) {
@@ -101,7 +101,7 @@ fun MonthViewCalendar(
 			state = state,
 			modifier = Modifier
 				.fillMaxWidth()
-				.weight(1f),  // 🎯 使用 weight 填充剩余空间
+				.weight(1f),
 			dayContent = { day ->
 				val isSelected = day.date == selectedDate
 
