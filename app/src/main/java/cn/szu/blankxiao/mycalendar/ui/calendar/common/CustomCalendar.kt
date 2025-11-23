@@ -1,6 +1,5 @@
 package cn.szu.blankxiao.mycalendar.ui.calendar.common
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
@@ -14,6 +13,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -30,9 +31,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
 import cn.szu.blankxiao.mycalendar.ui.theme.MyCalendarTheme
 import com.kizitonwose.calendar.compose.CalendarState
 import com.kizitonwose.calendar.compose.rememberCalendarState
@@ -60,10 +63,11 @@ fun AnimatableMonthCalendar(
 	val month = state.firstVisibleMonth
 	val density = LocalDensity.current
 
-	val weekHeightDp = 60f  // 单周高度
+	// 动态测量的周高度（单位：dp）
+	var weekHeightDp by remember { mutableStateOf(60f) }  // 初始默认值
 	val weekCount = month.weekDays.size  // 总周数
 	val monthHeightDp = weekHeightDp * weekCount  // 月视图总高度
-	
+
 	// 计算目标周的顶部位置
 	val targetWeekTopDp = targetWeekIndex * weekHeightDp
 
@@ -73,44 +77,59 @@ fun AnimatableMonthCalendar(
 
 	// 计算内容偏移量
 	val contentOffsetYDp = targetWeekTopDp * weekTransitionProgress
-	
+
 	// 转换为 px（layout 和 place 需要 px 单位）
 	val contentOffsetYPx = with(density) { contentOffsetYDp.dp.toPx() }.toInt()
 	val containerHeightPx = with(density) { containerHeight.dp.toPx() }.toInt()
 
 
-	Box(
-		modifier = Modifier
-			.fillMaxWidth()
-			.height(containerHeight.dp)
-			.clipToBounds()
-	) {
-		Column(
+	Column {
+		DaysOfWeekTitle()
+		Box(
 			modifier = Modifier
 				.fillMaxWidth()
-				.layout { measurable, constraints ->
-					val placeable = measurable.measure(
-						constraints.copy(
-							minHeight = 0,
-							maxHeight = Int.MAX_VALUE
-						)
-					)
-					layout(placeable.width, containerHeightPx) {
-						// 固定目标周：向上移动 contentOffsetYPx（px 单位）
-						placeable.place(0, -contentOffsetYPx)
-					}
-				}
+				.height(containerHeight.dp)
+				.clipToBounds()
 		) {
-			month.weekDays.forEachIndexed { index, week ->
+			Column(
+				modifier = Modifier
+					.fillMaxWidth()
+					.layout { measurable, constraints ->
+						val placeable = measurable.measure(
+							constraints.copy(
+								minHeight = 0,
+								maxHeight = Int.MAX_VALUE
+							)
+						)
+						layout(placeable.width, containerHeightPx) {
+							// 固定目标周：向上移动 contentOffsetYPx（px 单位）
+							placeable.place(0, -contentOffsetYPx)
+						}
+					}
+			) {
+				// 周排列日历
+				month.weekDays.forEachIndexed { index, week ->
 
-				Row(
-					modifier = Modifier
-						.fillMaxWidth()
-						.height(weekHeightDp.dp)  // 明确设置高度
-				) {
-					week.forEach { day ->
-						Box(modifier = Modifier.weight(1f)) {
-							dayContent(day)
+					Row(
+						modifier = Modifier
+							.fillMaxWidth()
+							.wrapContentHeight()
+							.onSizeChanged { size ->
+								// 动态测量周的实际高度（px → dp）
+								if (size.height > 0) {
+									val measuredHeightDp =
+										with(density) { size.height.toDp().value }
+									// 更新状态（首次或高度变化时）
+									if (weekHeightDp != measuredHeightDp) {
+										weekHeightDp = measuredHeightDp
+									}
+								}
+							}
+					) {
+						week.forEach { day ->
+							Box(modifier = Modifier.weight(1f)) {
+								dayContent(day)
+							}
 						}
 					}
 				}
@@ -125,7 +144,7 @@ fun AnimatableMonthCalendar(
 @Composable
 fun DragHandle(modifier: Modifier = Modifier) {
 	Box(
-		modifier = modifier,
+		modifier = modifier.padding(vertical = Dimensions.Padding.small),
 		contentAlignment = Alignment.Center
 	) {
 		Box(
@@ -178,26 +197,9 @@ fun PreviewAnimatableMonthCalendar() {
 				Text("  进度: %.2f".format(weekTransitionProgress))
 			}
 
-			// 调试信息（可选）
-			Text(
-				text = "调试: 容器高度变化 | 内容向上平移",
-				style = MaterialTheme.typography.bodySmall,
-				color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-			)
-
 			Box(
 				modifier = Modifier
 					.fillMaxWidth()
-					.draggable(
-						orientation = Orientation.Vertical,
-						state = rememberDraggableState { delta ->
-							// delta 为负数表示向上滑动（切换到周视图）
-							// delta 为正数表示向下滑动（切换到月视图）
-							val sensitivity = 0.002f // 调整灵敏度
-							weekTransitionProgress =
-								(weekTransitionProgress - delta * sensitivity).coerceIn(0f, 1f)
-						}
-					)
 			) {
 				AnimatableMonthCalendar(
 					state = state,
@@ -224,11 +226,24 @@ fun PreviewAnimatableMonthCalendar() {
 				}
 			}
 
-			DragHandle()
+			DragHandle(
+				modifier = Modifier
+					.draggable(
+						orientation = Orientation.Vertical,
+						state = rememberDraggableState { delta ->
+							// delta 为负数表示向上滑动（切换到周视图）
+							// delta 为正数表示向下滑动（切换到月视图）
+							val sensitivity = 0.002f // 调整灵敏度
+							weekTransitionProgress =
+								(weekTransitionProgress - delta * sensitivity).coerceIn(0f, 1f)
+						}
+					))
 
-			Spacer(modifier = Modifier
-				.fillMaxSize()
-				.background(Color.Black))
+			Spacer(
+				modifier = Modifier
+					.fillMaxSize()
+					.background(Color.Black)
+			)
 		}
 	}
 }
