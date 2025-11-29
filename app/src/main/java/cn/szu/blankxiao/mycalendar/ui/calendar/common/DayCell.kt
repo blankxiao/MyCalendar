@@ -1,6 +1,5 @@
 package cn.szu.blankxiao.mycalendar.ui.calendar.common
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -26,8 +25,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import cn.szu.blankxiao.mycalendar.data.TodoItemData
-import cn.szu.blankxiao.mycalendar.data.exampleTodoItemList
+import cn.szu.blankxiao.mycalendar.data.todo.TodoItemData
+import cn.szu.blankxiao.mycalendar.data.todo.exampleTodoItemList
 import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
 import cn.szu.blankxiao.mycalendar.ui.theme.MyCalendarTheme
 import cn.szu.blankxiao.mycalendar.ui.theme.Typography
@@ -43,28 +42,43 @@ private const val TAG = "DayCell"
  * @description DayCell 日期单天的样式
  * @date 2025-11-04 21:36
  */
-@Composable()
+@Composable
 fun DayCell(
 	day: LocalDate,
 	isSelected: Boolean,
 	isCurrentMonth: Boolean,
 	hasTodo: Boolean,
 	todoDataList: List<TodoItemData>?,
-	showTodoContent: Boolean = false,  // 是否显示 todo 详细内容（展开状态）
+	modifier: Modifier = Modifier,
+	showTodoContent: Boolean = false,
 	onClick: () -> Unit,
 ) {
-	val isToday = day == LocalDate.now()
 	val customColors = MaterialTheme.customColors
-
-	Log.d(TAG, "渲染 - day=$day, isSelected=$isSelected, isToday=$isToday")
-
-	val textColor = when {
-		isSelected -> customColors.calendarSelectedText
-		isToday -> customColors.calendarTodayText
-		!isCurrentMonth -> customColors.calendarOtherMonthText
-		else -> customColors.calendarNormalText
+	
+	// 缓存 today，避免每次重组都创建新对象
+	val today = remember { LocalDate.now() }
+	val isToday = day == today
+	
+	// 缓存颜色计算
+	val textColor = remember(isSelected, isToday, isCurrentMonth) {
+		when {
+			isSelected -> customColors.calendarSelectedText
+			isToday -> customColors.calendarTodayText
+			!isCurrentMonth -> customColors.calendarOtherMonthText
+			else -> customColors.calendarNormalText
+		}
 	}
-
+	
+	// 缓存背景色
+	val backgroundColor = remember(isSelected, isToday) {
+		when {
+			isSelected -> customColors.calendarSelectedBackground
+			isToday -> customColors.calendarTodayBackground
+			else -> Color.Transparent
+		}
+	}
+	
+	// 缓存农历文本
 	val lunarText = remember(day) {
 		LunarUtil.getLunarDayText(day)
 	}
@@ -72,7 +86,8 @@ fun DayCell(
 	// 外层 Column：包含圆形日期区域 + Todo 内容
 	Column(
 		horizontalAlignment = Alignment.CenterHorizontally,
-		verticalArrangement = Arrangement.Top
+		verticalArrangement = Arrangement.Top,
+		modifier = modifier
 	) {
 		// 圆形日期区域
 		Box(
@@ -80,22 +95,13 @@ fun DayCell(
 				.aspectRatio(1f)
 				.padding(Dimensions.Padding.tiny)
 				.clip(CircleShape)
-				.background(
-					when {
-						isSelected -> customColors.calendarSelectedBackground
-						isToday -> customColors.calendarTodayBackground
-						else -> Color.Transparent
-					}
-				)
+				.background(backgroundColor)
 				.border(
 					width = if (isToday && !isSelected) 1.dp else 0.dp,
 					color = customColors.calendarDivider,
 					shape = CircleShape
 				)
-				.clickable {
-					Log.d(TAG, "DayCell 点击 - day=$day")
-					onClick()
-				},
+				.clickable(onClick = onClick),
 			contentAlignment = Alignment.Center
 		) {
 			// 待办指示点（绝对定位在顶部）

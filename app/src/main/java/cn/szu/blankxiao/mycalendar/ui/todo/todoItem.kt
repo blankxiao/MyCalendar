@@ -24,7 +24,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import cn.szu.blankxiao.mycalendar.data.TodoItemData
+import cn.szu.blankxiao.mycalendar.data.todo.TodoItemData
 import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
 import cn.szu.blankxiao.mycalendar.ui.theme.MyCalendarTheme
 import cn.szu.blankxiao.mycalendar.ui.theme.Typography
