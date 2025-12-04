@@ -16,6 +16,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +34,8 @@ import cn.szu.blankxiao.mycalendar.ui.theme.MyCalendarTheme
 import cn.szu.blankxiao.mycalendar.ui.theme.Typography
 import cn.szu.blankxiao.mycalendar.ui.theme.customColors
 import cn.szu.blankxiao.mycalendar.utils.LunarUtil
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 private const val TAG = "DayCell"
@@ -57,7 +61,7 @@ fun DayCell(
 	
 	val today = remember { LocalDate.now() }
 	val isToday = day == today
-	
+
 	val textColor = remember(isSelected, isToday, isCurrentMonth, customColors) {
 		when {
 			isSelected -> customColors.calendarSelectedText
@@ -75,9 +79,11 @@ fun DayCell(
 		}
 	}
 	
-	// 农历文本
-	val lunarText = remember(day) {
-		LunarUtil.getLunarDayText(day)
+	// 农历文本 - 延迟加载，先显示公历，农历异步计算后显示
+	val lunarText by produceState(initialValue = "", key1 = day) {
+		value = withContext(Dispatchers.Default) {
+			LunarUtil.getLunarDayText(day)
+		}
 	}
 
 	// 外层 Column：包含圆形日期区域 + Todo 内容
