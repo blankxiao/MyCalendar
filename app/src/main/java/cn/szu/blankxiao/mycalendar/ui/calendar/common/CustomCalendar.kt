@@ -22,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -157,26 +158,30 @@ fun MonthGrid(
 			.fillMaxWidth()
 	) {
 		monthData.weeks.forEachIndexed { weekIndex, week ->
-			Row(
-				modifier = Modifier
-					.fillMaxWidth()
-					.wrapContentHeight()
-					.then(
-						// 只在第一周测量高度
-						if (weekIndex == 0 && onWeekHeightMeasured != null) {
-							Modifier.onSizeChanged { size ->
-								if (size.height > 0) {
-									val heightDp = with(density) { size.height.toDp().value }
-									onWeekHeightMeasured(heightDp)
+			key(weekIndex) {  // key用于优化重组
+				Row(
+					modifier = Modifier
+						.fillMaxWidth()
+						.wrapContentHeight()
+						.then(
+							// 只在第一周测量高度
+							if (weekIndex == 0 && onWeekHeightMeasured != null) {
+								Modifier.onSizeChanged { size ->
+									if (size.height > 0) {
+										val heightDp = with(density) { size.height.toDp().value }
+										onWeekHeightMeasured(heightDp)
+									}
 								}
+							} else {
+								Modifier
 							}
-						} else {
-							Modifier
+						)
+				) {
+					week.forEach { day ->
+						key(day.date) {  // key用于优化重组
+							dayContent(day)
 						}
-					)
-			) {
-				week.forEach { day ->
-					dayContent(day)
+					}
 				}
 			}
 		}
