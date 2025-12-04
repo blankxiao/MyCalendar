@@ -55,12 +55,10 @@ fun DayCell(
 ) {
 	val customColors = MaterialTheme.customColors
 	
-	// 缓存 today，避免每次重组都创建新对象
 	val today = remember { LocalDate.now() }
 	val isToday = day == today
 	
-	// 缓存颜色计算
-	val textColor = remember(isSelected, isToday, isCurrentMonth) {
+	val textColor = remember(isSelected, isToday, isCurrentMonth, customColors) {
 		when {
 			isSelected -> customColors.calendarSelectedText
 			isToday -> customColors.calendarTodayText
@@ -69,8 +67,7 @@ fun DayCell(
 		}
 	}
 	
-	// 缓存背景色
-	val backgroundColor = remember(isSelected, isToday) {
+	val backgroundColor = remember(isSelected, isToday, customColors) {
 		when {
 			isSelected -> customColors.calendarSelectedBackground
 			isToday -> customColors.calendarTodayBackground
@@ -78,7 +75,7 @@ fun DayCell(
 		}
 	}
 	
-	// 缓存农历文本
+	// 农历文本
 	val lunarText = remember(day) {
 		LunarUtil.getLunarDayText(day)
 	}
