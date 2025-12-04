@@ -1,5 +1,7 @@
 package cn.szu.blankxiao.mycalendar.ui.calendar.common
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
@@ -16,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -115,7 +118,15 @@ fun AnimatableCustomCalendar(
 			HorizontalPager(
 				state = state.pagerState,
 				modifier = Modifier
-					.fillMaxWidth()
+					.fillMaxWidth(),
+				// 调整动画配置，让滑动更平滑
+				flingBehavior = PagerDefaults.flingBehavior(
+					state = state.pagerState,
+					snapAnimationSpec = tween(
+						durationMillis = 400,
+						easing = FastOutSlowInEasing
+					)
+				)
 			) { pageIndex ->
 				val monthData = state.getMonthByIndex(pageIndex)
 				val isCurrentPage = pageIndex == state.pagerState.currentPage
