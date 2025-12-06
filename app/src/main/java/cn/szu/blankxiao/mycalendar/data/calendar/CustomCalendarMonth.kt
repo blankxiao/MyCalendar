@@ -11,18 +11,18 @@ import java.time.YearMonth
 
 data class CustomCalendarMonth(
 	val yearMonth: YearMonth,
-	val weeks: List<List<CustomCalendarDay>>
+	val weeks: List<CustomCalendarWeek>
 ) {
 	/** 当前月份的周数 */
 	val weekCount: Int get() = weeks.size
 
 	/** 获取指定周 */
-	fun getWeek(index: Int): List<CustomCalendarDay>? = weeks.getOrNull(index)
+	fun getWeek(index: Int): CustomCalendarWeek? = weeks.getOrNull(index)
 
 	/** 查找包含指定日期的周索引 */
 	fun findWeekIndex(date: LocalDate): Int {
 		return weeks.indexOfFirst { week ->
-			week.any { it.date == date && it.position == DayPosition.MonthDate }
+			week.days.any { it.date == date && it.position == DayPosition.MonthDate }
 		}
 	}
 }

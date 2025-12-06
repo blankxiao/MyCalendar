@@ -2,6 +2,7 @@ package cn.szu.blankxiao.mycalendar.utils
 
 import cn.szu.blankxiao.mycalendar.data.calendar.CustomCalendarDay
 import cn.szu.blankxiao.mycalendar.data.calendar.CustomCalendarMonth
+import cn.szu.blankxiao.mycalendar.data.calendar.CustomCalendarWeek
 import cn.szu.blankxiao.mycalendar.data.calendar.DayPosition
 import cn.szu.blankxiao.mycalendar.data.calendar.OutDateStyle
 import java.time.DayOfWeek
@@ -60,7 +61,7 @@ object CalendarDataCalculator {
 		}
 
 		// 按周分组（每周 7 天）
-		val weeks = allDays.chunked(7)
+		val weeks = allDays.chunked(7).map { CustomCalendarWeek(it) }
 
 		return CustomCalendarMonth(yearMonth, weeks)
 	}
@@ -127,5 +128,37 @@ object CalendarDataCalculator {
 	 */
 	fun getMonthByOffset(startMonth: YearMonth, offset: Int): YearMonth {
 		return startMonth.plusMonths(offset.toLong())
+	}
+
+	// ============ 周相关计算 ============
+
+	/**
+	 * 获取指定日期所在周的第一天
+	 */
+	fun getWeekStart(date: LocalDate, firstDayOfWeek: DayOfWeek): LocalDate {
+		val dayOfWeek = date.dayOfWeek.value
+		val firstDayValue = firstDayOfWeek.value
+		val daysToSubtract = if (dayOfWeek >= firstDayValue) {
+			dayOfWeek - firstDayValue
+		} else {
+			7 - (firstDayValue - dayOfWeek)
+		}
+		return date.minusDays(daysToSubtract.toLong())
+	}
+
+	/**
+	 * 计算周索引（从起始日期开始计算）
+	 */
+	fun getWeekIndex(startDate: LocalDate, targetDate: LocalDate, firstDayOfWeek: DayOfWeek): Int {
+		val startWeekStart = getWeekStart(startDate, firstDayOfWeek)
+		val targetWeekStart = getWeekStart(targetDate, firstDayOfWeek)
+		return ChronoUnit.WEEKS.between(startWeekStart, targetWeekStart).toInt()
+	}
+
+	/**
+	 * 计算总周数
+	 */
+	fun getTotalWeekCount(startDate: LocalDate, endDate: LocalDate, firstDayOfWeek: DayOfWeek): Int {
+		return getWeekIndex(startDate, endDate, firstDayOfWeek) + 1
 	}
 }

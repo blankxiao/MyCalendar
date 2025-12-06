@@ -1,7 +1,5 @@
 package cn.szu.blankxiao.mycalendar.ui.calendar.common
 
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
@@ -18,18 +16,19 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -68,20 +67,27 @@ fun AnimatableCustomCalendar(
 	modifier: Modifier = Modifier,
 	dayContent: @Composable RowScope.(CustomCalendarDay) -> Unit,
 ) {
-	val targetWeekIndex = state.targetWeekIndex
-	// 用于转换dp和px
 	val density = LocalDensity.current
 	val weekTransitionProgress = state.transitionProgress
+	val targetWeekIndex = state.targetWeekIndex
+
+	// 监听 pager 页面变化，更新对应模式的索引
+	LaunchedEffect(state.pagerState) {
+		snapshotFlow { state.pagerState.currentPage }
+			.collect { pageIndex ->
+				state.onPageChanged(pageIndex)
+			}
+	}
 
 	// 单周的高度
 	var weekHeightDp by remember { mutableFloatStateOf(60f) }
 	val weekCount = state.weekCountInMonth
 	val monthHeightDp = weekHeightDp * weekCount
 
-	// 计算目标周的顶部位置 用于状态转换
+	// 计算容器高度和偏移量
 	val targetWeekTopDp = targetWeekIndex * weekHeightDp
 
-	// 计算容器高度
+	// 根据 transitionProgress 渐变
 	val heightOffset = monthHeightDp - weekHeightDp
 	val containerHeight = monthHeightDp - (heightOffset * weekTransitionProgress)
 
@@ -110,7 +116,6 @@ fun AnimatableCustomCalendar(
 						)
 					)
 					layout(placeable.width, containerHeightPx) {
-						// 固定目标周：向上移动 contentOffsetYPx（px 单位）
 						placeable.place(0, -contentOffsetYPx)
 					}
 				}
@@ -118,25 +123,15 @@ fun AnimatableCustomCalendar(
 			HorizontalPager(
 				state = state.pagerState,
 				modifier = Modifier
-					.fillMaxWidth(),
-				// 调整动画配置，让滑动更平滑
-				flingBehavior = PagerDefaults.flingBehavior(
-					state = state.pagerState,
-					snapAnimationSpec = tween(
-						durationMillis = 400,
-						easing = FastOutSlowInEasing
-					)
-				)
+					.fillMaxWidth()
 			) { pageIndex ->
-				val monthData = state.getMonthByIndex(pageIndex)
+				val monthData = state.getMonthForPage(pageIndex)
 				val isCurrentPage = pageIndex == state.pagerState.currentPage
 
 				MonthGrid(
 					monthData = monthData,
 					onWeekHeightMeasured = if (isCurrentPage) { height ->
-						if (weekHeightDp != height) {
-							weekHeightDp = height
-						}
+						if (weekHeightDp != height) weekHeightDp = height
 					} else null,
 					dayContent = dayContent
 				)
@@ -188,7 +183,7 @@ fun MonthGrid(
 							}
 						)
 				) {
-					week.forEach { day ->
+					week.days.forEach { day ->
 						key(day.date) {  // key用于优化重组
 							dayContent(day)
 						}
@@ -198,7 +193,6 @@ fun MonthGrid(
 		}
 	}
 }
-
 
 /**
  * 拖动句柄组件
