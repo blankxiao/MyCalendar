@@ -123,18 +123,21 @@ fun AnimatableCustomCalendar(
 			HorizontalPager(
 				state = state.pagerState,
 				modifier = Modifier
-					.fillMaxWidth()
+					.fillMaxWidth(),
+				userScrollEnabled = weekTransitionProgress == 0f || weekTransitionProgress == 1f
 			) { pageIndex ->
 				val monthData = state.getMonthForPage(pageIndex)
 				val isCurrentPage = pageIndex == state.pagerState.currentPage
 
-				MonthGrid(
-					monthData = monthData,
-					onWeekHeightMeasured = if (isCurrentPage) { height ->
-						if (weekHeightDp != height) weekHeightDp = height
-					} else null,
-					dayContent = dayContent
-				)
+				key(monthData.yearMonth) {
+					MonthGrid(
+						monthData = monthData,
+						onWeekHeightMeasured = if (isCurrentPage) { height ->
+							if (weekHeightDp != height) weekHeightDp = height
+						} else null,
+						dayContent = dayContent
+					)
+				}
 			}
 		}
 

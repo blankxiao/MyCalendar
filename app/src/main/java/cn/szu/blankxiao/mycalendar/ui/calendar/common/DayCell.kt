@@ -132,14 +132,11 @@ fun DayCell(
 					color = textColor
 				)
 
-				// 农历日期（小字）
-				if (lunarText.isNotEmpty()) {
-					Text(
-						text = lunarText,
-						style = Typography.labelSmall,
-						color = textColor.copy(alpha = 0.6f)
-					)
-				}
+				Text(
+					text = lunarText.ifEmpty { "　" },
+					style = Typography.labelSmall,
+					color = if (lunarText.isNotEmpty()) textColor.copy(alpha = 0.6f) else Color.Transparent
+				)
 			}
 		}
 
