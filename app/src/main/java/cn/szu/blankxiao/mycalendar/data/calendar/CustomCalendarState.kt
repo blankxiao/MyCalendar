@@ -268,11 +268,35 @@ class CustomCalendarState internal constructor(
 	)
 
 	/**
+	 * 是否正在过渡动画中
+	 * - transitionProgress 在 (0, 1) 之间
+	 * - 或者动画正在运行中
+	 */
+	val isInTransition: Boolean
+		get() = (transitionProgress > 0f && transitionProgress < 1f) || progressAnimatable.isRunning
+
+	/**
 	 * 根据当前模式和页面索引获取对应的数据
 	 * - 月模式：pageIndex = 月索引，返回月份数据
 	 * - 周模式：pageIndex = 周索引，返回周数据
+	 * - 过渡期间：始终返回月份数据（用于正确计算动画高度）
 	 */
 	fun getDataForPage(pageIndex: Int): CustomCalendarData {
+		// 过渡动画期间或动画运行中，始终返回完整月份数据
+		// 这样才能正确计算从周到月的高度变化
+		if (isInTransition) {
+			val monthIndex = when (_calendarMode) {
+				CalendarMode.MONTH -> pageIndex
+				CalendarMode.WEEK -> {
+					val weekStartDate = CalendarDataCalculator.getDateByWeekIndex(
+						_startDate, pageIndex, _firstDayOfWeek
+					)
+					CalendarDataCalculator.getMonthIndex(startMonth, YearMonth.from(weekStartDate))
+				}
+			}
+			return cacheManager.getMonthData(monthIndex)
+		}
+
 		return when (_calendarMode) {
 			CalendarMode.MONTH -> cacheManager.getMonthData(pageIndex)
 			CalendarMode.WEEK -> cacheManager.getWeekData(pageIndex)

@@ -1,6 +1,5 @@
 package cn.szu.blankxiao.mycalendar.ui.calendar.common
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
@@ -183,9 +182,6 @@ fun MonthGrid(
 	// 转换为 px
 	val contentOffsetYPx = with(density) { contentOffsetYDp.dp.toPx() }.toInt()
 	val containerHeightPx = with(density) { containerHeight.dp.toPx() }.toInt()
-
-	Log.d(TAG, "MonthGrid: targetWeekIndex: $targetWeekIndex")
-	Log.d(TAG, "MonthGrid: selectedDate: $selectedDate")
 	Column(
 		modifier = modifier
 			.fillMaxWidth()
