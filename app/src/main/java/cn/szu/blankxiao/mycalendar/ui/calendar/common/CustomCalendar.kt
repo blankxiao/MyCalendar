@@ -1,5 +1,6 @@
 package cn.szu.blankxiao.mycalendar.ui.calendar.common
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
@@ -17,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,8 +40,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cn.szu.blankxiao.mycalendar.data.calendar.CalendarMode
+import cn.szu.blankxiao.mycalendar.data.calendar.CustomCalendarData
 import cn.szu.blankxiao.mycalendar.data.calendar.CustomCalendarDay
-import cn.szu.blankxiao.mycalendar.data.calendar.CustomCalendarMonth
 import cn.szu.blankxiao.mycalendar.data.calendar.CustomCalendarState
 import cn.szu.blankxiao.mycalendar.data.calendar.DayPosition
 import cn.szu.blankxiao.mycalendar.data.calendar.ModeChangeDragThreshold
@@ -67,36 +67,13 @@ fun AnimatableCustomCalendar(
 	modifier: Modifier = Modifier,
 	dayContent: @Composable RowScope.(CustomCalendarDay) -> Unit,
 ) {
-	val density = LocalDensity.current
-	val weekTransitionProgress = state.transitionProgress
-	val targetWeekIndex = state.targetWeekIndex
-
-	// 监听 pager 页面变化，更新对应模式的索引
+	// 监听 Pager 页面变化，更新 selectedDate
 	LaunchedEffect(state.pagerState) {
 		snapshotFlow { state.pagerState.currentPage }
-			.collect { pageIndex ->
-				state.onPageChanged(pageIndex)
+			.collect { newPage ->
+				state.onPageChanged(newPage)
 			}
 	}
-
-	// 单周的高度
-	var weekHeightDp by remember { mutableFloatStateOf(60f) }
-	val weekCount = state.weekCountInMonth
-	val monthHeightDp = weekHeightDp * weekCount
-
-	// 计算容器高度和偏移量
-	val targetWeekTopDp = targetWeekIndex * weekHeightDp
-
-	// 根据 transitionProgress 渐变
-	val heightOffset = monthHeightDp - weekHeightDp
-	val containerHeight = monthHeightDp - (heightOffset * weekTransitionProgress)
-
-	// 计算内容偏移量
-	val contentOffsetYDp = targetWeekTopDp * weekTransitionProgress
-
-	// 转换为 px
-	val contentOffsetYPx = with(density) { contentOffsetYDp.dp.toPx() }.toInt()
-	val containerHeightPx = with(density) { containerHeight.dp.toPx() }.toInt()
 
 	Column(
 		modifier = modifier
@@ -106,35 +83,60 @@ fun AnimatableCustomCalendar(
 		Box(
 			modifier = Modifier
 				.fillMaxWidth()
-				.height(containerHeight.dp)
+				.wrapContentHeight()
 				.clipToBounds()
-				.layout { measurable, constraints ->
-					val placeable = measurable.measure(
-						constraints.copy(
-							minHeight = 0,
-							maxHeight = Int.MAX_VALUE
-						)
-					)
-					layout(placeable.width, containerHeightPx) {
-						placeable.place(0, -contentOffsetYPx)
-					}
-				}
 		) {
+			// // 周模式下的滑动阈值（px）
+			// val weekSwipeThreshold = with(density) { 50.dp.toPx() }
+			// var accumulatedDrag by remember { mutableFloatStateOf(0f) }
+
 			HorizontalPager(
 				state = state.pagerState,
 				modifier = Modifier
-					.fillMaxWidth(),
-				userScrollEnabled = weekTransitionProgress == 0f || weekTransitionProgress == 1f
+					.fillMaxWidth()
+				// 	.then(
+				// 		if (state.calendarMode == CalendarMode.WEEK) {
+				// 			Modifier.pointerInput(state.calendarMode) {
+				// 				detectHorizontalDragGestures(
+				// 					onDragStart = {
+				// 						accumulatedDrag = 0f
+				// 					},
+				// 					onHorizontalDrag = { _, dragAmount ->
+				// 						accumulatedDrag += dragAmount
+				// 					},
+				// 					onDragEnd = {
+				// 						coroutineScope.launch {
+				// 							when {
+				// 								accumulatedDrag > weekSwipeThreshold -> {
+				// 									// 向右滑 → 上一周
+				// 									state.scrollToPreviousWeek()
+				// 								}
+				// 								accumulatedDrag < -weekSwipeThreshold -> {
+				// 									// 向左滑 → 下一周
+				// 									state.scrollToNextWeek()
+				// 								}
+				// 							}
+				// 						}
+				// 						accumulatedDrag = 0f
+				// 					},
+				// 					onDragCancel = {
+				// 						accumulatedDrag = 0f
+				// 					}
+				// 				)
+				// 			}
+				// 		} else {
+				// 			Modifier
+				// 		}
+				// 	),
+				// userScrollEnabled = state.calendarMode == CalendarMode.MONTH
 			) { pageIndex ->
-				val monthData = state.getMonthForPage(pageIndex)
-				val isCurrentPage = pageIndex == state.pagerState.currentPage
+				val calendarData = state.getDataForPage(pageIndex)
 
-				key(monthData.yearMonth) {
+				key(calendarData.yearMonth) {
 					MonthGrid(
-						monthData = monthData,
-						onWeekHeightMeasured = if (isCurrentPage) { height ->
-							if (weekHeightDp != height) weekHeightDp = height
-						} else null,
+						monthData = calendarData,
+						weekTransitionProgress = state.transitionProgress,
+						selectedDate = state.selectedDate,
 						dayContent = dayContent
 					)
 				}
@@ -155,30 +157,62 @@ fun AnimatableCustomCalendar(
  */
 @Composable
 fun MonthGrid(
-	monthData: CustomCalendarMonth,
+	monthData: CustomCalendarData,
+	selectedDate: LocalDate,
+	weekTransitionProgress: Float,
 	modifier: Modifier = Modifier,
-	onWeekHeightMeasured: ((Float) -> Unit)? = null,
 	dayContent: @Composable RowScope.(CustomCalendarDay) -> Unit,
 ) {
 	val density = LocalDensity.current
+	// 单周的高度
+	var weekHeightDp by remember { mutableFloatStateOf(60f) }
+	val weekCount = monthData.weekCount
+	val monthHeightDp = weekHeightDp * weekCount
 
+	// 计算容器高度和偏移量
+	val targetWeekIndex = monthData.calDateIndexInWeeks(selectedDate)
+	val targetWeekTopDp = targetWeekIndex * weekHeightDp
+
+	// 根据 transitionProgress 渐变
+	val heightOffset = monthHeightDp - weekHeightDp
+	val containerHeight = monthHeightDp - (heightOffset * weekTransitionProgress)
+
+	// 计算内容偏移量
+	val contentOffsetYDp = targetWeekTopDp * weekTransitionProgress
+
+	// 转换为 px
+	val contentOffsetYPx = with(density) { contentOffsetYDp.dp.toPx() }.toInt()
+	val containerHeightPx = with(density) { containerHeight.dp.toPx() }.toInt()
+
+	Log.d(TAG, "MonthGrid: targetWeekIndex: $targetWeekIndex")
+	Log.d(TAG, "MonthGrid: selectedDate: $selectedDate")
 	Column(
 		modifier = modifier
 			.fillMaxWidth()
+			.layout { measurable, constraints ->
+				val placeable = measurable.measure(
+					constraints.copy(
+						minHeight = 0,
+						maxHeight = Int.MAX_VALUE
+					)
+				)
+				layout(placeable.width, containerHeightPx) {
+					placeable.place(0, -contentOffsetYPx)
+				}
+			}
 	) {
 		monthData.weeks.forEachIndexed { weekIndex, week ->
-			key(weekIndex) {  // key用于优化重组
+			key(weekIndex) {
 				Row(
 					modifier = Modifier
 						.fillMaxWidth()
 						.wrapContentHeight()
 						.then(
 							// 只在第一周测量高度
-							if (weekIndex == 0 && onWeekHeightMeasured != null) {
+							if (weekIndex == 0) {
 								Modifier.onSizeChanged { size ->
 									if (size.height > 0) {
-										val heightDp = with(density) { size.height.toDp().value }
-										onWeekHeightMeasured(heightDp)
+										weekHeightDp = with(density) { size.height.toDp().value }
 									}
 								}
 							} else {
@@ -187,7 +221,7 @@ fun MonthGrid(
 						)
 				) {
 					week.days.forEach { day ->
-						key(day.date) {  // key用于优化重组
+						key(day.date) {
 							dayContent(day)
 						}
 					}
@@ -280,20 +314,11 @@ fun PreviewAnimatableMonthCalendar() {
 			Column(
 				horizontalAlignment = Alignment.CenterHorizontally
 			) {
-				Text(
-					text = state.displayText, // 使用新的格式化文本
-					style = MaterialTheme.typography.titleMedium
-				)
+				// Text(
+				// 	text = state.displayText, // 使用新的格式化文本
+				// 	style = MaterialTheme.typography.titleMedium
+				// )
 				Text("模式: ${if (state.calendarMode == CalendarMode.MONTH) "月" else "周"}")
-
-				// 测试按钮：切换模式
-				Button(onClick = {
-					coroutineScope.launch {
-						state.toggleMode(animate = true)
-					}
-				}) {
-					Text("切换模式")
-				}
 			}
 
 			AnimatableCustomCalendar(
@@ -315,7 +340,7 @@ fun PreviewAnimatableMonthCalendar() {
 					showTodoContent = false
 				) {
 					coroutineScope.launch {
-						state.selectDate(day.date, scrollToDate = true)
+						state.scrollToDate(day.date)
 					}
 				}
 			}

@@ -11,7 +11,6 @@ import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.Saver
@@ -19,6 +18,7 @@ import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import cn.szu.blankxiao.mycalendar.utils.CalendarDataCalculator
+import com.kizitonwose.calendar.core.yearMonth
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
@@ -30,24 +30,67 @@ const val ModeChangeDragThreshold = 200
 
 
 /**
- * 月份数据缓存
+ * 日历数据缓存管理器
+ * 统一管理月份和周数据的缓存，避免重复计算
  */
-class MonthDataCache(
-	private val calculator: (offset: Int) -> CustomCalendarMonth
+class CalendarDataCacheManager(
+	private val startDate: LocalDate,
+	private val startMonth: YearMonth,
+	private val firstDayOfWeek: DayOfWeek,
+	private val outDateStyle: OutDateStyle
 ) {
-	private val cache = mutableMapOf<Int, CustomCalendarMonth>()
+	// 月份数据缓存 (key: 月份索引)
+	private val monthCache = mutableMapOf<Int, CustomCalendarData>()
 
-	fun get(offset: Int): CustomCalendarMonth {
-		return cache.getOrPut(offset) {
-			calculator(offset)
+	// 周数据缓存 (key: 周索引)
+	private val weekCache = mutableMapOf<Int, CustomCalendarData>()
+
+	/**
+	 * 获取月份数据（带缓存）
+	 */
+	fun getMonthData(monthIndex: Int): CustomCalendarData {
+		return monthCache.getOrPut(monthIndex) {
+			val month = CalendarDataCalculator.getMonthByOffset(startMonth, monthIndex)
+			CalendarDataCalculator.calculateMonth(month, firstDayOfWeek, outDateStyle)
+		}
+	}
+
+	/**
+	 * 获取周数据（带缓存）
+	 * @param weekIndex 全局周索引（从起始日期开始计算）
+	 */
+	fun getWeekData(weekIndex: Int): CustomCalendarData {
+		return weekCache.getOrPut(weekIndex) {
+			// 根据周索引计算该周的第一天
+			val weekStartDate = CalendarDataCalculator.getDateByWeekIndex(
+				startDate, weekIndex, firstDayOfWeek
+			)
+			Log.d(TAG, "getWeekData: 周索引: $weekIndex, 周第一天: $weekStartDate")
+			// 找到对应的月份索引
+			val monthIndex = CalendarDataCalculator.getMonthIndex(
+				startMonth, YearMonth.from(weekStartDate)
+			)
+			// 获取月份数据（复用缓存）
+			val monthData = getMonthData(monthIndex)
+			Log.d(TAG, "getWeekData: 月索引: $monthIndex, 对应年月: ${monthData.yearMonth}")
+
+			// 在月份数据中找到该周
+			val weekIndexInMonth = monthData.calDateIndexInWeeks(weekStartDate)
+			
+			monthData.copy(
+				yearMonth = monthData.yearMonth,
+				weeks = listOf(monthData.weeks[weekIndexInMonth.coerceAtLeast(0)])
+			)
 		}
 	}
 
 	fun clear() {
-		cache.clear()
+		monthCache.clear()
+		weekCache.clear()
 	}
 
-	val size: Int get() = cache.size
+	val monthCacheSize: Int get() = monthCache.size
+	val weekCacheSize: Int get() = weekCache.size
 }
 
 // ============ 状态管理 ============
@@ -185,6 +228,9 @@ class CustomCalendarState internal constructor(
 	val calendarMode: CalendarMode
 		get() = _calendarMode
 
+	/** 是否正在切换模式（用于防止 onPageChanged 错误更新 selectedDate）*/
+	private var _isSwitchingMode = false
+
 	/**
 	 * 过渡进度动画：0f = 完全月视图，1f = 完全周视图
 	 */
@@ -198,6 +244,16 @@ class CustomCalendarState internal constructor(
 	val transitionProgress: Float
 		get() = progressAnimatable.value
 
+	// ============ 数据层 ============
+
+	/** 日历数据缓存管理器 */
+	private var cacheManager = CalendarDataCacheManager(
+		startDate = _startDate,
+		startMonth = startMonth,
+		firstDayOfWeek = _firstDayOfWeek,
+		outDateStyle = _outDateStyle
+	)
+
 	/** 动态页面数（根据 pagerMode 返回月数或周数）*/
 	val pageCount: Int
 		get() = when (_calendarMode) {
@@ -205,115 +261,58 @@ class CustomCalendarState internal constructor(
 			CalendarMode.WEEK -> totalWeekCount
 		}
 
-	// ============ 数据层 ============
-
-	/** 月份数据缓存 */
-	private val monthDataCache = MonthDataCache { offset ->
-		val month = CalendarDataCalculator.getMonthByOffset(startMonth, offset)
-		CalendarDataCalculator.calculateMonth(month, _firstDayOfWeek, _outDateStyle)
-	}
-
-	/** 月模式下的页面索引 */
-	var monthModePageIndex: Int =
-		CalendarDataCalculator.getMonthIndex(
-			startMonth,
-			YearMonth.from(initialVisibleDate)
-		)
-		private set
-
-	/** 周模式下的页面索引 */
-	var weekModePageIndex: Int =
-		CalendarDataCalculator.getWeekIndex(
-			_startDate,
-			initialVisibleDate,
-			firstDayOfWeek
-		)
-		private set
-
-	/** 当前显示的月份数据 */
-	val currentCustomMonth: CustomCalendarMonth by derivedStateOf {
-		monthDataCache.get(monthModePageIndex)
-	}
-
-	/** 目标周索引（选中日期在当前月份中的第几周，0-based）*/
-	val targetWeekIndex: Int by derivedStateOf {
-		currentCustomMonth.weeks.indexOfFirst { it.contains(selectedDate) }
-			.coerceAtLeast(0)
-	}
-
-	/** 当前月份的周数 */
-	val weekCountInMonth: Int by derivedStateOf {
-		currentCustomMonth.weekCount
-	}
-
 	/** Pager 状态（水平翻页）*/
 	internal val pagerState = PagerState(
-		currentPage = when (initialMode) {
-			CalendarMode.MONTH -> monthModePageIndex
-			CalendarMode.WEEK -> weekModePageIndex
-		},
+		currentPage = calCurrentPage(initialMode, initialVisibleDate),
 		pageCount = { pageCount }
 	)
 
 	/**
-	 * 根据当前模式和页面索引获取对应的月份数据
-	 * 用于 HorizontalPager 始终渲染 MonthGrid
-	 * 
-	 * - 月模式：pageIndex = 月索引，直接返回该月数据
-	 * - 周模式：pageIndex = 周索引，返回该周所属的月份数据
+	 * 根据当前模式和页面索引获取对应的数据
+	 * - 月模式：pageIndex = 月索引，返回月份数据
+	 * - 周模式：pageIndex = 周索引，返回周数据
 	 */
-	fun getMonthForPage(pageIndex: Int): CustomCalendarMonth {
+	fun getDataForPage(pageIndex: Int): CustomCalendarData {
 		return when (_calendarMode) {
-			CalendarMode.MONTH -> {
-				monthDataCache.get(pageIndex.coerceIn(0, totalMonthCount - 1))
-			}
-			CalendarMode.WEEK -> {
-				// 根据周索引计算该周的中间日期（周四），确定所属月份
-				val weekStart = CalendarDataCalculator.getWeekStart(_startDate, _firstDayOfWeek)
-				val dateInWeek = weekStart.plusWeeks(pageIndex.toLong()).plusDays(3)
-				val monthOffset = CalendarDataCalculator.getMonthIndex(startMonth, YearMonth.from(dateInWeek))
-				monthDataCache.get(monthOffset.coerceIn(0, totalMonthCount - 1))
-			}
+			CalendarMode.MONTH -> cacheManager.getMonthData(pageIndex)
+			CalendarMode.WEEK -> cacheManager.getWeekData(pageIndex)
 		}
 	}
 
 	/**
-	 * 当 Pager 页面变化时调用，更新对应模式的索引
-	 * 在 Composable 中通过 LaunchedEffect 监听 pagerState.currentPage 调用
+	 * 当 Pager 页面变化时调用，更新 selectedDate
+	 * @param newPageIndex 新的页面索引
 	 */
 	fun onPageChanged(newPageIndex: Int) {
-		when (_calendarMode) {
+		// 模式切换期间不更新 selectedDate
+		if (_isSwitchingMode) {
+			Log.d(TAG, "onPageChanged: 跳过（正在切换模式）")
+			return
+		}
+
+		val newDate = when (_calendarMode) {
 			CalendarMode.MONTH -> {
-				monthModePageIndex = newPageIndex
-				// 同步更新周索引（基于当前月份的选中日期）
-				weekModePageIndex = CalendarDataCalculator.getWeekIndex(
-					_startDate, selectedDate, _firstDayOfWeek
-				)
+				// 月模式：计算新月份的对应日期，尽量保持同一天
+				val newMonth = CalendarDataCalculator.getMonthByOffset(startMonth, newPageIndex)
+				val dayOfMonth = selectedDate.dayOfMonth.coerceAtMost(newMonth.lengthOfMonth())
+				newMonth.atDay(dayOfMonth)
 			}
 			CalendarMode.WEEK -> {
-				weekModePageIndex = newPageIndex
-				// 同步更新月索引（基于当前周所属的月份）
-				val weekStart = CalendarDataCalculator.getWeekStart(_startDate, _firstDayOfWeek)
-				val dateInWeek = weekStart.plusWeeks(newPageIndex.toLong()).plusDays(3)
-				monthModePageIndex = CalendarDataCalculator.getMonthIndex(
-					startMonth, YearMonth.from(dateInWeek)
+				// 周模式：计算新周的对应日期，保持同一星期几
+				val weekStartDate = CalendarDataCalculator.getDateByWeekIndex(
+					_startDate, newPageIndex, _firstDayOfWeek
 				)
+				// 保持星期几不变
+				val dayOffset = selectedDate.dayOfWeek.value - _firstDayOfWeek.value
+				val adjustedOffset = if (dayOffset < 0) dayOffset + 7 else dayOffset
+				weekStartDate.plusDays(adjustedOffset.toLong())
 			}
 		}
-	}
 
-	// ============ 显示信息（派生状态）============
-
-	/**
-	 * 当前显示信息的格式化文本
-	 * 月模式：「2025年1月」
-	 * 周模式：「2025年1月 第3周」
-	 */
-	val displayText: String by derivedStateOf {
-		val currentYearMonth = currentCustomMonth.yearMonth
-		when (calendarMode) {
-			CalendarMode.MONTH -> "${currentYearMonth.year}年${currentYearMonth.monthValue}月"
-			CalendarMode.WEEK -> "${currentYearMonth.year}年${currentYearMonth.monthValue}月 第${targetWeekIndex + 1}周"
+		// 只有日期真正改变时才更新
+		if (newDate != selectedDate && newDate >= _startDate && newDate <= _endDate) {
+			selectedDate = newDate
+			Log.d(TAG, "onPageChanged: pageIndex=$newPageIndex, newDate=$newDate")
 		}
 	}
 
@@ -334,19 +333,8 @@ class CustomCalendarState internal constructor(
 		selectedDate = date
 
 		// 根据当前 Pager 模式计算目标页面
-		val targetPageIndex = when (_calendarMode) {
-			CalendarMode.MONTH -> CalendarDataCalculator.getMonthIndex(
-				startMonth,
-				YearMonth.from(date)
-			)
-
-			CalendarMode.WEEK -> CalendarDataCalculator.getWeekIndex(
-				_startDate,
-				date,
-				_firstDayOfWeek
-			)
-		}
-
+		val targetPageIndex = calCurrentPage(_calendarMode, date)
+		Log.d(TAG, "scrollToDate: 切换日期, 新日期: $date, 当前模式$_calendarMode, 总pagerIndex: $pageCount 新pagerIndex: $targetPageIndex")
 
 		if (animate) {
 			pagerState.animateScrollToPage(targetPageIndex)
@@ -356,82 +344,6 @@ class CustomCalendarState internal constructor(
 	}
 
 	// ============ 模式切换 ============
-
-	/**
-	 * 切换到指定模式
-	 *
-	 * @param mode 目标模式
-	 * @param animate 是否使用动画
-	 */
-	suspend fun switchToMode(mode: CalendarMode, animate: Boolean = true) {
-		if (_calendarMode == mode) {
-			Log.d(TAG, "Already in $mode mode, skipping")
-			return
-		}
-
-		Log.d(TAG, "Switching from $_calendarMode to $mode, animate=$animate")
-
-		// 更新模式
-		_calendarMode = mode
-
-		// 更新进度值
-		val targetProgress = if (mode == CalendarMode.WEEK) 1f else 0f
-
-		if (animate) {
-			progressAnimatable.animateTo(
-				targetValue = targetProgress,
-				animationSpec = ModeTransitionAnimationSpec
-			)
-		} else {
-			progressAnimatable.snapTo(targetProgress)
-		}
-
-		// 动画完成后切换 Pager 模式（类似 NCalendar）
-		switchPagerMode(mode)
-	}
-
-	/**
-	 * 切换 Pager 的分页模式
-	 * @param newPagerMode 目标分页模式
-	 */
-	private suspend fun switchPagerMode(newPagerMode: CalendarMode) {
-		if (_calendarMode == newPagerMode) return
-
-		// 保存当前的支点日期
-		val pivotDate = selectedDate
-
-		// 切换分页模式
-		_calendarMode = newPagerMode
-
-		// 计算新模式下的目标页面索引
-		val targetPageIndex = when (newPagerMode) {
-			CalendarMode.MONTH -> CalendarDataCalculator.getMonthIndex(
-				startMonth,
-				YearMonth.from(pivotDate)
-			)
-
-			CalendarMode.WEEK -> CalendarDataCalculator.getWeekIndex(
-				_startDate,
-				pivotDate,
-				_firstDayOfWeek
-			)
-		}
-
-		// 跳转到目标页面
-		pagerState.scrollToPage(targetPageIndex)
-	}
-
-	/**
-	 * 切换模式（在月/周之间切换）
-	 */
-	suspend fun toggleMode(animate: Boolean = true) {
-		val newMode = if (_calendarMode == CalendarMode.MONTH) {
-			CalendarMode.WEEK
-		} else {
-			CalendarMode.MONTH
-		}
-		switchToMode(newMode, animate)
-	}
 
 	/**
 	 * 手动设置过渡进度（用于手势拖动）
@@ -459,14 +371,6 @@ class CustomCalendarState internal constructor(
 		val targetProgress = if (currentProgress <= threshold) 0f else 1f
 		val targetMode = if (targetProgress == 0f) CalendarMode.MONTH else CalendarMode.WEEK
 
-		Log.d(
-			TAG,
-			"Finishing drag: progress=$currentProgress, target=$targetProgress, mode=$targetMode"
-		)
-
-		// 更新模式
-		_calendarMode = targetMode
-
 		// 执行弹簧动画到目标值
 		progressAnimatable.animateTo(
 			targetValue = targetProgress,
@@ -478,17 +382,43 @@ class CustomCalendarState internal constructor(
 	}
 
 	/**
-	 * 选择日期
-	 *
-	 * @param date 要选择的日期
-	 * @param scrollToDate 是否滚动到该日期
+	 * 切换 Pager 的分页模式
+	 * @param newPagerMode 目标分页模式
 	 */
-	suspend fun selectDate(date: LocalDate, scrollToDate: Boolean = true) {
-		selectedDate = date
+	private suspend fun switchPagerMode(newPagerMode: CalendarMode) {
+		if (_calendarMode == newPagerMode) return
 
-		if (scrollToDate) {
-			scrollToDate(date, animate = true)
-		}
+		// 设置标志位，防止 onPageChanged 错误更新 selectedDate
+		_isSwitchingMode = true
+
+		// 切换分页模式
+		_calendarMode = newPagerMode
+
+		// 计算新模式下的目标页面索引
+		val targetPageIndex = calCurrentPage(newPagerMode, selectedDate)
+
+		Log.d(TAG, "switchPagerMode: 当前模式: ${_calendarMode}, 总索引${pageCount}, 当前page索引: $targetPageIndex")
+		// 跳转到目标页面
+		pagerState.scrollToPage(targetPageIndex)
+
+		// 清除标志位
+		_isSwitchingMode = false
+	}
+
+	private fun calCurrentPage(
+		mode: CalendarMode,
+		targetDate: LocalDate,
+	): Int = when (mode) {
+		CalendarMode.MONTH -> CalendarDataCalculator.getMonthIndex(
+			startMonth,
+			targetDate.yearMonth
+		)
+
+		CalendarMode.WEEK -> CalendarDataCalculator.getWeekIndex(
+			_startDate,
+			targetDate,
+			_firstDayOfWeek
+		)
 	}
 
 	// ============ ScrollableState 实现 ============
@@ -510,11 +440,16 @@ class CustomCalendarState internal constructor(
 	// ============ 内部方法 ============
 
 	/**
-	 * 配置变化时清空缓存
+	 * 配置变化时重建缓存管理器
 	 */
 	private fun onConfigChanged() {
-		monthDataCache.clear()
-		Log.d(TAG, "Configuration changed, cache cleared")
+		cacheManager = CalendarDataCacheManager(
+			startDate = _startDate,
+			startMonth = startMonth,
+			firstDayOfWeek = _firstDayOfWeek,
+			outDateStyle = _outDateStyle
+		)
+		Log.d(TAG, "Configuration changed, cache rebuilt")
 	}
 
 	// ============ 状态保存 ============

@@ -1,7 +1,8 @@
 package cn.szu.blankxiao.mycalendar.utils
 
+import android.util.Log
+import cn.szu.blankxiao.mycalendar.data.calendar.CustomCalendarData
 import cn.szu.blankxiao.mycalendar.data.calendar.CustomCalendarDay
-import cn.szu.blankxiao.mycalendar.data.calendar.CustomCalendarMonth
 import cn.szu.blankxiao.mycalendar.data.calendar.CustomCalendarWeek
 import cn.szu.blankxiao.mycalendar.data.calendar.DayPosition
 import cn.szu.blankxiao.mycalendar.data.calendar.OutDateStyle
@@ -16,11 +17,13 @@ import java.time.temporal.ChronoUnit
  * @date 2025-11-29 18:49
  */
 
+private const val TAG = "CalendarDataCalculator"
 
 /**
  * 日历数据计算工具
  */
 object CalendarDataCalculator {
+
 
 	/**
 	 * 计算指定月份的日历数据
@@ -34,7 +37,7 @@ object CalendarDataCalculator {
 		yearMonth: YearMonth,
 		firstDayOfWeek: DayOfWeek,
 		outDateStyle: OutDateStyle = OutDateStyle.EndOfGrid
-	): CustomCalendarMonth {
+	): CustomCalendarData {
 		val firstDayOfMonth = yearMonth.atDay(1)
 		val lastDayOfMonth = yearMonth.atEndOfMonth()
 
@@ -63,7 +66,7 @@ object CalendarDataCalculator {
 		// 按周分组（每周 7 天）
 		val weeks = allDays.chunked(7).map { CustomCalendarWeek(it) }
 
-		return CustomCalendarMonth(yearMonth, weeks)
+		return CustomCalendarData(yearMonth, weeks)
 	}
 
 	/**
@@ -152,6 +155,7 @@ object CalendarDataCalculator {
 	fun getWeekIndex(startDate: LocalDate, targetDate: LocalDate, firstDayOfWeek: DayOfWeek): Int {
 		val startWeekStart = getWeekStart(startDate, firstDayOfWeek)
 		val targetWeekStart = getWeekStart(targetDate, firstDayOfWeek)
+		Log.d(TAG, "getWeekIndex: startDate: $startWeekStart, targetDate: $targetDate, diff: ${ChronoUnit.WEEKS.between(startWeekStart, targetWeekStart).toInt()}")
 		return ChronoUnit.WEEKS.between(startWeekStart, targetWeekStart).toInt()
 	}
 
@@ -160,5 +164,17 @@ object CalendarDataCalculator {
 	 */
 	fun getTotalWeekCount(startDate: LocalDate, endDate: LocalDate, firstDayOfWeek: DayOfWeek): Int {
 		return getWeekIndex(startDate, endDate, firstDayOfWeek) + 1
+	}
+
+	/**
+	 * 根据周索引获取该周的第一天
+	 * @param startDate 起始日期
+	 * @param weekIndex 周索引（从0开始）
+	 * @param firstDayOfWeek 一周的第一天
+	 * @return 该周的第一天日期
+	 */
+	fun getDateByWeekIndex(startDate: LocalDate, weekIndex: Int, firstDayOfWeek: DayOfWeek): LocalDate {
+		val startWeekStart = getWeekStart(startDate, firstDayOfWeek)
+		return startWeekStart.plusWeeks(weekIndex.toLong())
 	}
 }

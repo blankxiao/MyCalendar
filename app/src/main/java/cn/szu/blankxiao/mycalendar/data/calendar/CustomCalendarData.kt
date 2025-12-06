@@ -9,7 +9,9 @@ import java.time.YearMonth
  * @date 2025-11-29 18:45
  */
 
-data class CustomCalendarMonth(
+private const val TAG = "CustomCalendarData"
+
+data class CustomCalendarData(
 	val yearMonth: YearMonth,
 	val weeks: List<CustomCalendarWeek>
 ) {
@@ -17,7 +19,11 @@ data class CustomCalendarMonth(
 	val weekCount: Int get() = weeks.size
 
 	/** 获取指定周 */
-	fun getWeek(index: Int): CustomCalendarWeek? = weeks.getOrNull(index)
+	fun getWeek(index: Int): CustomCalendarWeek = weeks[index]
+
+	fun calDateIndexInWeeks(targetDate: LocalDate): Int {
+		return weeks.indexOfFirst { it.contains(targetDate) }
+	}
 
 	/** 查找包含指定日期的周索引 */
 	fun findWeekIndex(date: LocalDate): Int {
