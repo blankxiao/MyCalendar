@@ -85,49 +85,11 @@ fun AnimatableCustomCalendar(
 				.wrapContentHeight()
 				.clipToBounds()
 		) {
-			// // 周模式下的滑动阈值（px）
-			// val weekSwipeThreshold = with(density) { 50.dp.toPx() }
-			// var accumulatedDrag by remember { mutableFloatStateOf(0f) }
 
 			HorizontalPager(
 				state = state.pagerState,
 				modifier = Modifier
 					.fillMaxWidth()
-				// 	.then(
-				// 		if (state.calendarMode == CalendarMode.WEEK) {
-				// 			Modifier.pointerInput(state.calendarMode) {
-				// 				detectHorizontalDragGestures(
-				// 					onDragStart = {
-				// 						accumulatedDrag = 0f
-				// 					},
-				// 					onHorizontalDrag = { _, dragAmount ->
-				// 						accumulatedDrag += dragAmount
-				// 					},
-				// 					onDragEnd = {
-				// 						coroutineScope.launch {
-				// 							when {
-				// 								accumulatedDrag > weekSwipeThreshold -> {
-				// 									// 向右滑 → 上一周
-				// 									state.scrollToPreviousWeek()
-				// 								}
-				// 								accumulatedDrag < -weekSwipeThreshold -> {
-				// 									// 向左滑 → 下一周
-				// 									state.scrollToNextWeek()
-				// 								}
-				// 							}
-				// 						}
-				// 						accumulatedDrag = 0f
-				// 					},
-				// 					onDragCancel = {
-				// 						accumulatedDrag = 0f
-				// 					}
-				// 				)
-				// 			}
-				// 		} else {
-				// 			Modifier
-				// 		}
-				// 	),
-				// userScrollEnabled = state.calendarMode == CalendarMode.MONTH
 			) { pageIndex ->
 				val calendarData = state.getDataForPage(pageIndex)
 
@@ -150,9 +112,13 @@ fun AnimatableCustomCalendar(
 }
 
 
+/** 固定的最大周数 */
+private const val FIXED_WEEK_COUNT = 6
+
 /**
  * 月份网格组件
  * 负责渲染单个月份的日历网格
+ * 使用固定高度（6周），通过动态间距适配不同周数的月份
  */
 @Composable
 fun MonthGrid(
@@ -165,16 +131,27 @@ fun MonthGrid(
 	val density = LocalDensity.current
 	// 单周的高度
 	var weekHeightDp by remember { mutableFloatStateOf(60f) }
-	val weekCount = monthData.weekCount
-	val monthHeightDp = weekHeightDp * weekCount
+	val actualWeekCount = monthData.weekCount
+
+	// 固定月份高度（始终为6周高度）
+	val fixedMonthHeightDp = weekHeightDp * FIXED_WEEK_COUNT
+
+	// 计算周间距（将多余空间平均分配到周之间）
+	val extraSpace = fixedMonthHeightDp - (weekHeightDp * actualWeekCount)
+	val gapCount = actualWeekCount - 1
+	val weekGapDp = if (gapCount > 0) extraSpace / gapCount else 0f
+
+	// 每周的有效高度（包含间距）
+	val effectiveWeekHeightDp = weekHeightDp + weekGapDp
 
 	// 计算容器高度和偏移量
 	val targetWeekIndex = monthData.calDateIndexInWeeks(selectedDate)
-	val targetWeekTopDp = targetWeekIndex * weekHeightDp
+	// 目标周的顶部位置（考虑间距）
+	val targetWeekTopDp = targetWeekIndex * effectiveWeekHeightDp
 
 	// 根据 transitionProgress 渐变
-	val heightOffset = monthHeightDp - weekHeightDp
-	val containerHeight = monthHeightDp - (heightOffset * weekTransitionProgress)
+	val heightOffset = fixedMonthHeightDp - weekHeightDp
+	val containerHeight = fixedMonthHeightDp - (heightOffset * weekTransitionProgress)
 
 	// 计算内容偏移量
 	val contentOffsetYDp = targetWeekTopDp * weekTransitionProgress
@@ -182,6 +159,7 @@ fun MonthGrid(
 	// 转换为 px
 	val contentOffsetYPx = with(density) { contentOffsetYDp.dp.toPx() }.toInt()
 	val containerHeightPx = with(density) { containerHeight.dp.toPx() }.toInt()
+
 	Column(
 		modifier = modifier
 			.fillMaxWidth()
@@ -199,10 +177,14 @@ fun MonthGrid(
 	) {
 		monthData.weeks.forEachIndexed { weekIndex, week ->
 			key(weekIndex) {
+				// 计算底部间距（最后一周不加）
+				val bottomPadding = if (weekIndex < actualWeekCount - 1) weekGapDp.dp else 0.dp
+
 				Row(
 					modifier = Modifier
 						.fillMaxWidth()
 						.wrapContentHeight()
+						.padding(bottom = bottomPadding)
 						.then(
 							// 只在第一周测量高度
 							if (weekIndex == 0) {
