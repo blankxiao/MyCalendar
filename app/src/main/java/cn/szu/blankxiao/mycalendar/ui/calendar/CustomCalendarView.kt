@@ -20,9 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import cn.szu.blankxiao.mycalendar.ui.calendar.common.CalendarViewType
-import cn.szu.blankxiao.mycalendar.ui.calendar.specific.DayViewCalendar
-import cn.szu.blankxiao.mycalendar.ui.calendar.specific.MonthViewCalendar
-import cn.szu.blankxiao.mycalendar.ui.calendar.specific.WeekViewCalendar
 import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
 import cn.szu.blankxiao.mycalendar.ui.theme.MyCalendarTheme
 import cn.szu.blankxiao.mycalendar.ui.theme.customColors
@@ -60,19 +57,6 @@ fun CustomCalendarView(
 			color = customColors.calendarDivider
 		)
 
-		when (currentViewType) {
-			CalendarViewType.MONTH -> MonthViewCalendar(selectedDate = selectedDate, date2TodoDataList = mapOf()) {
-				onDateSelected(it)
-			}
-
-			CalendarViewType.WEEK -> WeekViewCalendar(selectedDate = selectedDate) {
-				onDateSelected(it)
-			}
-
-			CalendarViewType.DAY -> DayViewCalendar(selectedDate = selectedDate) {
-				onDateSelected(it)
-			}
-		}
 	}
 
 }

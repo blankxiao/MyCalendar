@@ -1,4 +1,4 @@
-package cn.szu.blankxiao.mycalendar.ui.calendar.common
+package cn.szu.blankxiao.mycalendar.ui.calendar.specific
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
@@ -45,6 +45,8 @@ import cn.szu.blankxiao.mycalendar.data.calendar.CustomCalendarState
 import cn.szu.blankxiao.mycalendar.data.calendar.DayPosition
 import cn.szu.blankxiao.mycalendar.data.calendar.ModeChangeDragThreshold
 import cn.szu.blankxiao.mycalendar.data.calendar.rememberCustomCalendarState
+import cn.szu.blankxiao.mycalendar.ui.calendar.common.DayCell
+import cn.szu.blankxiao.mycalendar.ui.calendar.common.DaysOfWeekTitle
 import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
 import cn.szu.blankxiao.mycalendar.ui.theme.MyCalendarTheme
 import kotlinx.coroutines.launch
@@ -292,10 +294,6 @@ fun PreviewAnimatableMonthCalendar() {
 			Column(
 				horizontalAlignment = Alignment.CenterHorizontally
 			) {
-				// Text(
-				// 	text = state.displayText, // 使用新的格式化文本
-				// 	style = MaterialTheme.typography.titleMedium
-				// )
 				Text("模式: ${if (state.calendarMode == CalendarMode.MONTH) "月" else "周"}")
 			}
 
