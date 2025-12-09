@@ -302,8 +302,8 @@ fun PreviewAnimatableMonthCalendar() {
 				modifier = Modifier.fillMaxWidth()
 			) { day ->
 				val isSelected = day.date == state.selectedDate
-				val currentDayTodo: List<Nothing>? = null
-				val showSpot = currentDayTodo != null && !isSelected
+				val currentDaySchedule: List<Nothing>? = null
+				val showSpot = currentDaySchedule != null && !isSelected
 				val isCurrentMonth = day.position == DayPosition.MonthDate
 
 				DayCell(
@@ -311,9 +311,9 @@ fun PreviewAnimatableMonthCalendar() {
 					isSelected = isSelected,
 					isCurrentMonth = isCurrentMonth,
 					hasTodo = showSpot,
-					todoDataList = currentDayTodo,
+					scheduleDataList = currentDaySchedule,
 					modifier = Modifier.weight(1f),
-					showTodoContent = false
+					showScheduleContent = false
 				) {
 					coroutineScope.launch {
 						state.scrollToDate(day.date)

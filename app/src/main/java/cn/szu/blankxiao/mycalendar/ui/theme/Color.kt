@@ -50,7 +50,7 @@ val LightOrange = Color(0xFFFFE0B2)          // 浅橙色 - 深色文字
 
 // 浅色主题灰色
 val VeryLightGray = Color(0xFFFAFAFA)        // 极浅灰 - 页面背景
-val SoftBackground = Color(0xFFF8F9FA)       // 柔和浅灰 - TodoList 背景
+val SoftBackground = Color(0xFFF8F9FA)       // 柔和浅灰 - ScheduleList 背景
 val PureWhite = Color(0xFFFFFFFF)            // 纯白 - 卡片表面
 val WhisperGray = Color(0xFFF5F5F5)          // 轻灰 - 表面变体
 

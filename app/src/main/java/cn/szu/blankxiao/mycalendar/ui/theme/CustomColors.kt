@@ -39,33 +39,33 @@ data class CustomColors(
     val calendarDivider: Color,                 // 分割线颜色
     
     // 日历待办指示点
-    val calendarTodoDot: Color,                 // 待办事项指示点颜色
+    val calendarScheduleDot: Color,                 // 待办事项指示点颜色
     
-    // ==================== TodoRelate 相关颜色 ====================
+    // ==================== ScheduleRelate 相关颜色 ====================
     
-    // TodoRelate 项状态
-    val todoUncompletedText: Color,             // 未完成任务的文字色
-    val todoCompletedText: Color,               // 已完成任务的文字色
-    val todoDateText: Color,                    // 任务日期文字色
+    // ScheduleRelate 项状态
+    val scheduleUncompletedText: Color,             // 未完成任务的文字色
+    val scheduleCompletedText: Color,               // 已完成任务的文字色
+    val scheduleDateText: Color,                    // 任务日期文字色
     
-    // TodoRelate 复选框
-    val todoCheckboxChecked: Color,             // 复选框选中颜色
-    val todoCheckboxUnchecked: Color,           // 复选框未选中颜色
-    val todoCheckboxCheckmark: Color,           // 复选框未选中颜色
+    // ScheduleRelate 复选框
+    val scheduleCheckboxChecked: Color,             // 复选框选中颜色
+    val scheduleCheckboxUnchecked: Color,           // 复选框未选中颜色
+    val scheduleCheckboxCheckmark: Color,           // 复选框未选中颜色
 
-    // TodoRelate 卡片
-    val todoCardBackground: Color,              // TodoRelate 卡片背景
-    val todoCardElevation: Color,               // TodoRelate 卡片阴影（可选）
+    // ScheduleRelate 卡片
+    val scheduleCardBackground: Color,              // ScheduleRelate 卡片背景
+    val scheduleCardElevation: Color,               // ScheduleRelate 卡片阴影（可选）
     
-    // TodoRelate 优先级
-    val todoUrgent: Color,                      // 紧急任务标记
-    val todoImportant: Color,                   // 重要任务标记
-    val todoNormal: Color,                      // 普通任务标记
+    // ScheduleRelate 优先级
+    val scheduleUrgent: Color,                      // 紧急任务标记
+    val scheduleImportant: Color,                   // 重要任务标记
+    val scheduleNormal: Color,                      // 普通任务标记
 
-    // TodoList 整体
-    val todoListBackground: Color,              // TodoList 整体背景
-    val todoListTitleText: Color,               // TodoList 标题文字
-    val todoListEmptyText: Color,               // 空状态提示文字
+    // ScheduleList 整体
+    val scheduleListBackground: Color,              // ScheduleList 整体背景
+    val scheduleListTitleText: Color,               // ScheduleList 标题文字
+    val scheduleListEmptyText: Color,               // 空状态提示文字
 
     // ==================== 通用 UI 颜色 ====================
     
@@ -92,7 +92,7 @@ val LightCustomColors = CustomColors(
     calendarSelectedText = FixedWhite,              // 白色文字（高对比度）
     
     // 日历 - 今天标记
-    // TODO 显示问题
+    // Schedule 显示问题
     calendarTodayBackground = LightSkyBlue,         // 极浅蓝背景
     calendarTodayBorder = SkyBlue,                  // 天蓝色边框（突出）
     calendarTodayText = DeepSkyBlue,                // 深蓝色文字（高对比度）
@@ -112,31 +112,31 @@ val LightCustomColors = CustomColors(
     calendarDivider = PaleBorderGray,               // 极浅灰分割线
     
     // 日历 - 待办指示点（低调的灰色）
-    calendarTodoDot = MediumGray,                   // 中灰色小点（低调）
+    calendarScheduleDot = MediumGray,                   // 中灰色小点（低调）
     
-    // TodoRelate - 任务状态
-    todoUncompletedText = CharcoalGray,             // 炭灰色（醒目）
-    todoCompletedText = MediumGray,                 // 中灰色（弱化）
-    todoDateText = MediumGray,                      // 中灰色（日期）
+    // ScheduleRelate - 任务状态
+    scheduleUncompletedText = CharcoalGray,             // 炭灰色（醒目）
+    scheduleCompletedText = MediumGray,                 // 中灰色（弱化）
+    scheduleDateText = MediumGray,                      // 中灰色（日期）
     
-    // TodoRelate - 复选框
-    todoCheckboxChecked = SkyBlue,                  // 天蓝色（选中）
-    todoCheckboxUnchecked = LightBorderGray,        // 浅边框灰（未选中）
-    todoCheckboxCheckmark = FixedWhite,           // 白色
+    // ScheduleRelate - 复选框
+    scheduleCheckboxChecked = SkyBlue,                  // 天蓝色（选中）
+    scheduleCheckboxUnchecked = LightBorderGray,        // 浅边框灰（未选中）
+    scheduleCheckboxCheckmark = FixedWhite,           // 白色
 
-    // TodoRelate - 卡片
-    todoCardBackground = PureWhite,                 // 纯白背景
-    todoCardElevation = SilverGray,                 // 银灰色（轻阴影）
+    // ScheduleRelate - 卡片
+    scheduleCardBackground = PureWhite,                 // 纯白背景
+    scheduleCardElevation = SilverGray,                 // 银灰色（轻阴影）
     
-    // TodoRelate - 优先级
-    todoUrgent = SoftRed,                           // 柔和红（紧急）
-    todoImportant = WarmOrange,                     // 暖橙色（重要）
-    todoNormal = MintGreen,                         // 薄荷绿（普通）
+    // ScheduleRelate - 优先级
+    scheduleUrgent = SoftRed,                           // 柔和红（紧急）
+    scheduleImportant = WarmOrange,                     // 暖橙色（重要）
+    scheduleNormal = MintGreen,                         // 薄荷绿（普通）
     
-    // TodoList - 整体
-    todoListBackground = SoftBackground,            // 柔和浅灰背景（区别于卡片的纯白）
-    todoListTitleText = CharcoalGray,               // 炭灰色（标题）
-    todoListEmptyText = MediumGray,                 // 中灰色（空状态提示）
+    // ScheduleList - 整体
+    scheduleListBackground = SoftBackground,            // 柔和浅灰背景（区别于卡片的纯白）
+    scheduleListTitleText = CharcoalGray,               // 炭灰色（标题）
+    scheduleListEmptyText = MediumGray,                 // 中灰色（空状态提示）
     
     // 通用 - 按钮
     buttonPrimaryBackground = SkyBlue,              // 天蓝色（主按钮）
@@ -180,31 +180,31 @@ val DarkCustomColors = CustomColors(
     calendarDivider = DeepBorderGray,               // 深边框灰分割线
     
     // 日历 - 待办指示点（柔和的灰色）
-    calendarTodoDot = NeutralGray,                  // 中性灰小点（柔和）
+    calendarScheduleDot = NeutralGray,                  // 中性灰小点（柔和）
     
-    // TodoRelate - 任务状态
-    todoUncompletedText = LightGray,                // 浅灰色（醒目）
-    todoCompletedText = NeutralGray,                // 中性灰（弱化）
-    todoDateText = NeutralGray,                     // 中性灰（日期）
+    // ScheduleRelate - 任务状态
+    scheduleUncompletedText = LightGray,                // 浅灰色（醒目）
+    scheduleCompletedText = NeutralGray,                // 中性灰（弱化）
+    scheduleDateText = NeutralGray,                     // 中性灰（日期）
     
-    // TodoRelate - 复选框
-    todoCheckboxChecked = BrightBlue,               // 明亮蓝（选中）
-    todoCheckboxUnchecked = DarkBorderGray,         // 深边框灰（未选中）
-    todoCheckboxCheckmark = FixedBlack,           // 白色
+    // ScheduleRelate - 复选框
+    scheduleCheckboxChecked = BrightBlue,               // 明亮蓝（选中）
+    scheduleCheckboxUnchecked = DarkBorderGray,         // 深边框灰（未选中）
+    scheduleCheckboxCheckmark = FixedBlack,           // 白色
 
-    // TodoRelate - 卡片
-    todoCardBackground = DarkCharcoal,              // 深灰背景
-    todoCardElevation = DeepCharcoal,               // 深炭色（中等阴影）
+    // ScheduleRelate - 卡片
+    scheduleCardBackground = DarkCharcoal,              // 深灰背景
+    scheduleCardElevation = DeepCharcoal,               // 深炭色（中等阴影）
     
-    // TodoRelate - 优先级
-    todoUrgent = SoftRed,                           // 柔和红（紧急）
-    todoImportant = BrightOrange,                   // 明亮橙（重要）
-    todoNormal = LimeGreen,                         // 柠檬绿（普通）
+    // ScheduleRelate - 优先级
+    scheduleUrgent = SoftRed,                           // 柔和红（紧急）
+    scheduleImportant = BrightOrange,                   // 明亮橙（重要）
+    scheduleNormal = LimeGreen,                         // 柠檬绿（普通）
     
-    // TodoList - 整体
-    todoListBackground = SlateGray,                 // 石板灰背景（区别于卡片的深灰）
-    todoListTitleText = LightGray,                  // 浅灰色（标题）
-    todoListEmptyText = NeutralGray,                // 中性灰（空状态提示）
+    // ScheduleList - 整体
+    scheduleListBackground = SlateGray,                 // 石板灰背景（区别于卡片的深灰）
+    scheduleListTitleText = LightGray,                  // 浅灰色（标题）
+    scheduleListEmptyText = NeutralGray,                // 中性灰（空状态提示）
     
     // 通用 - 按钮
     buttonPrimaryBackground = BrightBlue,           // 明亮蓝（主按钮）

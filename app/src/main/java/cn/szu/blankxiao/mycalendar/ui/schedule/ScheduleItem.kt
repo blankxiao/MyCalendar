@@ -1,4 +1,4 @@
-package cn.szu.blankxiao.mycalendar.ui.todo
+package cn.szu.blankxiao.mycalendar.ui.schedule
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,7 +24,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import cn.szu.blankxiao.mycalendar.data.todo.TodoItemData
+import cn.szu.blankxiao.mycalendar.data.schedule.ScheduleItemData
 import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
 import cn.szu.blankxiao.mycalendar.ui.theme.MyCalendarTheme
 import cn.szu.blankxiao.mycalendar.ui.theme.Typography
@@ -35,15 +35,15 @@ import java.util.Locale
 
 /**
  * @author BlankXiao
- * @description todoItem
+ * @description ScheduleItem - 日程项组件
  * @date 2025-11-03 21:06
  */
 
-private const val TAG = "TodoItem"
+private const val TAG = "ScheduleItem"
 
 @Composable
-fun TodoItem(
-	itemData: TodoItemData,
+fun ScheduleItem(
+	itemData: ScheduleItemData,
 	modifier: Modifier = Modifier,
 	onChecked: () -> Unit,
 ) {
@@ -59,7 +59,7 @@ fun TodoItem(
 			.padding(horizontal = Dimensions.Padding.medium, vertical = Dimensions.Padding.tiny),
 		shape = RoundedCornerShape(Dimensions.CornerRadius.medium),
 		colors = CardDefaults.cardColors(
-			containerColor = customColors.todoCardBackground
+			containerColor = customColors.scheduleCardBackground
 		),
 		elevation = CardDefaults.cardElevation(
 			defaultElevation = Dimensions.Elevation.small
@@ -76,9 +76,9 @@ fun TodoItem(
 				checked = itemData.isChecked, onCheckedChange = { checked ->
 					onChecked()
 				}, colors = CheckboxDefaults.colors(
-					checkedColor = customColors.todoCheckboxChecked,
-					uncheckedColor = customColors.todoCheckboxUnchecked,
-					checkmarkColor = customColors.todoCheckboxCheckmark
+					checkedColor = customColors.scheduleCheckboxChecked,
+					uncheckedColor = customColors.scheduleCheckboxUnchecked,
+					checkmarkColor = customColors.scheduleCheckboxCheckmark
 				)
 			)
 
@@ -94,9 +94,9 @@ fun TodoItem(
 					style = Typography.titleSmall,
 					fontWeight = FontWeight.Medium,
 					color = if (itemData.isChecked) {
-						customColors.todoCompletedText
+						customColors.scheduleCompletedText
 					} else {
-						customColors.todoUncompletedText
+						customColors.scheduleUncompletedText
 					},
 					// 划线
 					textDecoration = if (itemData.isChecked) TextDecoration.LineThrough else TextDecoration.None
@@ -104,7 +104,7 @@ fun TodoItem(
 
 				// 日期文本
 				Text(
-					text = formattedDate, fontSize = 14.sp, color = customColors.todoDateText
+					text = formattedDate, fontSize = 14.sp, color = customColors.scheduleDateText
 				)
 			}
 		}
@@ -112,12 +112,12 @@ fun TodoItem(
 }
 
 
-@Composable()
+@Composable
 @Preview(showBackground = true)
-fun PreviewTodoItem() {
+fun PreviewScheduleItem() {
 	var isChecked by remember { mutableStateOf(false) }
 	MyCalendarTheme {
-		TodoItem(TodoItemData("吃饭", LocalDate.now(), "", false)) {
+		ScheduleItem(ScheduleItemData("团队会议", LocalDate.now(), "下午3点", false)) {
 			isChecked = !isChecked
 		}
 	}

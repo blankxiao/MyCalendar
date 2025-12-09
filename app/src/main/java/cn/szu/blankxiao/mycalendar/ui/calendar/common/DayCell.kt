@@ -27,8 +27,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import cn.szu.blankxiao.mycalendar.data.todo.TodoItemData
-import cn.szu.blankxiao.mycalendar.data.todo.exampleTodoItemList
+import cn.szu.blankxiao.mycalendar.data.schedule.ScheduleItemData
+import cn.szu.blankxiao.mycalendar.data.schedule.exampleScheduleItemList
 import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
 import cn.szu.blankxiao.mycalendar.ui.theme.MyCalendarTheme
 import cn.szu.blankxiao.mycalendar.ui.theme.Typography
@@ -52,9 +52,9 @@ fun DayCell(
 	isSelected: Boolean,
 	isCurrentMonth: Boolean,
 	hasTodo: Boolean,
-	todoDataList: List<TodoItemData>?,
+	scheduleDataList: List<ScheduleItemData>?,
 	modifier: Modifier = Modifier,
-	showTodoContent: Boolean = false,
+	showScheduleContent: Boolean = false,
 	onClick: () -> Unit,
 ) {
 	val customColors = MaterialTheme.customColors
@@ -86,7 +86,7 @@ fun DayCell(
 		}
 	}
 
-	// 外层 Column：包含圆形日期区域 + Todo 内容
+	// 外层 Column：包含圆形日期区域 + Schedule 内容
 	Column(
 		horizontalAlignment = Alignment.CenterHorizontally,
 		verticalArrangement = Arrangement.Top,
@@ -115,7 +115,7 @@ fun DayCell(
 						.offset(y = Dimensions.Spacing.tiny)
 						.size(Dimensions.Size.tiny)
 						.clip(CircleShape)
-						.background(customColors.calendarTodoDot)
+						.background(customColors.calendarScheduleDot)
 				)
 			}
 
@@ -140,8 +140,8 @@ fun DayCell(
 			}
 		}
 
-		// TodoData 内容（在圆圈外部）
-		if (showTodoContent && !todoDataList.isNullOrEmpty()) {
+		// ScheduleData 内容（在圆圈外部）
+		if (showScheduleContent && !scheduleDataList.isNullOrEmpty()) {
 			Column(
 				modifier = Modifier
 					.padding(top = Dimensions.Padding.tiny)
@@ -149,14 +149,14 @@ fun DayCell(
 				verticalArrangement = Arrangement.spacedBy(Dimensions.Spacing.tiny),
 				horizontalAlignment = Alignment.CenterHorizontally
 			) {
-				todoDataList.take(2).forEach { todoItem ->
-					simpleTodoItem(todoItem, textColor)
+				scheduleDataList.take(2).forEach { scheduleItem ->
+					simpleScheduleItem(scheduleItem, textColor)
 				}
 				
-				// 如果还有更多 todo，显示提示
-				if (todoDataList.size > 2) {
+				// 如果还有更多 Schedule，显示提示
+				if (scheduleDataList.size > 2) {
 					Text(
-						text = "📝 还有 ${todoDataList.size - 2} 项",
+						text = "📝 还有 ${scheduleDataList.size - 2} 项",
 						style = Typography.labelSmall,
 						fontSize = 8.sp,
 						color = textColor.copy(alpha = 0.5f)
@@ -168,8 +168,8 @@ fun DayCell(
 }
 
 @Composable
-private fun simpleTodoItem(
-	todoItem: TodoItemData,
+private fun simpleScheduleItem(
+	scheduleItemData: ScheduleItemData,
 	textColor: Color
 ) {
 	Row(
@@ -179,16 +179,16 @@ private fun simpleTodoItem(
 	) {
 		// 表情图标（根据完成状态）
 		Text(
-			text = if (todoItem.isChecked) "✅" else "📌",
+			text = if (scheduleItemData.isChecked) "✅" else "📌",
 			style = Typography.labelSmall,
 			fontSize = 10.sp
 		)
 
-		// Todo 标题（限制长度）
+		// Schedule 标题（限制长度）
 		Text(
-			text = todoItem.title.take(4),  // 最多显示 4 个字
+			text = scheduleItemData.title.take(4),  // 最多显示 4 个字
 			style = Typography.labelSmall,
-			color = if (todoItem.isChecked)
+			color = if (scheduleItemData.isChecked)
 				textColor.copy(alpha = 0.5f)
 			else
 				textColor.copy(alpha = 0.7f),
@@ -203,7 +203,7 @@ private fun simpleTodoItem(
 fun PreviewDayCell() {
 	MyCalendarTheme {
 		DayCell(
-			LocalDate.now(), isSelected = false, isCurrentMonth = true, hasTodo = true, exampleTodoItemList
+			LocalDate.now(), isSelected = false, isCurrentMonth = true, hasTodo = true, exampleScheduleItemList
 		) {}
 	}
 }

@@ -1,4 +1,4 @@
-package cn.szu.blankxiao.mycalendar.ui.todo
+package cn.szu.blankxiao.mycalendar.ui.schedule
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import cn.szu.blankxiao.mycalendar.data.todo.TodoItemData
+import cn.szu.blankxiao.mycalendar.data.schedule.ScheduleItemData
 import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
 import cn.szu.blankxiao.mycalendar.ui.theme.MyCalendarTheme
 import cn.szu.blankxiao.mycalendar.ui.theme.Typography
@@ -32,34 +32,34 @@ import java.time.LocalDate
 
 /**
  * @author BlankXiao
- * @description TodoList - 待办事项列表
+ * @description ScheduleList - 日程列表
  * @date 2025-11-08 15:52
  */
 
-private const val TAG = "TodoList"
+private const val TAG = "ScheduleList"
 
 /**
- * TodoList 组件
+ * 日程列表组件
  * 适用于 BottomSheet 中显示
  * 
- * @param todoDataList 待办事项数据列表
+ * @param scheduleDataList 日程数据列表
  * @param title 列表标题（可选）
- * @param onItemToggle 任务完成状态切换回调
+ * @param onItemToggle 日程完成状态切换回调
  * @param modifier 修饰符
  */
 @Composable
-fun TodoList(
-	todoDataList: List<TodoItemData>,
+fun ScheduleList(
+	scheduleDataList: List<ScheduleItemData>,
 	modifier: Modifier = Modifier,
-	title: String = "今日待办",
-	onItemToggle: (TodoItemData) -> Unit = {}
+	title: String = "今日日程",
+	onItemToggle: (ScheduleItemData) -> Unit = {}
 ) {
 	val customColors = MaterialTheme.customColors
 
 	Column(
 		modifier = modifier
 			.fillMaxWidth()
-			.background(customColors.todoListBackground)
+			.background(customColors.scheduleListBackground)
 	) {
 		// 标题区域
 		Column(
@@ -74,18 +74,18 @@ fun TodoList(
 				text = title,
 				style = Typography.titleLarge,
 				fontWeight = FontWeight.Bold,
-				color = customColors.todoListTitleText
+				color = customColors.scheduleListTitleText
 			)
 
-			// 任务统计
-			val completedCount = todoDataList.count { it.isChecked }
-			val totalCount = todoDataList.size
+			// 日程统计
+			val completedCount = scheduleDataList.count { it.isChecked }
+			val totalCount = scheduleDataList.size
 
 			if (totalCount > 0) {
 				Text(
 					text = "已完成 $completedCount / $totalCount",
 					style = Typography.bodyMedium,
-					color = customColors.todoListEmptyText,
+					color = customColors.scheduleListEmptyText,
 					modifier = Modifier.padding(top = Dimensions.Padding.tiny)
 				)
 			}
@@ -97,22 +97,22 @@ fun TodoList(
 		)
 
 		// 内容区域
-		if (todoDataList.isEmpty()) {
+		if (scheduleDataList.isEmpty()) {
 			// 空状态
-			EmptyTodoState()
+			EmptyScheduleState()
 		} else {
-			// 任务列表（支持滚动）
+			// 日程列表（支持滚动）
 			LazyColumn(
 				modifier = Modifier
 					.fillMaxWidth()
 					.weight(1f, fill = false), // 不强制填充剩余空间
 				verticalArrangement = Arrangement.spacedBy(Dimensions.Spacing.extraSmall)
 			) {
-				items(todoDataList, key = { it.hashCode() }) { todoItem ->
-					TodoItem(
-						itemData = todoItem,
+				items(scheduleDataList, key = { it.hashCode() }) { scheduleItem ->
+					ScheduleItem(
+						itemData = scheduleItem,
 						onChecked = {
-							onItemToggle(todoItem)
+							onItemToggle(scheduleItem)
 						}
 					)
 				}
@@ -125,7 +125,7 @@ fun TodoList(
  * 空状态组件
  */
 @Composable
-private fun EmptyTodoState(modifier: Modifier = Modifier) {
+private fun EmptyScheduleState(modifier: Modifier = Modifier) {
 	val customColors = MaterialTheme.customColors
 
 	Box(
@@ -140,21 +140,21 @@ private fun EmptyTodoState(modifier: Modifier = Modifier) {
 		) {
 			Icon(
 				imageVector = Icons.Default.CheckCircle,
-				contentDescription = "无待办事项",
-				tint = customColors.todoListEmptyText,
+				contentDescription = "无日程安排",
+				tint = customColors.scheduleListEmptyText,
 				modifier = Modifier.size(64.dp)
 			)
 
 			Text(
-				text = "暂无待办事项",
+				text = "暂无日程安排",
 				style = Typography.bodyLarge,
-				color = customColors.todoListEmptyText
+				color = customColors.scheduleListEmptyText
 			)
 
 			Text(
 				text = "享受轻松的一天 ✨",
 				style = Typography.bodyMedium,
-				color = customColors.todoListEmptyText
+				color = customColors.scheduleListEmptyText
 			)
 		}
 	}
@@ -162,18 +162,18 @@ private fun EmptyTodoState(modifier: Modifier = Modifier) {
 
 @Composable
 @Preview(showBackground = true)
-fun PreviewTodoList() {
-	val todoData1 = TodoItemData("完成项目文档", LocalDate.now(), "按时提交文档", false)
-	val todoData2 = TodoItemData("团队会议", LocalDate.now(), "下午3点开会", false)
-	val todoData3 = TodoItemData("代码 Review", LocalDate.now(), "审核 PR #123", true)
-	val todoDataList = remember {
-		mutableStateListOf(todoData1, todoData2, todoData3)
+fun PreviewScheduleList() {
+	val schedule1 = ScheduleItemData("完成项目文档", LocalDate.now(), "按时提交文档", false)
+	val schedule2 = ScheduleItemData("团队会议", LocalDate.now(), "下午3点开会", false)
+	val schedule3 = ScheduleItemData("代码 Review", LocalDate.now(), "审核 PR #123", true)
+	val scheduleList = remember {
+		mutableStateListOf(schedule1, schedule2, schedule3)
 	}
 
 	MyCalendarTheme {
-		TodoList(
-			todoDataList = todoDataList,
-			title = "今日待办",
+		ScheduleList(
+			scheduleDataList = scheduleList,
+			title = "今日日程",
 			onItemToggle = { item ->
 				item.isChecked = !item.isChecked
 			}
@@ -183,11 +183,11 @@ fun PreviewTodoList() {
 
 @Composable
 @Preview(showBackground = true)
-fun PreviewEmptyTodoList() {
+fun PreviewEmptyScheduleList() {
 	MyCalendarTheme {
-		TodoList(
-			todoDataList = emptyList(),
-			title = "今日待办"
+		ScheduleList(
+			scheduleDataList = emptyList(),
+			title = "今日日程"
 		)
 	}
 }
