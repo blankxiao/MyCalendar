@@ -1,5 +1,7 @@
 package cn.szu.blankxiao.mycalendar.ui.schedule
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,6 +47,8 @@ private const val TAG = "ScheduleList"
  * @param scheduleDataList 日程数据列表
  * @param title 列表标题（可选）
  * @param onItemToggle 日程完成状态切换回调
+ * @param onItemDelete 日程删除回调
+ * @param onItemLongPress 日程长按回调（编辑）
  * @param modifier 修饰符
  */
 @Composable
@@ -52,7 +56,9 @@ fun ScheduleList(
 	scheduleDataList: List<ScheduleItemData>,
 	modifier: Modifier = Modifier,
 	title: String = "今日日程",
-	onItemToggle: (ScheduleItemData) -> Unit = {}
+	onItemToggle: (ScheduleItemData) -> Unit = {},
+	onItemDelete: ((ScheduleItemData) -> Unit)? = null,
+	onItemLongPress: ((ScheduleItemData) -> Unit)? = null
 ) {
 	val customColors = MaterialTheme.customColors
 
@@ -101,19 +107,42 @@ fun ScheduleList(
 			// 空状态
 			EmptyScheduleState()
 		} else {
-			// 日程列表（支持滚动）
+			// 日程列表（支持滚动 + 动画）
 			LazyColumn(
 				modifier = Modifier
 					.fillMaxWidth()
 					.weight(1f, fill = false), // 不强制填充剩余空间
 				verticalArrangement = Arrangement.spacedBy(Dimensions.Spacing.extraSmall)
 			) {
-				items(scheduleDataList, key = { it.hashCode() }) { scheduleItem ->
+				items(
+					items = scheduleDataList,
+					key = { it.id }
+				) { scheduleItem ->
 					ScheduleItem(
 						itemData = scheduleItem,
+						modifier = Modifier.animateItem(
+							fadeInSpec = spring(
+								dampingRatio = Spring.DampingRatioMediumBouncy,
+								stiffness = Spring.StiffnessLow
+							),
+							placementSpec = spring(
+								dampingRatio = Spring.DampingRatioMediumBouncy,
+								stiffness = Spring.StiffnessMedium
+							),
+							fadeOutSpec = spring(
+								dampingRatio = Spring.DampingRatioMediumBouncy,
+								stiffness = Spring.StiffnessLow
+							)
+						),
 						onChecked = {
 							onItemToggle(scheduleItem)
-						}
+						},
+						onDelete = if (onItemDelete != null) {
+							{ onItemDelete(scheduleItem) }
+						} else null,
+						onLongPress = if (onItemLongPress != null) {
+							{ onItemLongPress(scheduleItem) }
+						} else null
 					)
 				}
 			}

@@ -1,24 +1,42 @@
 package cn.szu.blankxiao.mycalendar.ui.schedule
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,34 +47,152 @@ import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
 import cn.szu.blankxiao.mycalendar.ui.theme.MyCalendarTheme
 import cn.szu.blankxiao.mycalendar.ui.theme.Typography
 import cn.szu.blankxiao.mycalendar.ui.theme.customColors
+import kotlinx.coroutines.delay
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 /**
  * @author BlankXiao
- * @description ScheduleItem - 日程项组件
+ * @description ScheduleItem - 日程项组件（支持滑动删除）
  * @date 2025-11-03 21:06
+ * 
+ * 手势操作：
+ * - 左滑 → 删除
+ * - 点击复选框 → 标记完成/取消完成
  */
 
 private const val TAG = "ScheduleItem"
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScheduleItem(
 	itemData: ScheduleItemData,
 	modifier: Modifier = Modifier,
+	onDelete: (() -> Unit)? = null,
 	onChecked: () -> Unit,
+	onLongPress: (() -> Unit)? = null,
 ) {
 
-	val customColors = MaterialTheme.customColors
-	// 日期格式化
-	val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy年MM月dd日", Locale.CHINA) }
-	val formattedDate = itemData.date.format(dateFormatter)
+	// 控制项是否显示（用于删除动画）
+	var isVisible by remember { mutableStateOf(true) }
+	
+	// 滑动状态（只支持左滑删除）
+	val swipeState = rememberSwipeToDismissBoxState(
+		confirmValueChange = { dismissValue ->
+			when (dismissValue) {
+				SwipeToDismissBoxValue.EndToStart -> {
+					// 左滑 → 删除
+					if (onDelete != null) {
+						isVisible = false
+						true // 允许dismiss
+					} else {
+						false
+					}
+				}
+				else -> false // 不响应右滑
+			}
+		},
+		positionalThreshold = { it * 0.5f } // 滑动阈值设为50%
+	)
+	
+	// 删除动画完成后触发删除
+	LaunchedEffect(isVisible) {
+		if (!isVisible && onDelete != null) {
+			delay(300) // 等待动画完成
+			onDelete()
+		}
+	}
+	
+	AnimatedVisibility(
+		visible = isVisible,
+		exit = shrinkVertically(
+			animationSpec = tween(300),
+			shrinkTowards = Alignment.Top
+		) + fadeOut(animationSpec = tween(300))
+	) {
+		SwipeToDismissBox(
+			state = swipeState,
+			modifier = modifier
+				.fillMaxWidth()
+				.padding(horizontal = Dimensions.Padding.medium, vertical = Dimensions.Padding.tiny),
+			enableDismissFromStartToEnd = false, // 禁用右滑
+			backgroundContent = {
+				// 滑动背景（只显示删除）
+				SwipeBackground(
+					swipeDirection = swipeState.dismissDirection
+				)
+			}
+		) {
+			// 日程卡片内容
+			ScheduleItemContent(
+				itemData = itemData,
+				onChecked = onChecked,
+				onLongPress = onLongPress
+			)
+		}
+	}
+}
 
+/**
+ * 滑动背景 - 显示删除提示
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SwipeBackground(
+	swipeDirection: SwipeToDismissBoxValue
+) {
+	val color = when (swipeDirection) {
+		SwipeToDismissBoxValue.EndToStart -> Color(0xFFF44336) // 红色
+		else -> Color.Transparent
+	}
+	
+	val icon = when (swipeDirection) {
+		SwipeToDismissBoxValue.EndToStart -> Icons.Default.Delete
+		else -> null
+	}
+	
+	Box(
+		modifier = Modifier
+			.fillMaxSize()
+			.background(color, RoundedCornerShape(Dimensions.CornerRadius.medium))
+			.padding(horizontal = 24.dp),
+		contentAlignment = Alignment.CenterEnd
+	) {
+		icon?.let {
+			Icon(
+				imageVector = it,
+				contentDescription = "删除",
+				tint = Color.White,
+				modifier = Modifier.padding(16.dp)
+			)
+		}
+	}
+}
+
+/**
+ * 日程卡片内容
+ */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun ScheduleItemContent(
+	itemData: ScheduleItemData,
+	onChecked: () -> Unit,
+	onLongPress: (() -> Unit)? = null
+) {
+	val customColors = MaterialTheme.customColors
+	
 	Card(
-		modifier = modifier
+		modifier = Modifier
 			.fillMaxWidth()
-			.padding(horizontal = Dimensions.Padding.medium, vertical = Dimensions.Padding.tiny),
+			.then(
+				if (onLongPress != null) {
+					Modifier.combinedClickable(
+						onClick = { },
+						onLongClick = onLongPress
+					)
+				} else {
+					Modifier
+				}
+			),
 		shape = RoundedCornerShape(Dimensions.CornerRadius.medium),
 		colors = CardDefaults.cardColors(
 			containerColor = customColors.scheduleCardBackground
@@ -72,23 +208,24 @@ fun ScheduleItem(
 			horizontalArrangement = Arrangement.Start,
 			verticalAlignment = Alignment.CenterVertically
 		) {
+			// 复选框
 			Checkbox(
-				checked = itemData.isChecked, onCheckedChange = { checked ->
-					onChecked()
-				}, colors = CheckboxDefaults.colors(
+				checked = itemData.isChecked,
+				onCheckedChange = { onChecked() },
+				colors = CheckboxDefaults.colors(
 					checkedColor = customColors.scheduleCheckboxChecked,
 					uncheckedColor = customColors.scheduleCheckboxUnchecked,
 					checkmarkColor = customColors.scheduleCheckboxCheckmark
 				)
 			)
-
+			
 			Column(
 				modifier = Modifier
 					.weight(1f)
 					.padding(start = Dimensions.Padding.tiny),
 				verticalArrangement = Arrangement.spacedBy(Dimensions.Padding.tiny)
 			) {
-				// 描述文本
+				// 标题文本
 				Text(
 					text = itemData.title,
 					style = Typography.titleSmall,
@@ -98,14 +235,22 @@ fun ScheduleItem(
 					} else {
 						customColors.scheduleUncompletedText
 					},
-					// 划线
-					textDecoration = if (itemData.isChecked) TextDecoration.LineThrough else TextDecoration.None
+					textDecoration = if (itemData.isChecked) {
+						TextDecoration.LineThrough
+					} else {
+						TextDecoration.None
+					}
 				)
-
-				// 日期文本
-				Text(
-					text = formattedDate, fontSize = 14.sp, color = customColors.scheduleDateText
-				)
+				
+				// 描述文本
+				if (itemData.desc.isNotBlank()) {
+					Text(
+						text = itemData.desc,
+						fontSize = 12.sp,
+						color = customColors.scheduleDateText,
+						maxLines = 1
+					)
+				}
 			}
 		}
 	}
@@ -115,10 +260,29 @@ fun ScheduleItem(
 @Composable
 @Preview(showBackground = true)
 fun PreviewScheduleItem() {
-	var isChecked by remember { mutableStateOf(false) }
 	MyCalendarTheme {
-		ScheduleItem(ScheduleItemData("团队会议", LocalDate.now(), "下午3点", false)) {
-			isChecked = !isChecked
+		Column {
+			ScheduleItem(
+				itemData = ScheduleItemData(
+					title = "团队会议",
+					date = LocalDate.now(),
+					desc = "讨论项目进度和下周计划",
+					isChecked = false
+				),
+				onChecked = {},
+				onDelete = {}
+			)
+			
+			ScheduleItem(
+				itemData = ScheduleItemData(
+					title = "完成设计稿",
+					date = LocalDate.now(),
+					desc = "UI设计和交互稿",
+					isChecked = true
+				),
+				onChecked = {},
+				onDelete = {}
+			)
 		}
 	}
 }
