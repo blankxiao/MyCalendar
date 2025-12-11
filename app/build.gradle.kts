@@ -2,6 +2,8 @@ plugins {
 	alias(libs.plugins.android.application)
 	alias(libs.plugins.kotlin.android)
 	alias(libs.plugins.kotlin.compose)
+	// KSP 插件（Room 编译需要）
+	id("com.google.devtools.ksp")
 }
 
 android {
@@ -59,6 +61,20 @@ dependencies {
 	
 	// 农历库
 	implementation("cn.6tail:lunar:1.7.0")
+	
+	// ============ Room 数据库 ============
+	val roomVersion = "2.8.0"
+	implementation("androidx.room:room-runtime:$roomVersion")
+	implementation("androidx.room:room-ktx:$roomVersion")  // Kotlin 协程支持
+	ksp("androidx.room:room-compiler:$roomVersion")        // KSP 编译器
+	
+	// ============ Koin 依赖注入 ============
+	val koinVersion = "4.1.1"
+	implementation("io.insert-koin:koin-android:$koinVersion")           // Android 核心
+	implementation("io.insert-koin:koin-androidx-compose:$koinVersion")  // Compose 支持
+	
+	// ============ ViewModel ============
+	implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
 
 	testImplementation(libs.junit)
 	androidTestImplementation(libs.androidx.junit)
