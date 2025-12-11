@@ -20,7 +20,7 @@ import cn.szu.blankxiao.mycalendar.dao.local.entity.ScheduleEntity
  */
 @Database(
     entities = [ScheduleEntity::class],
-    version = 1,
+    version = 2,  // 版本升级：添加提醒功能
     exportSchema = false  // 不导出schema（生产环境建议设为true）
 )
 abstract class AppDatabase : RoomDatabase() {

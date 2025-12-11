@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -70,6 +71,7 @@ fun ScheduleItem(
 	onDelete: (() -> Unit)? = null,
 	onChecked: () -> Unit,
 	onLongPress: (() -> Unit)? = null,
+	onReminderTest: (() -> Unit)? = null,
 ) {
 
 	// 控制项是否显示（用于删除动画）
@@ -126,7 +128,8 @@ fun ScheduleItem(
 			ScheduleItemContent(
 				itemData = itemData,
 				onChecked = onChecked,
-				onLongPress = onLongPress
+				onLongPress = onLongPress,
+				onReminderTest = onReminderTest
 			)
 		}
 	}
@@ -176,7 +179,8 @@ private fun SwipeBackground(
 private fun ScheduleItemContent(
 	itemData: ScheduleItemData,
 	onChecked: () -> Unit,
-	onLongPress: (() -> Unit)? = null
+	onLongPress: (() -> Unit)? = null,
+	onReminderTest: (() -> Unit)? = null
 ) {
 	val customColors = MaterialTheme.customColors
 	
@@ -249,6 +253,20 @@ private fun ScheduleItemContent(
 						fontSize = 12.sp,
 						color = customColors.scheduleDateText,
 						maxLines = 1
+					)
+				}
+			}
+			
+			// 提醒图标（如果启用了提醒）
+			if (itemData.reminderEnabled && onReminderTest != null) {
+				androidx.compose.material3.IconButton(
+					onClick = onReminderTest,
+					modifier = Modifier.padding(start = 8.dp)
+				) {
+					Icon(
+						imageVector = Icons.Default.Notifications,
+						contentDescription = "测试提醒",
+						tint = customColors.scheduleCheckboxChecked
 					)
 				}
 			}

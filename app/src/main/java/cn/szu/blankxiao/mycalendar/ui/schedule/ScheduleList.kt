@@ -49,6 +49,7 @@ private const val TAG = "ScheduleList"
  * @param onItemToggle 日程完成状态切换回调
  * @param onItemDelete 日程删除回调
  * @param onItemLongPress 日程长按回调（编辑）
+ * @param onReminderTest 提醒测试回调
  * @param modifier 修饰符
  */
 @Composable
@@ -58,7 +59,8 @@ fun ScheduleList(
 	title: String = "今日日程",
 	onItemToggle: (ScheduleItemData) -> Unit = {},
 	onItemDelete: ((ScheduleItemData) -> Unit)? = null,
-	onItemLongPress: ((ScheduleItemData) -> Unit)? = null
+	onItemLongPress: ((ScheduleItemData) -> Unit)? = null,
+	onReminderTest: ((ScheduleItemData) -> Unit)? = null
 ) {
 	val customColors = MaterialTheme.customColors
 
@@ -142,6 +144,9 @@ fun ScheduleList(
 						} else null,
 						onLongPress = if (onItemLongPress != null) {
 							{ onItemLongPress(scheduleItem) }
+						} else null,
+						onReminderTest = if (onReminderTest != null && scheduleItem.reminderEnabled) {
+							{ onReminderTest(scheduleItem) }
 						} else null
 					)
 				}

@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,7 +21,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +36,8 @@ import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
 import cn.szu.blankxiao.mycalendar.ui.theme.customColors
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -46,7 +52,7 @@ import java.util.Locale
 fun EditScheduleDialog(
     scheduleData: ScheduleItemData,
     onDismiss: () -> Unit,
-    onConfirm: (id: Long, title: String, date: LocalDate, description: String) -> Unit,
+    onConfirm: (id: Long, title: String, date: LocalDate, description: String, reminderEnabled: Boolean, reminderTime: LocalDateTime?) -> Unit,
     onDelete: (() -> Unit)? = null
 ) {
     var title by remember { mutableStateOf(scheduleData.title) }
@@ -54,8 +60,22 @@ fun EditScheduleDialog(
     var currentDate by remember { mutableStateOf(scheduleData.date) }
     var showDatePicker by remember { mutableStateOf(false) }
     
+    // 提醒相关状态
+    var reminderEnabled by remember { mutableStateOf(scheduleData.reminderEnabled) }
+    var reminderDate by remember { 
+        mutableStateOf(scheduleData.reminderTime?.toLocalDate() ?: scheduleData.date) 
+    }
+    var reminderTime by remember { 
+        mutableStateOf(scheduleData.reminderTime?.toLocalTime() ?: LocalTime.of(9, 0)) 
+    }
+    var showReminderDatePicker by remember { mutableStateOf(false) }
+    var showReminderTimePicker by remember { mutableStateOf(false) }
+    
     val dateFormatter = remember { 
         DateTimeFormatter.ofPattern("yyyy年MM月dd日", Locale.CHINA) 
+    }
+    val dateTimeFormatter = remember {
+        DateTimeFormatter.ofPattern("MM月dd日 HH:mm", Locale.CHINA)
     }
     val customColors = MaterialTheme.customColors
     
@@ -122,6 +142,46 @@ fun EditScheduleDialog(
                     maxLines = 5
                 )
                 
+                // 提醒设置
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = reminderEnabled,
+                        onCheckedChange = { reminderEnabled = it }
+                    )
+                    Text("启用提醒")
+                }
+                
+                // 提醒日期时间选择
+                if (reminderEnabled) {
+                    OutlinedTextField(
+                        value = LocalDateTime.of(reminderDate, reminderTime).format(dateTimeFormatter),
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("提醒时间") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { showReminderDatePicker = true },
+                        enabled = false,
+                        trailingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Notifications,
+                                contentDescription = "设置提醒时间",
+                                modifier = Modifier.clickable { 
+                                    showReminderDatePicker = true 
+                                }
+                            )
+                        },
+                        colors = androidx.compose.material3.TextFieldDefaults.colors(
+                            disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    )
+                }
+                
                 // 按钮行
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -155,11 +215,18 @@ fun EditScheduleDialog(
                         Button(
                             onClick = {
                                 if (title.isNotBlank()) {
+                                    // 组合提醒日期时间
+                                    val reminderDateTime = if (reminderEnabled) {
+                                        LocalDateTime.of(reminderDate, reminderTime)
+                                    } else null
+                                    
                                     onConfirm(
                                         scheduleData.id,
                                         title.trim(),
                                         currentDate,
-                                        description.trim()
+                                        description.trim(),
+                                        reminderEnabled,
+                                        reminderDateTime
                                     )
                                     onDismiss()
                                 }
@@ -207,6 +274,77 @@ fun EditScheduleDialog(
         ) {
             DatePicker(state = datePickerState)
         }
+    }
+    
+    // 提醒日期选择器
+    if (showReminderDatePicker) {
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = reminderDate
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli()
+        )
+        
+        DatePickerDialog(
+            onDismissRequest = { showReminderDatePicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        datePickerState.selectedDateMillis?.let { millis ->
+                            reminderDate = Instant.ofEpochMilli(millis)
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDate()
+                        }
+                        showReminderDatePicker = false
+                        // 打开时间选择器
+                        showReminderTimePicker = true
+                    }
+                ) {
+                    Text("下一步")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showReminderDatePicker = false }) {
+                    Text("取消")
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
+    
+    // 提醒时间选择器
+    if (showReminderTimePicker) {
+        val timePickerState = rememberTimePickerState(
+            initialHour = reminderTime.hour,
+            initialMinute = reminderTime.minute,
+            is24Hour = true
+        )
+        
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showReminderTimePicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        reminderTime = LocalTime.of(
+                            timePickerState.hour,
+                            timePickerState.minute
+                        )
+                        showReminderTimePicker = false
+                    }
+                ) {
+                    Text("确定")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showReminderTimePicker = false }) {
+                    Text("取消")
+                }
+            },
+            text = {
+                TimePicker(state = timePickerState)
+            }
+        )
     }
 }
 

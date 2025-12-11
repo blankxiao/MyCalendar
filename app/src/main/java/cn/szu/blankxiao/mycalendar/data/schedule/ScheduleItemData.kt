@@ -1,6 +1,7 @@
 package cn.szu.blankxiao.mycalendar.data.schedule
 
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 val eatExample: ScheduleItemData =
 	ScheduleItemData(title = "吃饭", date = LocalDate.of(2025, 11, 22), desc = "按时吃饭有利于健康")
@@ -23,4 +24,6 @@ data class ScheduleItemData(
 	val desc: String,
     var isChecked: Boolean = false,
     val id: Long = 0,  // 数据库ID，0表示新建
+    val reminderEnabled: Boolean = false,  // 是否启用提醒
+    val reminderTime: LocalDateTime? = null  // 提醒的完整日期时间
 )

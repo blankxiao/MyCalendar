@@ -27,6 +27,7 @@ import cn.szu.blankxiao.mycalendar.data.calendar.CalendarMode
 import cn.szu.blankxiao.mycalendar.data.calendar.DayPosition
 import cn.szu.blankxiao.mycalendar.data.calendar.rememberCustomCalendarState
 import cn.szu.blankxiao.mycalendar.data.schedule.ScheduleItemData
+import cn.szu.blankxiao.mycalendar.reminder.ReminderManager
 import cn.szu.blankxiao.mycalendar.ui.calendar.common.DayCell
 import cn.szu.blankxiao.mycalendar.ui.calendar.specific.AnimatableCustomCalendar
 import cn.szu.blankxiao.mycalendar.ui.schedule.AddScheduleDialog
@@ -58,6 +59,7 @@ fun MainScreen(
 ) {
 	val coroutineScope = rememberCoroutineScope()
 	val customColors = MaterialTheme.customColors
+	val context = androidx.compose.ui.platform.LocalContext.current
 
 	// 日历范围配置
 	val monthDelta = 12L
@@ -172,6 +174,10 @@ fun MainScreen(
 					// 长按打开编辑对话框
 					editingSchedule = item
 					showEditDialog = true
+				},
+				onReminderTest = { item ->
+					// 测试提醒
+					ReminderManager.testReminder(context, item)
 				}
 			)
 		}
@@ -194,12 +200,28 @@ fun MainScreen(
 			AddScheduleDialog(
 				selectedDate = calendarState.selectedDate,
 				onDismiss = { showAddDialog = false },
-				onConfirm = { title, date, description ->
-					viewModel.addSchedule(
+				onConfirm = { title, date, description, reminderEnabled, reminderDateTime ->
+					val scheduleData = ScheduleItemData(
 						title = title,
 						date = date,
-						description = description
+						desc = description,
+						isChecked = false,
+						reminderEnabled = reminderEnabled,
+						reminderTime = reminderDateTime
 					)
+					
+					// 添加日程
+					coroutineScope.launch {
+						val scheduleId = viewModel.addScheduleAndGetId(scheduleData)
+						
+						// 如果启用提醒，设置提醒
+						if (reminderEnabled && reminderDateTime != null) {
+							ReminderManager.setReminder(
+								context,
+								scheduleData.copy(id = scheduleId)
+							)
+						}
+					}
 				}
 			)
 		}
@@ -212,18 +234,36 @@ fun MainScreen(
 					showEditDialog = false
 					editingSchedule = null
 				},
-				onConfirm = { id, title, date, description ->
-					viewModel.updateSchedule(
-						editingSchedule!!.copy(
-							id = id,
-							title = title,
-							date = date,
-							desc = description
-						)
+				onConfirm = { id, title, date, description, reminderEnabled, reminderDateTime ->
+					val updatedSchedule = editingSchedule!!.copy(
+						id = id,
+						title = title,
+						date = date,
+						desc = description,
+						reminderEnabled = reminderEnabled,
+						reminderTime = reminderDateTime
 					)
+					viewModel.updateSchedule(updatedSchedule)
+					
+					// 更新提醒设置
+					coroutineScope.launch {
+						if (reminderEnabled && reminderDateTime != null) {
+							ReminderManager.setReminder(context, updatedSchedule)
+						} else {
+							// 取消提醒
+							ReminderManager.cancelReminder(context, updatedSchedule.id)
+						}
+					}
+					
+					showEditDialog = false
+					editingSchedule = null
 				},
 				onDelete = {
 					viewModel.deleteSchedule(editingSchedule!!)
+					// 取消提醒
+					ReminderManager.cancelReminder(context, editingSchedule!!.id)
+					showEditDialog = false
+					editingSchedule = null
 				}
 			)
 		}

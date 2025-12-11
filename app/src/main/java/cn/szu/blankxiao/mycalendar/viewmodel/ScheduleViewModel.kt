@@ -123,6 +123,23 @@ class ScheduleViewModel(
     }
     
     /**
+     * 添加日程并返回ID
+     */
+    suspend fun addScheduleAndGetId(scheduleData: ScheduleItemData): Long {
+        return try {
+            _isLoading.value = true
+            val id = repository.addSchedule(scheduleData)
+            _errorMessage.value = null
+            id
+        } catch (e: Exception) {
+            _errorMessage.value = "添加日程失败: ${e.message}"
+            -1
+        } finally {
+            _isLoading.value = false
+        }
+    }
+    
+    /**
      * 更新日程
      */
     fun updateSchedule(scheduleData: ScheduleItemData) {

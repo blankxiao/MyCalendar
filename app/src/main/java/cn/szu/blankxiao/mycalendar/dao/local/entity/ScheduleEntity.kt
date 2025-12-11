@@ -5,6 +5,7 @@ import androidx.room.PrimaryKey
 import cn.szu.blankxiao.mycalendar.data.schedule.ScheduleItemData
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.ZoneId
 
 /**
@@ -38,7 +39,13 @@ data class ScheduleEntity(
     val createdAt: Long = System.currentTimeMillis(),
     
     /** 更新时间戳 */
-    val updatedAt: Long = System.currentTimeMillis()
+    val updatedAt: Long = System.currentTimeMillis(),
+    
+    /** 是否启用提醒 */
+    val reminderEnabled: Boolean = false,
+    
+    /** 提醒时间戳（具体的提醒时间） */
+    val reminderTime: Long? = null
 ) {
     /**
      * 转换为UI数据模型
@@ -48,12 +55,22 @@ data class ScheduleEntity(
             .atZone(ZoneId.systemDefault())
             .toLocalDate()
         
+        // 转换提醒时间
+        val reminderDateTime = reminderTime?.let {
+            LocalDateTime.ofInstant(
+                Instant.ofEpochMilli(it),
+                ZoneId.systemDefault()
+            )
+        }
+        
         return ScheduleItemData(
             id = id,
             title = title,
             date = localDate,
             desc = description,
-            isChecked = isChecked
+            isChecked = isChecked,
+            reminderEnabled = reminderEnabled,
+            reminderTime = reminderDateTime
         )
     }
     
@@ -67,12 +84,21 @@ data class ScheduleEntity(
                 .toInstant()
                 .toEpochMilli()
             
+            // 转换提醒时间
+            val reminderTimestamp = data.reminderTime?.let {
+                it.atZone(ZoneId.systemDefault())
+                    .toInstant()
+                    .toEpochMilli()
+            }
+            
             return ScheduleEntity(
                 id = data.id,
                 title = data.title,
                 date = timestamp,
                 description = data.desc,
-                isChecked = data.isChecked
+                isChecked = data.isChecked,
+                reminderEnabled = data.reminderEnabled,
+                reminderTime = reminderTimestamp
             )
         }
     }
