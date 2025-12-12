@@ -29,6 +29,12 @@ interface ScheduleDao {
     fun getAllSchedules(): Flow<List<ScheduleEntity>>
     
     /**
+     * 查询所有日程
+     */
+    @Query("SELECT * FROM schedules ORDER BY date DESC, isChecked ASC, updatedAt DESC")
+    suspend fun getAllSchedulesOnce(): List<ScheduleEntity>
+    
+    /**
      * 根据日期查询日程
      * @param startDate 开始日期时间戳
      * @param endDate 结束日期时间戳

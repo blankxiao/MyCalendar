@@ -4,6 +4,8 @@ plugins {
 	alias(libs.plugins.kotlin.compose)
 	// KSP 插件（Room 编译需要）
 	id("com.google.devtools.ksp")
+	// Kotlin 序列化插件
+	id("org.jetbrains.kotlin.plugin.serialization") version "2.0.21"
 }
 
 android {
@@ -75,6 +77,15 @@ dependencies {
 	
 	// ============ ViewModel ============
 	implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
+	
+	// ============ Kotlin 序列化 ============
+	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+	
+	// ============ Material Icons Extended ============
+	implementation("androidx.compose.material:material-icons-extended:1.5.4")
+	
+	// ============ Navigation Compose ============
+	implementation("androidx.navigation:navigation-compose:2.7.6")
 
 	testImplementation(libs.junit)
 	androidTestImplementation(libs.androidx.junit)

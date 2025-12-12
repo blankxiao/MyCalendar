@@ -1,5 +1,6 @@
 package cn.szu.blankxiao.mycalendar.dao.repository
 
+import cn.szu.blankxiao.mycalendar.dao.local.entity.ScheduleEntity
 import cn.szu.blankxiao.mycalendar.data.schedule.ScheduleItemData
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
@@ -66,5 +67,10 @@ interface ScheduleRepository {
      * 删除所有日程
      */
     suspend fun deleteAllSchedules()
+    
+    /**
+     * 获取所有日程Entity（用于导出）
+     */
+    suspend fun getAllScheduleEntities(): List<ScheduleEntity>
 }
 

@@ -1,16 +1,26 @@
 package cn.szu.blankxiao.mycalendar.ui.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -23,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import cn.szu.blankxiao.mycalendar.data.calendar.CalendarMode
 import cn.szu.blankxiao.mycalendar.data.calendar.DayPosition
 import cn.szu.blankxiao.mycalendar.data.calendar.rememberCustomCalendarState
@@ -55,7 +66,8 @@ import java.util.Locale
 @Composable
 fun MainScreen(
 	modifier: Modifier = Modifier,
-	viewModel: ScheduleViewModel = koinViewModel()
+	viewModel: ScheduleViewModel = koinViewModel(),
+	onNavigateToSettings: () -> Unit = {}
 ) {
 	val coroutineScope = rememberCoroutineScope()
 	val customColors = MaterialTheme.customColors
@@ -88,44 +100,97 @@ fun MainScreen(
 		DateTimeFormatter.ofPattern("M月d日 EEEE", Locale.CHINA)
 	}
 
-	// 添加日程对话框状态
+	// 对话框状态
 	var showAddDialog by remember { mutableStateOf(false) }
-	
-	// 编辑日程对话框状态
 	var showEditDialog by remember { mutableStateOf(false) }
 	var editingSchedule by remember { mutableStateOf<ScheduleItemData?>(null) }
+	
+	// 菜单状态
+	var showMenu by remember { mutableStateOf(false) }
+
+	// Snackbar状态
+	val snackbarHostState = remember { SnackbarHostState() }
 
 	Box(
 		modifier = modifier
 			.fillMaxSize()
 			.background(customColors.calendarBackground)
 	) {
+		// Snackbar Host
+		Box(
+			modifier = Modifier
+				.align(Alignment.BottomCenter)
+				.fillMaxWidth()
+		) {
+			SnackbarHost(hostState = snackbarHostState)
+		}
 		Column(
 			modifier = Modifier.fillMaxSize()
 		) {
-			// 顶部标题区域
-			Column(
+			// 顶部标题区域（带设置按钮）
+			Row(
 				modifier = Modifier
 					.fillMaxWidth()
 					.padding(
 						horizontal = Dimensions.Padding.large,
 						vertical = Dimensions.Padding.medium
 					),
-				horizontalAlignment = Alignment.CenterHorizontally
+				verticalAlignment = Alignment.CenterVertically,
+				horizontalArrangement = Arrangement.SpaceBetween
 			) {
-				// 当前选中日期
-				Text(
-					text = calendarState.selectedDate.format(dateFormatter),
-					style = Typography.titleLarge,
-					fontWeight = FontWeight.Bold,
-					color = customColors.calendarNormalText
-				)
-				// 当前模式
-				Text(
-					text = "当前模式: ${if (calendarState.calendarMode == CalendarMode.MONTH) "月视图" else "周视图"}",
-					style = Typography.bodySmall,
-					color = customColors.calendarOtherMonthText
-				)
+				// 左侧占位（保持标题居中）
+				Box(modifier = Modifier.width(48.dp))
+				
+				// 中间的标题
+				Column(
+					modifier = Modifier.weight(1f),
+					horizontalAlignment = Alignment.CenterHorizontally
+				) {
+					// 当前选中日期
+					Text(
+						text = calendarState.selectedDate.format(dateFormatter),
+						style = Typography.titleLarge,
+						fontWeight = FontWeight.Bold,
+						color = customColors.calendarNormalText
+					)
+					// 当前模式
+					Text(
+						text = "当前模式: ${if (calendarState.calendarMode == CalendarMode.MONTH) "月视图" else "周视图"}",
+						style = Typography.bodySmall,
+						color = customColors.calendarOtherMonthText
+					)
+				}
+
+				// 右侧的设置按钮
+				Box {
+					IconButton(onClick = { showMenu = true }) {
+						Icon(
+							imageVector = Icons.Default.MoreVert,
+							contentDescription = "更多选项",
+							tint = customColors.calendarNormalText
+						)
+					}
+					
+					// 下拉菜单
+					DropdownMenu(
+						expanded = showMenu,
+						onDismissRequest = { showMenu = false }
+					) {
+						DropdownMenuItem(
+							text = { Text("设置") },
+							onClick = {
+								showMenu = false
+								onNavigateToSettings()
+							},
+							leadingIcon = {
+								Icon(
+									imageVector = Icons.Default.Settings,
+									contentDescription = null
+								)
+							}
+						)
+					}
+				}
 			}
 
 			// 日历组件
@@ -194,79 +259,80 @@ fun MainScreen(
 				contentDescription = "添加日程"
 			)
 		}
+	}
 
-		// 添加日程对话框
-		if (showAddDialog) {
-			AddScheduleDialog(
-				selectedDate = calendarState.selectedDate,
-				onDismiss = { showAddDialog = false },
-				onConfirm = { title, date, description, reminderEnabled, reminderDateTime ->
-					val scheduleData = ScheduleItemData(
-						title = title,
-						date = date,
-						desc = description,
-						isChecked = false,
-						reminderEnabled = reminderEnabled,
-						reminderTime = reminderDateTime
-					)
-					
-					// 添加日程
-					coroutineScope.launch {
-						val scheduleId = viewModel.addScheduleAndGetId(scheduleData)
-						
-						// 如果启用提醒，设置提醒
-						if (reminderEnabled && reminderDateTime != null) {
-							ReminderManager.setReminder(
-								context,
-								scheduleData.copy(id = scheduleId)
-							)
-						}
+	// 对话框部分
+	// 添加日程对话框
+	if (showAddDialog) {
+		AddScheduleDialog(
+			selectedDate = calendarState.selectedDate,
+			onDismiss = { showAddDialog = false },
+			onConfirm = { title, date, description, reminderEnabled, reminderDateTime ->
+				val scheduleData = ScheduleItemData(
+					title = title,
+					date = date,
+					desc = description,
+					isChecked = false,
+					reminderEnabled = reminderEnabled,
+					reminderTime = reminderDateTime
+				)
+
+				// 添加日程
+				coroutineScope.launch {
+					val scheduleId = viewModel.addScheduleAndGetId(scheduleData)
+
+					// 如果启用提醒，设置提醒
+					if (reminderEnabled && reminderDateTime != null) {
+						ReminderManager.setReminder(
+							context,
+							scheduleData.copy(id = scheduleId)
+						)
 					}
 				}
-			)
-		}
-		
-		// 编辑日程对话框
-		if (showEditDialog && editingSchedule != null) {
-			EditScheduleDialog(
-				scheduleData = editingSchedule!!,
-				onDismiss = { 
-					showEditDialog = false
-					editingSchedule = null
-				},
-				onConfirm = { id, title, date, description, reminderEnabled, reminderDateTime ->
-					val updatedSchedule = editingSchedule!!.copy(
-						id = id,
-						title = title,
-						date = date,
-						desc = description,
-						reminderEnabled = reminderEnabled,
-						reminderTime = reminderDateTime
-					)
-					viewModel.updateSchedule(updatedSchedule)
-					
-					// 更新提醒设置
-					coroutineScope.launch {
-						if (reminderEnabled && reminderDateTime != null) {
-							ReminderManager.setReminder(context, updatedSchedule)
-						} else {
-							// 取消提醒
-							ReminderManager.cancelReminder(context, updatedSchedule.id)
-						}
+			}
+		)
+	}
+
+	// 编辑日程对话框
+	if (showEditDialog && editingSchedule != null) {
+		EditScheduleDialog(
+			scheduleData = editingSchedule!!,
+			onDismiss = {
+				showEditDialog = false
+				editingSchedule = null
+			},
+			onConfirm = { id, title, date, description, reminderEnabled, reminderDateTime ->
+				val updatedSchedule = editingSchedule!!.copy(
+					id = id,
+					title = title,
+					date = date,
+					desc = description,
+					reminderEnabled = reminderEnabled,
+					reminderTime = reminderDateTime
+				)
+				viewModel.updateSchedule(updatedSchedule)
+
+				// 更新提醒设置
+				coroutineScope.launch {
+					if (reminderEnabled && reminderDateTime != null) {
+						ReminderManager.setReminder(context, updatedSchedule)
+					} else {
+						// 取消提醒
+						ReminderManager.cancelReminder(context, updatedSchedule.id)
 					}
-					
-					showEditDialog = false
-					editingSchedule = null
-				},
-				onDelete = {
-					viewModel.deleteSchedule(editingSchedule!!)
-					// 取消提醒
-					ReminderManager.cancelReminder(context, editingSchedule!!.id)
-					showEditDialog = false
-					editingSchedule = null
 				}
-			)
-		}
+
+				showEditDialog = false
+				editingSchedule = null
+			},
+			onDelete = {
+				viewModel.deleteSchedule(editingSchedule!!)
+				// 取消提醒
+				ReminderManager.cancelReminder(context, editingSchedule!!.id)
+				showEditDialog = false
+				editingSchedule = null
+			}
+		)
 	}
 }
 

@@ -76,5 +76,11 @@ class ScheduleRepositoryImpl(
     override suspend fun deleteAllSchedules() {
         scheduleDao.deleteAll()
     }
+    
+    override suspend fun getAllScheduleEntities(): List<ScheduleEntity> {
+        // 由于getAllSchedules返回Flow，我们需要添加一个新的DAO方法
+        // 或者使用first()来获取当前值
+        return scheduleDao.getAllSchedulesOnce()
+    }
 }
 
