@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import cn.szu.blankxiao.mycalendar.data.settings.ThemeSettingsManager
 import cn.szu.blankxiao.mycalendar.ui.screen.DataManagementScreen
 import cn.szu.blankxiao.mycalendar.ui.screen.DayViewScreen
 import cn.szu.blankxiao.mycalendar.ui.screen.MainScreen
@@ -25,7 +26,8 @@ import org.koin.androidx.compose.koinViewModel
 fun AppNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    viewModel: ScheduleViewModel = koinViewModel()
+    viewModel: ScheduleViewModel = koinViewModel(),
+    themeSettingsManager: ThemeSettingsManager
 ) {
     NavHost(
         navController = navController,
@@ -50,6 +52,7 @@ fun AppNavHost(
         composable(Screen.Settings.route) {
             SettingsScreen(
                 viewModel = viewModel,
+                themeSettingsManager = themeSettingsManager,
                 onNavigateBack = {
                     navController.popBackStack()
                 },

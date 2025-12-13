@@ -23,24 +23,31 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.window.Dialog
+import cn.szu.blankxiao.mycalendar.data.settings.ThemeMode
+import cn.szu.blankxiao.mycalendar.data.settings.ThemeSettingsManager
 import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
 import cn.szu.blankxiao.mycalendar.ui.theme.customColors
 import cn.szu.blankxiao.mycalendar.viewmodel.ScheduleViewModel
+import kotlinx.coroutines.launch
 
 /**
  * @author BlankXiao
@@ -51,11 +58,16 @@ import cn.szu.blankxiao.mycalendar.viewmodel.ScheduleViewModel
 @Composable
 fun SettingsScreen(
     viewModel: ScheduleViewModel,
+    themeSettingsManager: ThemeSettingsManager,
     onNavigateBack: () -> Unit,
     onNavigateToDataManagement: () -> Unit
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     var showClearDataDialog by remember { mutableStateOf(false) }
+    var showThemeDialog by remember { mutableStateOf(false) }
+    
+    val currentThemeMode by themeSettingsManager.themeMode.collectAsState(initial = ThemeMode.SYSTEM)
     
     val customColors = MaterialTheme.customColors
     
@@ -92,6 +104,26 @@ fun SettingsScreen(
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
         ) {
+            // 外观设置组
+            SettingsGroup(title = "外观") {
+                SettingsItem(
+                    title = "主题",
+                    subtitle = when (currentThemeMode) {
+                        ThemeMode.LIGHT -> "浅色模式"
+                        ThemeMode.DARK -> "深色模式"
+                        ThemeMode.SYSTEM -> "跟随系统"
+                    },
+                    showArrow = true,
+                    onClick = { showThemeDialog = true }
+                )
+            }
+            
+            // 分隔线
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = Dimensions.Padding.large),
+                color = customColors.outline
+            )
+            
             // 数据管理设置组
             SettingsGroup(title = "数据管理") {
                 // 日程导入导出
@@ -141,6 +173,20 @@ fun SettingsScreen(
                 showClearDataDialog = false
                 viewModel.deleteAllSchedules()
                 Toast.makeText(context, "已清空所有日程数据", Toast.LENGTH_SHORT).show()
+            }
+        )
+    }
+    
+    // 主题选择对话框
+    if (showThemeDialog) {
+        ThemeSelectionDialog(
+            currentMode = currentThemeMode,
+            onDismiss = { showThemeDialog = false },
+            onSelect = { mode ->
+                scope.launch {
+                    themeSettingsManager.setThemeMode(mode)
+                }
+                showThemeDialog = false
             }
         )
     }
@@ -207,6 +253,112 @@ private fun ClearDataConfirmDialog(
                     }
                 }
             }
+        }
+    }
+}
+
+/**
+ * 主题选择对话框
+ */
+@Composable
+private fun ThemeSelectionDialog(
+    currentMode: ThemeMode,
+    onDismiss: () -> Unit,
+    onSelect: (ThemeMode) -> Unit
+) {
+    val customColors = MaterialTheme.customColors
+    
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            shape = RoundedCornerShape(Dimensions.CornerRadius.large),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(Dimensions.Padding.medium),
+            colors = CardDefaults.cardColors(
+                containerColor = customColors.surface
+            )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(Dimensions.Padding.large),
+                verticalArrangement = Arrangement.spacedBy(Dimensions.Spacing.small)
+            ) {
+                Text(
+                    text = "选择主题",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = customColors.textPrimary
+                )
+                
+                // 主题选项
+                ThemeOption(
+                    title = "浅色模式",
+                    subtitle = "始终使用浅色主题",
+                    isSelected = currentMode == ThemeMode.LIGHT,
+                    onClick = { onSelect(ThemeMode.LIGHT) }
+                )
+                
+                ThemeOption(
+                    title = "深色模式",
+                    subtitle = "始终使用深色主题",
+                    isSelected = currentMode == ThemeMode.DARK,
+                    onClick = { onSelect(ThemeMode.DARK) }
+                )
+                
+                ThemeOption(
+                    title = "跟随系统",
+                    subtitle = "根据系统设置自动切换",
+                    isSelected = currentMode == ThemeMode.SYSTEM,
+                    onClick = { onSelect(ThemeMode.SYSTEM) }
+                )
+            }
+        }
+    }
+}
+
+/**
+ * 主题选项
+ */
+@Composable
+private fun ThemeOption(
+    title: String,
+    subtitle: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val customColors = MaterialTheme.customColors
+    
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(vertical = Dimensions.Padding.small),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RadioButton(
+            selected = isSelected,
+            onClick = onClick,
+            colors = RadioButtonDefaults.colors(
+                selectedColor = customColors.buttonPrimaryBackground,
+                unselectedColor = customColors.outline
+            )
+        )
+        
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = Dimensions.Padding.small)
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge,
+                color = customColors.textPrimary
+            )
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = customColors.textSecondary
+            )
         }
     }
 }

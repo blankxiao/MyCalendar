@@ -86,6 +86,9 @@ dependencies {
 	
 	// ============ Navigation Compose ============
 	implementation("androidx.navigation:navigation-compose:2.7.6")
+	
+	// ============ DataStore Preferences ============
+	implementation("androidx.datastore:datastore-preferences:1.1.1")
 
 	testImplementation(libs.junit)
 	androidTestImplementation(libs.androidx.junit)
