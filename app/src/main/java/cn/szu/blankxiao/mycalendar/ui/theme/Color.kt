@@ -99,6 +99,43 @@ val Dark800 = Color(0xFFD4D4D8)              // 主要文字
 val Dark900 = Color(0xFFFAFAFA)              // 最亮 - 强调
 
 // ========================================
+// 圣诞主题色系列（Christmas）- 节日氛围
+// ========================================
+
+// 圣诞红 - 温暖喜庆
+val ChristmasRed50 = Color(0xFFFDF2F2)
+val ChristmasRed100 = Color(0xFFFCE4E4)
+val ChristmasRed200 = Color(0xFFF9BFBF)
+val ChristmasRed300 = Color(0xFFF28B8B)
+val ChristmasRed400 = Color(0xFFE53935)           // 主红色
+val ChristmasRed500 = Color(0xFFC62828)
+val ChristmasRed600 = Color(0xFFB71C1C)
+val ChristmasRed700 = Color(0xFF8B0000)
+
+// 圣诞绿 - 常青树
+val ChristmasGreen50 = Color(0xFFF1F8E9)
+val ChristmasGreen100 = Color(0xFFDCEDC8)
+val ChristmasGreen200 = Color(0xFFC5E1A5)
+val ChristmasGreen300 = Color(0xFF8BC34A)
+val ChristmasGreen400 = Color(0xFF2E7D32)         // 主绿色
+val ChristmasGreen500 = Color(0xFF1B5E20)
+val ChristmasGreen600 = Color(0xFF0D4A0D)
+val ChristmasGreen700 = Color(0xFF003300)
+
+// 圣诞金 - 闪耀装饰
+val ChristmasGold50 = Color(0xFFFFFDE7)
+val ChristmasGold100 = Color(0xFFFFF9C4)
+val ChristmasGold200 = Color(0xFFFFF59D)
+val ChristmasGold300 = Color(0xFFFFD54F)          // 金色
+val ChristmasGold400 = Color(0xFFFFCA28)
+val ChristmasGold500 = Color(0xFFFFB300)
+val ChristmasGold600 = Color(0xFFFF8F00)
+
+// 圣诞白/雪色
+val ChristmasSnow = Color(0xFFFFFAFA)             // 雪白背景
+val ChristmasIce = Color(0xFFF0F8FF)              // 冰蓝白
+
+// ========================================
 // 特殊颜色
 // ========================================
 

@@ -15,7 +15,8 @@ import kotlinx.coroutines.flow.map
 enum class ThemeMode {
     LIGHT,      // 浅色模式
     DARK,       // 深色模式
-    SYSTEM      // 跟随系统
+    SYSTEM,     // 跟随系统
+    CHRISTMAS   // 圣诞主题
 }
 
 /**

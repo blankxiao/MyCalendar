@@ -6,6 +6,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import cn.szu.blankxiao.mycalendar.data.settings.ThemeMode
 
 /**
  * 主题配置文件
@@ -106,6 +107,56 @@ private val DarkColorScheme = darkColorScheme(
     scrim = ScrimDark,
 )
 
+// ==================== Material3 圣诞主题 ====================
+private val ChristmasColorScheme = lightColorScheme(
+    // 主色调 - 圣诞绿
+    primary = ChristmasGreen400,
+    onPrimary = White,
+    primaryContainer = ChristmasGreen100,
+    onPrimaryContainer = ChristmasGreen600,
+    
+    // 次要色 - 圣诞红
+    secondary = ChristmasRed400,
+    onSecondary = White,
+    secondaryContainer = ChristmasRed100,
+    onSecondaryContainer = ChristmasRed600,
+    
+    // 第三色 - 圣诞金
+    tertiary = ChristmasGold400,
+    onTertiary = ChristmasGreen700,
+    tertiaryContainer = ChristmasGold100,
+    onTertiaryContainer = ChristmasGold600,
+    
+    // 错误色
+    error = ChristmasRed500,
+    onError = White,
+    errorContainer = ChristmasRed50,
+    onErrorContainer = ChristmasRed600,
+    
+    // 背景和表面 - 雪白
+    background = ChristmasSnow,
+    onBackground = ChristmasGreen700,
+    surface = White,
+    onSurface = ChristmasGreen700,
+    surfaceVariant = ChristmasGreen50,
+    onSurfaceVariant = ChristmasGreen500,
+    
+    // 边框
+    outline = ChristmasGreen200,
+    outlineVariant = ChristmasGreen100,
+    
+    // 反向表面
+    inverseSurface = ChristmasGreen700,
+    inverseOnSurface = ChristmasSnow,
+    inversePrimary = ChristmasGreen200,
+    
+    // 遮罩
+    scrim = ScrimLight,
+)
+
+/**
+ * 简化的主题函数（保持向后兼容）
+ */
 @Composable
 fun MyCalendarTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -118,6 +169,38 @@ fun MyCalendarTheme(
     // 提供自定义颜色到组合树
     CompositionLocalProvider(LocalCustomColors provides customColors) {
         // 应用主题（包含Material3的colorScheme）
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            shapes = Shapes,
+            content = content
+        )
+    }
+}
+
+/**
+ * 带主题模式的主题函数
+ */
+@Composable
+fun MyCalendarTheme(
+    themeMode: ThemeMode,
+    content: @Composable () -> Unit
+) {
+    val isSystemDark = isSystemInDarkTheme()
+    
+    // 根据主题模式选择配色方案
+    val (colorScheme, customColors) = when (themeMode) {
+        ThemeMode.LIGHT -> LightColorScheme to LightCustomColors
+        ThemeMode.DARK -> DarkColorScheme to DarkCustomColors
+        ThemeMode.CHRISTMAS -> ChristmasColorScheme to ChristmasCustomColors
+        ThemeMode.SYSTEM -> {
+            if (isSystemDark) DarkColorScheme to DarkCustomColors
+            else LightColorScheme to LightCustomColors
+        }
+    }
+
+    // 提供自定义颜色到组合树
+    CompositionLocalProvider(LocalCustomColors provides customColors) {
         MaterialTheme(
             colorScheme = colorScheme,
             typography = Typography,

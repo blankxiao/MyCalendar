@@ -335,6 +335,103 @@ val DarkCustomColors = CustomColors(
     textDisabled = Dark500,
 )
 
+// ==================== 圣诞主题 - 节日氛围 ====================
+
+val ChristmasCustomColors = CustomColors(
+    // 通用基础颜色
+    primary = ChristmasGreen400,
+    onPrimary = White,
+    primaryContainer = ChristmasGreen100,
+    onPrimaryContainer = ChristmasGreen600,
+    
+    surface = ChristmasSnow,
+    onSurface = ChristmasGreen700,
+    surfaceVariant = ChristmasGreen50,
+    onSurfaceVariant = ChristmasGreen500,
+    
+    background = ChristmasSnow,
+    onBackground = ChristmasGreen700,
+    
+    outline = ChristmasGreen200,
+    outlineVariant = ChristmasGreen100,
+    
+    error = ChristmasRed400,
+    onError = White,
+    errorContainer = ChristmasRed50,
+    onErrorContainer = ChristmasRed600,
+    
+    success = ChristmasGreen400,
+    onSuccess = White,
+    
+    warning = ChristmasGold400,
+    onWarning = ChristmasGreen700,
+    
+    scrim = ScrimLight,
+    
+    disabled = ChristmasGreen200,
+    onDisabled = ChristmasGreen400,
+    
+    inputText = ChristmasGreen700,
+    inputLabel = ChristmasGreen500,
+    inputIcon = ChristmasGreen400,
+    
+    buttonPrimaryBackground = ChristmasRed400,      // 圣诞红按钮
+    buttonPrimaryText = White,
+    buttonSecondaryBackground = ChristmasGreen100,
+    buttonSecondaryText = ChristmasGreen600,
+    
+    // 日历颜色 - 圣诞风格
+    calendarSelectedBackground = ChristmasRed400,   // 选中用圣诞红
+    calendarSelectedText = White,
+    
+    calendarTodayBackground = ChristmasGold100,     // 今天用金色背景
+    calendarTodayBorder = ChristmasGold400,
+    calendarTodayText = ChristmasGreen600,
+    
+    calendarNormalText = ChristmasGreen700,
+    calendarOtherMonthText = ChristmasGreen300,
+    calendarWeekendText = ChristmasRed300,          // 周末用浅红色
+    
+    calendarHeaderText = ChristmasGreen700,
+    calendarWeekLabelText = ChristmasGreen500,
+    calendarNavigationIcon = ChristmasGreen500,
+    
+    calendarBackground = ChristmasSnow,
+    calendarDivider = ChristmasGreen100,
+    
+    calendarScheduleDot = ChristmasRed400,          // 待办点用圣诞红
+    
+    calendarDragHandle = ChristmasGreen300,
+    
+    // 日程颜色
+    scheduleUncompletedText = ChristmasGreen700,
+    scheduleCompletedText = ChristmasGreen400,
+    scheduleDateText = ChristmasGreen500,
+    
+    scheduleCheckboxChecked = ChristmasGreen400,
+    scheduleCheckboxUnchecked = ChristmasGreen300,
+    scheduleCheckboxCheckmark = White,
+
+    scheduleCardBackground = White,
+    
+    scheduleUrgent = ChristmasRed400,
+    scheduleImportant = ChristmasGold400,
+    scheduleNormal = ChristmasGreen400,
+    
+    scheduleListBackground = ChristmasSnow,
+    scheduleListTitleText = ChristmasGreen700,
+    scheduleListEmptyText = ChristmasGreen400,
+    
+    scheduleSwipeDeleteBackground = ChristmasRed400,
+    scheduleSwipeDeleteIcon = White,
+    
+    // 文字层次
+    textPrimary = ChristmasGreen700,
+    textSecondary = ChristmasGreen500,
+    textTertiary = ChristmasGreen400,
+    textDisabled = ChristmasGreen300,
+)
+
 // ==================== CompositionLocal ====================
 
 val LocalCustomColors = staticCompositionLocalOf { LightCustomColors }

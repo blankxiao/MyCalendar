@@ -3,7 +3,6 @@ package cn.szu.blankxiao.mycalendar
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -22,14 +21,7 @@ class MainActivity : ComponentActivity() {
 			val themeSettingsManager = remember { ThemeSettingsManager(this) }
 			val themeMode by themeSettingsManager.themeMode.collectAsState(initial = ThemeMode.SYSTEM)
 			
-			// 根据主题模式决定是否使用深色主题
-			val isDarkTheme = when (themeMode) {
-				ThemeMode.LIGHT -> false
-				ThemeMode.DARK -> true
-				ThemeMode.SYSTEM -> isSystemInDarkTheme()
-			}
-			
-			MyCalendarTheme(darkTheme = isDarkTheme) {
+			MyCalendarTheme(themeMode = themeMode) {
 				val navController = rememberNavController()
 				AppNavHost(
 					navController = navController,

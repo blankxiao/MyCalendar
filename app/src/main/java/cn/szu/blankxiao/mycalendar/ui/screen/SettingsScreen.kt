@@ -112,6 +112,7 @@ fun SettingsScreen(
                         ThemeMode.LIGHT -> "浅色模式"
                         ThemeMode.DARK -> "深色模式"
                         ThemeMode.SYSTEM -> "跟随系统"
+                        ThemeMode.CHRISTMAS -> "圣诞主题"
                     },
                     showArrow = true,
                     onClick = { showThemeDialog = true }
@@ -310,6 +311,18 @@ private fun ThemeSelectionDialog(
                     subtitle = "根据系统设置自动切换",
                     isSelected = currentMode == ThemeMode.SYSTEM,
                     onClick = { onSelect(ThemeMode.SYSTEM) }
+                )
+                
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = Dimensions.Padding.small),
+                    color = customColors.outlineVariant
+                )
+                
+                ThemeOption(
+                    title = "圣诞主题",
+                    subtitle = "节日限定红绿配色",
+                    isSelected = currentMode == ThemeMode.CHRISTMAS,
+                    onClick = { onSelect(ThemeMode.CHRISTMAS) }
                 )
             }
         }
