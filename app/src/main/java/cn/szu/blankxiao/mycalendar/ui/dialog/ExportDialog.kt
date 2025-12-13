@@ -44,11 +44,13 @@ sealed class ExportLocation {
 
 /**
  * @author BlankXiao
- * @description 导出对话框
+ * @description 导出对话框（支持多种格式）
  * @date 2025-12-11
  */
 @Composable
 fun ExportDialog(
+    fileExtension: String = "json",
+    mimeType: String = "application/json",
     onDismiss: () -> Unit,
     onConfirm: (ExportLocation) -> Unit
 ) {
@@ -58,11 +60,18 @@ fun ExportDialog(
     val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
     
     // 生成默认文件名
-    val defaultFileName = remember {
+    val defaultFileName = remember(fileExtension) {
         "MyCalendar_Export_${
             DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")
                 .format(LocalDateTime.now())
-        }.json"
+        }.$fileExtension"
+    }
+    
+    // 格式显示名称
+    val formatDisplayName = when (fileExtension) {
+        "ics" -> "iCalendar (.ics)"
+        "json" -> "JSON"
+        else -> fileExtension.uppercase()
     }
     
     var useCustomPath by remember { mutableStateOf(false) }
@@ -70,7 +79,7 @@ fun ExportDialog(
     
     // 系统文件选择器
     val createDocumentLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.CreateDocument("application/json")
+        contract = ActivityResultContracts.CreateDocument(mimeType)
     ) { uri ->
         if (uri != null) {
             selectedUri = uri
@@ -96,7 +105,7 @@ fun ExportDialog(
             ) {
                 // 标题
                 Text(
-                    text = "导出日程",
+                    text = "导出日程 ($formatDisplayName)",
                     style = MaterialTheme.typography.titleLarge,
                     color = customColors.calendarNormalText
                 )

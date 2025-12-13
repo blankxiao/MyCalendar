@@ -55,15 +55,34 @@ fun DataManagementScreen(
     val coroutineScope = rememberCoroutineScope()
     val customColors = MaterialTheme.customColors
     
-    var showExportDialog by remember { mutableStateOf(false) }
+    var showJsonExportDialog by remember { mutableStateOf(false) }
+    var showIcsExportDialog by remember { mutableStateOf(false) }
     
     // 文件选择器 - 导入JSON
-    val importLauncher = rememberLauncherForActivityResult(
+    val jsonImportLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
         if (uri != null) {
             coroutineScope.launch {
                 val result = viewModel.importSchedulesFromUri(context, uri)
+                if (result.isSuccess) {
+                    val count = result.getOrNull() ?: 0
+                    Toast.makeText(context, "导入成功：共 $count 条日程", Toast.LENGTH_SHORT).show()
+                } else {
+                    val errorMsg = result.exceptionOrNull()?.message ?: "未知错误"
+                    Toast.makeText(context, "导入失败：$errorMsg", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+    
+    // 文件选择器 - 导入ICS
+    val icsImportLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            coroutineScope.launch {
+                val result = viewModel.importSchedulesFromIcsUri(context, uri)
                 if (result.isSuccess) {
                     val count = result.getOrNull() ?: 0
                     Toast.makeText(context, "导入成功：共 $count 条日程", Toast.LENGTH_SHORT).show()
@@ -112,8 +131,8 @@ fun DataManagementScreen(
                 // 导出
                 DataOperationItem(
                     title = "导出日程",
-                    subtitle = "将所有日程导出为 JSON 文件",
-                    onClick = { showExportDialog = true }
+                    subtitle = "将所有日程导出为 JSON 文件（应用备份）",
+                    onClick = { showJsonExportDialog = true }
                 )
                 
                 HorizontalDivider(
@@ -126,19 +145,45 @@ fun DataManagementScreen(
                     title = "导入日程",
                     subtitle = "从 JSON 文件导入日程",
                     onClick = {
-                        importLauncher.launch(arrayOf("application/json"))
+                        jsonImportLauncher.launch(arrayOf("application/json"))
+                    }
+                )
+            }
+            
+            // iCalendar 格式
+            DataFormatSection(title = "iCalendar 格式 (.ics)") {
+                // 导出
+                DataOperationItem(
+                    title = "导出日程",
+                    subtitle = "导出为通用日历格式，可导入 Google/Apple 日历",
+                    onClick = { showIcsExportDialog = true }
+                )
+                
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = Dimensions.Padding.large),
+                    color = customColors.outlineVariant
+                )
+                
+                // 导入
+                DataOperationItem(
+                    title = "导入日程",
+                    subtitle = "从 iCalendar (.ics) 文件导入日程",
+                    onClick = {
+                        icsImportLauncher.launch(arrayOf("text/calendar", "*/*"))
                     }
                 )
             }
         }
     }
     
-    // 导出对话框
-    if (showExportDialog) {
+    // JSON 导出对话框
+    if (showJsonExportDialog) {
         ExportDialog(
-            onDismiss = { showExportDialog = false },
+            fileExtension = "json",
+            mimeType = "application/json",
+            onDismiss = { showJsonExportDialog = false },
             onConfirm = { location ->
-                showExportDialog = false
+                showJsonExportDialog = false
                 coroutineScope.launch {
                     when (location) {
                         is ExportLocation.DefaultPath -> {
@@ -152,6 +197,40 @@ fun DataManagementScreen(
                         }
                         is ExportLocation.CustomUri -> {
                             val result = viewModel.exportSchedulesToUri(context, location.uri)
+                            if (result.isSuccess) {
+                                val fileName = result.getOrNull()
+                                Toast.makeText(context, "导出成功：$fileName", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(context, "导出失败：${result.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    }
+                }
+            }
+        )
+    }
+    
+    // ICS 导出对话框
+    if (showIcsExportDialog) {
+        ExportDialog(
+            fileExtension = "ics",
+            mimeType = "text/calendar",
+            onDismiss = { showIcsExportDialog = false },
+            onConfirm = { location ->
+                showIcsExportDialog = false
+                coroutineScope.launch {
+                    when (location) {
+                        is ExportLocation.DefaultPath -> {
+                            val result = viewModel.exportSchedulesAsIcs(context, location.file)
+                            if (result.isSuccess) {
+                                val file = result.getOrNull()
+                                Toast.makeText(context, "导出成功：${file?.name}", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(context, "导出失败：${result.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()
+                            }
+                        }
+                        is ExportLocation.CustomUri -> {
+                            val result = viewModel.exportSchedulesToIcsUri(context, location.uri)
                             if (result.isSuccess) {
                                 val fileName = result.getOrNull()
                                 Toast.makeText(context, "导出成功：$fileName", Toast.LENGTH_SHORT).show()

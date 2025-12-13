@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import cn.szu.blankxiao.mycalendar.dao.repository.ScheduleRepository
 import cn.szu.blankxiao.mycalendar.data.schedule.ScheduleItemData
 import cn.szu.blankxiao.mycalendar.export.ExportImportManager
+import cn.szu.blankxiao.mycalendar.export.IcsExportImportManager
 import cn.szu.blankxiao.mycalendar.export.JsonExportImportManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -80,7 +81,8 @@ class ScheduleViewModel(
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
     
     // 导出导入管理器
-    private val exportManager: ExportImportManager = JsonExportImportManager()
+    private val jsonExportManager: ExportImportManager = JsonExportImportManager()
+    private val icsExportManager: ExportImportManager = IcsExportImportManager()
     
     // ==================== 公共方法 ====================
     
@@ -241,13 +243,13 @@ class ScheduleViewModel(
             val fileName = "MyCalendar_Export_${
                 DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")
                     .format(java.time.LocalDateTime.now())
-            }.${exportManager.getFileExtension()}"
+            }.${jsonExportManager.getFileExtension()}"
             
             // 创建输出文件
             val outputFile = File(outputDirectory, fileName)
             
             // 执行导出
-            val result = exportManager.exportData(context, entities, outputFile)
+            val result = jsonExportManager.exportData(context, entities, outputFile)
             
             _errorMessage.value = null
             result
@@ -278,7 +280,7 @@ class ScheduleViewModel(
             
             // 使用ContentResolver写入
             context.contentResolver.openOutputStream(uri)?.use { outputStream ->
-                val jsonString = exportManager.exportToString(entities)
+                val jsonString = jsonExportManager.exportToString(entities)
                 outputStream.write(jsonString.toByteArray())
             } ?: throw Exception("无法打开输出流")
             
@@ -307,7 +309,7 @@ class ScheduleViewModel(
             _isLoading.value = true
             
             // 执行导入
-            val result = exportManager.importData(context, inputFile)
+            val result = jsonExportManager.importData(context, inputFile)
             
             if (result.isSuccess) {
                 val entities = result.getOrThrow()
@@ -352,7 +354,7 @@ class ScheduleViewModel(
             } ?: return Result.failure(Exception("无法读取文件"))
             
             // 执行导入
-            val result = exportManager.importFromString(jsonString)
+            val result = jsonExportManager.importFromString(jsonString)
             
             if (result.isSuccess) {
                 val entities = result.getOrThrow()
@@ -373,6 +375,126 @@ class ScheduleViewModel(
             
         } catch (e: Exception) {
             _errorMessage.value = "导入失败: ${e.message}"
+            Result.failure(e)
+        } finally {
+            _isLoading.value = false
+        }
+    }
+    
+    // ==================== ICS 格式导出导入 ====================
+    
+    /**
+     * 导出数据到ICS文件（目录）
+     * @param context 上下文
+     * @param outputDirectory 输出目录
+     * @return Result<File> 成功返回文件，失败返回异常
+     */
+    suspend fun exportSchedulesAsIcs(
+        context: Context,
+        outputDirectory: File
+    ): Result<File> {
+        return try {
+            _isLoading.value = true
+            
+            // 获取所有日程Entity
+            val entities = repository.getAllScheduleEntities()
+            
+            // 生成文件名（带时间戳）
+            val fileName = "MyCalendar_Export_${
+                DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")
+                    .format(java.time.LocalDateTime.now())
+            }.${icsExportManager.getFileExtension()}"
+            
+            // 创建输出文件
+            val outputFile = File(outputDirectory, fileName)
+            
+            // 执行导出
+            val result = icsExportManager.exportData(context, entities, outputFile)
+            
+            _errorMessage.value = null
+            result
+            
+        } catch (e: Exception) {
+            _errorMessage.value = "ICS导出失败: ${e.message}"
+            Result.failure(e)
+        } finally {
+            _isLoading.value = false
+        }
+    }
+    
+    /**
+     * 导出数据到ICS Uri（使用SAF）
+     * @param context 上下文
+     * @param uri 输出Uri
+     * @return Result<String> 成功返回文件名，失败返回异常
+     */
+    suspend fun exportSchedulesToIcsUri(
+        context: Context,
+        uri: Uri
+    ): Result<String> {
+        return try {
+            _isLoading.value = true
+            
+            // 获取所有日程Entity
+            val entities = repository.getAllScheduleEntities()
+            
+            // 使用ContentResolver写入
+            context.contentResolver.openOutputStream(uri)?.use { outputStream ->
+                val icsString = icsExportManager.exportToString(entities)
+                outputStream.write(icsString.toByteArray())
+            } ?: throw Exception("无法打开输出流")
+            
+            _errorMessage.value = null
+            Result.success(uri.lastPathSegment ?: "export.ics")
+            
+        } catch (e: Exception) {
+            _errorMessage.value = "ICS导出失败: ${e.message}"
+            Result.failure(e)
+        } finally {
+            _isLoading.value = false
+        }
+    }
+    
+    /**
+     * 从ICS Uri导入数据
+     * @param context 上下文
+     * @param uri 输入Uri
+     * @return Result<Int> 成功返回导入数量，失败返回异常
+     */
+    suspend fun importSchedulesFromIcsUri(
+        context: Context,
+        uri: Uri
+    ): Result<Int> {
+        return try {
+            _isLoading.value = true
+            
+            // 读取文件内容
+            val icsString = context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                inputStream.bufferedReader().readText()
+            } ?: return Result.failure(Exception("无法读取文件"))
+            
+            // 执行导入
+            val result = icsExportManager.importFromString(icsString)
+            
+            if (result.isSuccess) {
+                val entities = result.getOrThrow()
+                
+                // 批量插入数据库
+                entities.forEach { entity ->
+                    val scheduleData = entity.toScheduleItemData()
+                    repository.addSchedule(scheduleData)
+                }
+                
+                _errorMessage.value = null
+                Result.success(entities.size)
+            } else {
+                val error = result.exceptionOrNull()
+                _errorMessage.value = error?.message ?: "ICS导入失败"
+                Result.failure(error ?: Exception("Unknown error"))
+            }
+            
+        } catch (e: Exception) {
+            _errorMessage.value = "ICS导入失败: ${e.message}"
             Result.failure(e)
         } finally {
             _isLoading.value = false
