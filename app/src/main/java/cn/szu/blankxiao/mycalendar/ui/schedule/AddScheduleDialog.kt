@@ -426,8 +426,6 @@ fun AddScheduleDialog(
 @Composable
 private fun PreviewAddScheduleDialog() {
     MyCalendarTheme {
-        AddScheduleDialog(LocalDate.now(), {}) {
-            title, date, description, reminderEnabled, reminderTime ->
-        }
+        AddScheduleDialog(LocalDate.now(), {}) { _, _, _, _, _ -> }
     }
 }

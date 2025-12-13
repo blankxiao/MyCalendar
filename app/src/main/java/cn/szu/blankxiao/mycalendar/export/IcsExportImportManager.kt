@@ -189,17 +189,10 @@ class IcsExportImportManager : ExportImportManager {
         val sb = StringBuilder()
         
         val reminderTime = schedule.reminderTime ?: return ""
-        val eventDate = Instant.ofEpochMilli(schedule.date)
-            .atZone(ZoneId.systemDefault())
-            .toLocalDate()
-            .atStartOfDay()
         
         val reminderDateTime = Instant.ofEpochMilli(reminderTime)
             .atZone(ZoneId.systemDefault())
             .toLocalDateTime()
-        
-        // 计算提醒时间与事件开始时间的差值（分钟）
-        val diffMinutes = java.time.Duration.between(reminderDateTime, eventDate).toMinutes()
         
         sb.appendLine(VALARM_BEGIN)
         sb.appendLine("ACTION:DISPLAY")

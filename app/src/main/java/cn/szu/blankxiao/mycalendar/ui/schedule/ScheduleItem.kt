@@ -14,10 +14,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -41,7 +42,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
 import cn.szu.blankxiao.mycalendar.data.schedule.ScheduleItemData
 import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
 import cn.szu.blankxiao.mycalendar.ui.theme.MyCalendarTheme
@@ -69,8 +69,7 @@ fun ScheduleItem(
 	modifier: Modifier = Modifier,
 	onDelete: (() -> Unit)? = null,
 	onChecked: () -> Unit,
-	onLongPress: (() -> Unit)? = null,
-	onReminderTest: (() -> Unit)? = null,
+	onLongPress: (() -> Unit)? = null
 ) {
 
 	// 控制项是否显示（用于删除动画）
@@ -127,8 +126,7 @@ fun ScheduleItem(
 			ScheduleItemContent(
 				itemData = itemData,
 				onChecked = onChecked,
-				onLongPress = onLongPress,
-				onReminderTest = onReminderTest
+				onLongPress = onLongPress
 			)
 		}
 	}
@@ -180,8 +178,7 @@ private fun SwipeBackground(
 private fun ScheduleItemContent(
 	itemData: ScheduleItemData,
 	onChecked: () -> Unit,
-	onLongPress: (() -> Unit)? = null,
-	onReminderTest: (() -> Unit)? = null
+	onLongPress: (() -> Unit)? = null
 ) {
 	val customColors = MaterialTheme.customColors
 	
@@ -198,79 +195,94 @@ private fun ScheduleItemContent(
 					Modifier
 				}
 			),
-		shape = RoundedCornerShape(Dimensions.CornerRadius.medium),
+		shape = RoundedCornerShape(Dimensions.CornerRadius.small),
 		colors = CardDefaults.cardColors(
-			containerColor = customColors.scheduleCardBackground
+			containerColor = customColors.surface
 		),
 		elevation = CardDefaults.cardElevation(
-			defaultElevation = Dimensions.Elevation.small
+			defaultElevation = Dimensions.Elevation.none
 		)
 	) {
 		Row(
 			modifier = Modifier
 				.fillMaxWidth()
-				.padding(Dimensions.Padding.medium),
-			horizontalArrangement = Arrangement.Start,
+				.padding(
+					horizontal = Dimensions.Padding.medium,
+					vertical = Dimensions.Padding.small
+				),
+			horizontalArrangement = Arrangement.spacedBy(Dimensions.Spacing.small),
 			verticalAlignment = Alignment.CenterVertically
 		) {
-			// 复选框
-			Checkbox(
-				checked = itemData.isChecked,
-				onCheckedChange = { onChecked() },
-				colors = CheckboxDefaults.colors(
-					checkedColor = customColors.scheduleCheckboxChecked,
-					uncheckedColor = customColors.scheduleCheckboxUnchecked,
-					checkmarkColor = customColors.scheduleCheckboxCheckmark
-				)
+			// 状态指示器 - 简约圆点
+			Box(
+				modifier = Modifier
+					.size(Dimensions.Size.tiny)
+					.background(
+						color = if (itemData.isChecked) 
+							customColors.success 
+						else 
+							customColors.buttonPrimaryBackground,
+						shape = RoundedCornerShape(50)
+					)
 			)
 			
+			// 内容区域
 			Column(
-				modifier = Modifier
-					.weight(1f)
-					.padding(start = Dimensions.Padding.tiny),
-				verticalArrangement = Arrangement.spacedBy(Dimensions.Padding.tiny)
+				modifier = Modifier.weight(1f),
+				verticalArrangement = Arrangement.spacedBy(Dimensions.Spacing.tiny)
 			) {
-				// 标题文本
-				Text(
-					text = itemData.title,
-					style = Typography.titleSmall,
-					fontWeight = FontWeight.Medium,
-					color = if (itemData.isChecked) {
-						customColors.scheduleCompletedText
-					} else {
-						customColors.scheduleUncompletedText
-					},
-					textDecoration = if (itemData.isChecked) {
-						TextDecoration.LineThrough
-					} else {
-						TextDecoration.None
+				// 标题行（含提醒标记）
+				Row(
+					verticalAlignment = Alignment.CenterVertically,
+					horizontalArrangement = Arrangement.spacedBy(Dimensions.Spacing.tiny)
+				) {
+					Text(
+						text = itemData.title,
+						style = Typography.bodyMedium,
+						fontWeight = if (itemData.isChecked) FontWeight.Normal else FontWeight.Medium,
+						color = if (itemData.isChecked) 
+							customColors.textTertiary 
+						else 
+							customColors.textPrimary,
+						textDecoration = if (itemData.isChecked) 
+							TextDecoration.LineThrough 
+						else 
+							TextDecoration.None,
+						modifier = Modifier.weight(1f, fill = false)
+					)
+					
+					// 提醒指示器
+					if (itemData.reminderEnabled) {
+						Icon(
+							imageVector = Icons.Outlined.Notifications,
+							contentDescription = "已设置提醒",
+							modifier = Modifier.size(Dimensions.IconSize.tiny),
+							tint = customColors.textSecondary
+						)
 					}
-				)
+				}
 				
-				// 描述文本
+				// 描述（如有）
 				if (itemData.desc.isNotBlank()) {
 					Text(
 						text = itemData.desc,
-						fontSize = 12.sp,
-						color = customColors.scheduleDateText,
+						style = Typography.bodySmall,
+						color = customColors.textSecondary,
 						maxLines = 1
 					)
 				}
 			}
 			
-			// 提醒图标（如果启用了提醒）
-			if (itemData.reminderEnabled && onReminderTest != null) {
-				androidx.compose.material3.IconButton(
-					onClick = onReminderTest,
-					modifier = Modifier.padding(start = Dimensions.Padding.small)
-				) {
-					Icon(
-						imageVector = Icons.Default.Notifications,
-						contentDescription = "测试提醒",
-						tint = customColors.scheduleCheckboxChecked
-					)
-				}
-			}
+			// 完成按钮
+			Checkbox(
+				checked = itemData.isChecked,
+				onCheckedChange = { onChecked() },
+				colors = CheckboxDefaults.colors(
+					checkedColor = customColors.success,
+					uncheckedColor = customColors.outline,
+					checkmarkColor = customColors.onSuccess
+				)
+			)
 		}
 	}
 }

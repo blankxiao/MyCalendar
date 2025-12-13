@@ -12,14 +12,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -67,7 +66,8 @@ import java.util.Locale
 fun MainScreen(
 	modifier: Modifier = Modifier,
 	viewModel: ScheduleViewModel = koinViewModel(),
-	onNavigateToSettings: () -> Unit = {}
+	onNavigateToSettings: () -> Unit = {},
+	onNavigateToDayView: (LocalDate) -> Unit = {}
 ) {
 	val coroutineScope = rememberCoroutineScope()
 	val customColors = MaterialTheme.customColors
@@ -188,13 +188,6 @@ fun MainScreen(
 								showMenu = false
 								onNavigateToSettings()
 							},
-							leadingIcon = {
-								Icon(
-									imageVector = Icons.Default.Settings,
-									contentDescription = null,
-									tint = customColors.textPrimary
-								)
-							},
 							colors = MenuDefaults.itemColors(
 								textColor = customColors.textPrimary,
 								leadingIconColor = customColors.textPrimary
@@ -223,37 +216,29 @@ fun MainScreen(
 					hasTodo = hasSchedule,
 					scheduleDataList = daySchedules.ifEmpty { null },
 					modifier = Modifier.weight(1f),
-					showScheduleContent = false
-				) {
-					coroutineScope.launch {
-						calendarState.scrollToDate(day.date)
+					showScheduleContent = false,
+					onClick = {
+						coroutineScope.launch {
+							calendarState.scrollToDate(day.date)
+						}
+					},
+					onDoubleClick = {
+						onNavigateToDayView(day.date)
 					}
-				}
+				)
 			}
 
 			// 日程列表
 			ScheduleList(
 				scheduleDataList = selectedDateSchedules,
-				title = "${calendarState.selectedDate.dayOfMonth}日 日程",
 				modifier = Modifier
 					.fillMaxWidth()
 					.weight(1f),
-				onItemToggle = { item ->
-					// 使用ViewModel更新状态
-					viewModel.toggleScheduleStatus(item)
-				},
-				onItemDelete = { item ->
-					// 使用ViewModel删除日程
-					viewModel.deleteSchedule(item)
-				},
+				onItemToggle = { viewModel.toggleScheduleStatus(it) },
+				onItemDelete = { viewModel.deleteSchedule(it) },
 				onItemLongPress = { item ->
-					// 长按打开编辑对话框
 					editingSchedule = item
 					showEditDialog = true
-				},
-				onReminderTest = { item ->
-					// 测试提醒
-					ReminderManager.testReminder(context, item)
 				}
 			)
 		}

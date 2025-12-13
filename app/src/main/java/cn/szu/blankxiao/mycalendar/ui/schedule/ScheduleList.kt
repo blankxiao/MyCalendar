@@ -5,16 +5,11 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,7 +17,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import cn.szu.blankxiao.mycalendar.data.schedule.ScheduleItemData
 import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
@@ -44,118 +38,64 @@ private const val TAG = "ScheduleList"
  * 适用于 BottomSheet 中显示
  * 
  * @param scheduleDataList 日程数据列表
- * @param title 列表标题（可选）
  * @param onItemToggle 日程完成状态切换回调
  * @param onItemDelete 日程删除回调
  * @param onItemLongPress 日程长按回调（编辑）
- * @param onReminderTest 提醒测试回调
  * @param modifier 修饰符
  */
 @Composable
 fun ScheduleList(
 	scheduleDataList: List<ScheduleItemData>,
 	modifier: Modifier = Modifier,
-	title: String = "今日日程",
 	onItemToggle: (ScheduleItemData) -> Unit = {},
 	onItemDelete: ((ScheduleItemData) -> Unit)? = null,
-	onItemLongPress: ((ScheduleItemData) -> Unit)? = null,
-	onReminderTest: ((ScheduleItemData) -> Unit)? = null
+	onItemLongPress: ((ScheduleItemData) -> Unit)? = null
 ) {
 	val customColors = MaterialTheme.customColors
 
-	Column(
-		modifier = modifier
-			.fillMaxWidth()
-			.background(customColors.scheduleListBackground)
-	) {
-		// 标题区域
-		Column(
-			modifier = Modifier
+	// 内容区域
+	if (scheduleDataList.isEmpty()) {
+		EmptyScheduleState(modifier = modifier)
+	} else {
+		// 日程列表（支持滚动 + 动画）
+		LazyColumn(
+			modifier = modifier
 				.fillMaxWidth()
-				.padding(
-					horizontal = Dimensions.Padding.large,
-					vertical = Dimensions.Padding.medium
-				)
+				.background(customColors.scheduleListBackground),
+			verticalArrangement = Arrangement.spacedBy(Dimensions.Spacing.small),
+			contentPadding = PaddingValues(vertical = Dimensions.Padding.small)
 		) {
-			Text(
-				text = title,
-				style = Typography.titleLarge,
-				fontWeight = FontWeight.Bold,
-				color = customColors.scheduleListTitleText
-			)
-
-			// 日程统计
-			val completedCount = scheduleDataList.count { it.isChecked }
-			val totalCount = scheduleDataList.size
-
-			if (totalCount > 0) {
-				Text(
-					text = "已完成 $completedCount / $totalCount",
-					style = Typography.bodyMedium,
-					color = customColors.scheduleListEmptyText,
-					modifier = Modifier.padding(top = Dimensions.Padding.tiny)
-				)
-			}
-		}
-
-		HorizontalDivider(
-			color = customColors.calendarDivider,
-			thickness = Dimensions.Divider.thickness
-		)
-
-		// 内容区域
-		if (scheduleDataList.isEmpty()) {
-			// 空状态
-			EmptyScheduleState()
-		} else {
-			// 日程列表（支持滚动 + 动画）
-			LazyColumn(
-				modifier = Modifier
-					.fillMaxWidth()
-					.weight(1f, fill = false), // 不强制填充剩余空间
-				verticalArrangement = Arrangement.spacedBy(Dimensions.Spacing.extraSmall)
-			) {
-				items(
-					items = scheduleDataList,
-					key = { it.id }
-				) { scheduleItem ->
-					ScheduleItem(
-						itemData = scheduleItem,
-						modifier = Modifier.animateItem(
-							fadeInSpec = spring(
-								dampingRatio = Spring.DampingRatioMediumBouncy,
-								stiffness = Spring.StiffnessLow
-							),
-							placementSpec = spring(
-								dampingRatio = Spring.DampingRatioMediumBouncy,
-								stiffness = Spring.StiffnessMedium
-							),
-							fadeOutSpec = spring(
-								dampingRatio = Spring.DampingRatioMediumBouncy,
-								stiffness = Spring.StiffnessLow
-							)
+			items(
+				items = scheduleDataList,
+				key = { it.id }
+			) { scheduleItem ->
+				ScheduleItem(
+					itemData = scheduleItem,
+					modifier = Modifier.animateItem(
+						fadeInSpec = spring(
+							dampingRatio = Spring.DampingRatioMediumBouncy,
+							stiffness = Spring.StiffnessLow
 						),
-						onChecked = {
-							onItemToggle(scheduleItem)
-						},
-						onDelete = if (onItemDelete != null) {
-							{ onItemDelete(scheduleItem) }
-						} else null,
-						onLongPress = if (onItemLongPress != null) {
-							{ onItemLongPress(scheduleItem) }
-						} else null,
-						onReminderTest = if (onReminderTest != null && scheduleItem.reminderEnabled) {
-							{ onReminderTest(scheduleItem) }
-						} else null
-					)
-				}
+						placementSpec = spring(
+							dampingRatio = Spring.DampingRatioMediumBouncy,
+							stiffness = Spring.StiffnessMedium
+						),
+						fadeOutSpec = spring(
+							dampingRatio = Spring.DampingRatioMediumBouncy,
+							stiffness = Spring.StiffnessLow
+						)
+					),
+					onChecked = { onItemToggle(scheduleItem) },
+					onDelete = onItemDelete?.let { { it(scheduleItem) } },
+					onLongPress = onItemLongPress?.let { { it(scheduleItem) } }
+				)
 			}
 		}
 	}
 }
 
 /**
- * 空状态组件
+ * 空状态组件 - 简约风格
  */
 @Composable
 private fun EmptyScheduleState(modifier: Modifier = Modifier) {
@@ -164,32 +104,14 @@ private fun EmptyScheduleState(modifier: Modifier = Modifier) {
 	Box(
 		modifier = modifier
 			.fillMaxWidth()
-			.padding(vertical = Dimensions.Spacing.huge),
+			.padding(vertical = Dimensions.Spacing.extraLarge),
 		contentAlignment = Alignment.Center
 	) {
-		Column(
-			horizontalAlignment = Alignment.CenterHorizontally,
-			verticalArrangement = Arrangement.spacedBy(Dimensions.Spacing.small)
-		) {
-			Icon(
-				imageVector = Icons.Default.CheckCircle,
-				contentDescription = "无日程安排",
-				tint = customColors.scheduleListEmptyText,
-				modifier = Modifier.size(Dimensions.IconSize.huge)
-			)
-
-			Text(
-				text = "暂无日程安排",
-				style = Typography.bodyLarge,
-				color = customColors.scheduleListEmptyText
-			)
-
-			Text(
-				text = "享受轻松的一天 ✨",
-				style = Typography.bodyMedium,
-				color = customColors.scheduleListEmptyText
-			)
-		}
+		Text(
+			text = "暂无日程",
+			style = Typography.bodyMedium,
+			color = customColors.textTertiary
+		)
 	}
 }
 
@@ -206,7 +128,6 @@ fun PreviewScheduleList() {
 	MyCalendarTheme {
 		ScheduleList(
 			scheduleDataList = scheduleList,
-			title = "今日日程",
 			onItemToggle = { item ->
 				item.isChecked = !item.isChecked
 			}
@@ -218,9 +139,6 @@ fun PreviewScheduleList() {
 @Preview(showBackground = true)
 fun PreviewEmptyScheduleList() {
 	MyCalendarTheme {
-		ScheduleList(
-			scheduleDataList = emptyList(),
-			title = "今日日程"
-		)
+		ScheduleList(scheduleDataList = emptyList())
 	}
 }

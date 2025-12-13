@@ -2,7 +2,8 @@ package cn.szu.blankxiao.mycalendar.ui.calendar.common
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,6 +47,7 @@ private const val TAG = "DayCell"
  * @description DayCell 日期单天的样式
  * @date 2025-11-04 21:36
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DayCell(
 	day: LocalDate,
@@ -55,6 +58,7 @@ fun DayCell(
 	modifier: Modifier = Modifier,
 	showScheduleContent: Boolean = false,
 	onClick: () -> Unit,
+	onDoubleClick: (() -> Unit)? = null,
 ) {
 	val customColors = MaterialTheme.customColors
 	
@@ -103,7 +107,10 @@ fun DayCell(
 					color = if (isToday && !isSelected) customColors.calendarTodayBorder else Color.Transparent,
 					shape = CircleShape
 				)
-				.clickable(onClick = onClick),
+				.combinedClickable(
+					onClick = onClick,
+					onDoubleClick = onDoubleClick
+				),
 			contentAlignment = Alignment.Center
 		) {
 			// 待办指示点（绝对定位在顶部）
@@ -155,7 +162,7 @@ fun DayCell(
 				// 如果还有更多 Schedule，显示提示
 				if (scheduleDataList.size > 2) {
 					Text(
-						text = "📝 还有 ${scheduleDataList.size - 2} 项",
+						text = "+${scheduleDataList.size - 2}",
 						style = Typography.labelSmall,
 						fontSize = 8.sp,
 						color = textColor.copy(alpha = 0.5f)
@@ -171,16 +178,24 @@ private fun simpleScheduleItem(
 	scheduleItemData: ScheduleItemData,
 	textColor: Color
 ) {
+	val customColors = MaterialTheme.customColors
+	
 	Row(
 		verticalAlignment = Alignment.CenterVertically,
-		horizontalArrangement = Arrangement.Center,
+		horizontalArrangement = Arrangement.spacedBy(Dimensions.Spacing.tiny),
 		modifier = Modifier.fillMaxWidth()
 	) {
-		// 表情图标（根据完成状态）
-		Text(
-			text = if (scheduleItemData.isChecked) "✅" else "📌",
-			style = Typography.labelSmall,
-			fontSize = 10.sp
+		// 状态指示圆点
+		Box(
+			modifier = Modifier
+				.size(Dimensions.Size.extraTiny)
+				.background(
+					color = if (scheduleItemData.isChecked) 
+						customColors.success
+					else 
+						customColors.buttonPrimaryBackground,
+					shape = RoundedCornerShape(50)
+				)
 		)
 
 		// Schedule 标题（限制长度）
@@ -202,7 +217,12 @@ private fun simpleScheduleItem(
 fun PreviewDayCell() {
 	MyCalendarTheme {
 		DayCell(
-			LocalDate.now(), isSelected = false, isCurrentMonth = true, hasTodo = true, exampleScheduleItemList
-		) {}
+			day = LocalDate.now(),
+			isSelected = false,
+			isCurrentMonth = true,
+			hasTodo = true,
+			scheduleDataList = exampleScheduleItemList,
+			onClick = {}
+		)
 	}
 }

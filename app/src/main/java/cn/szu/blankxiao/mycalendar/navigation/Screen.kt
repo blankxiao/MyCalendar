@@ -21,10 +21,11 @@ sealed class Screen(val route: String) {
      */
     data object DataManagement : Screen("data_management")
     
-    // 未来可以添加更多页面
-    // data object About : Screen("about")
-    // data object ScheduleDetail : Screen("schedule_detail/{scheduleId}") {
-    //     fun createRoute(scheduleId: Long) = "schedule_detail/$scheduleId"
-    // }
+    /**
+     * 日视图页面 - 显示单日详情
+     */
+    data object DayView : Screen("day_view/{date}") {
+        fun createRoute(date: String) = "day_view/$date"
+    }
 }
 

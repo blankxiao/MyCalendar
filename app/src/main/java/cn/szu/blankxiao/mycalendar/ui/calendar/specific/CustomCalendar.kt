@@ -315,12 +315,13 @@ fun PreviewAnimatableMonthCalendar() {
 					hasTodo = showSpot,
 					scheduleDataList = currentDaySchedule,
 					modifier = Modifier.weight(1f),
-					showScheduleContent = false
-				) {
-					coroutineScope.launch {
-						state.scrollToDate(day.date)
+					showScheduleContent = false,
+					onClick = {
+						coroutineScope.launch {
+							state.scrollToDate(day.date)
+						}
 					}
-				}
+				)
 			}
 
 			Spacer(

@@ -81,7 +81,7 @@ object NotificationHelper {
         // 构建通知
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_launcher_foreground) // 使用应用图标
-            .setContentTitle("📅 $title")
+            .setContentTitle(title)
             .setContentText(if (description.isNotBlank()) description else "日程即将开始")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
