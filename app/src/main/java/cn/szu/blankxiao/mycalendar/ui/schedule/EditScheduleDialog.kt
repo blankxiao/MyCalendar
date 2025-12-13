@@ -11,10 +11,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -34,6 +39,7 @@ import androidx.compose.ui.window.Dialog
 import cn.szu.blankxiao.mycalendar.data.schedule.ScheduleItemData
 import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
 import cn.szu.blankxiao.mycalendar.ui.theme.customColors
+import cn.szu.blankxiao.mycalendar.ui.theme.outlinedTextFieldColors
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -84,7 +90,10 @@ fun EditScheduleDialog(
             shape = RoundedCornerShape(Dimensions.CornerRadius.large),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(Dimensions.Padding.medium)
+                .padding(Dimensions.Padding.medium),
+            colors = CardDefaults.cardColors(
+                containerColor = customColors.surface
+            )
         ) {
             Column(
                 modifier = Modifier
@@ -116,11 +125,7 @@ fun EditScheduleDialog(
                             modifier = Modifier.clickable { showDatePicker = true }
                         )
                     },
-                    colors = androidx.compose.material3.TextFieldDefaults.colors(
-                        disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                        disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    colors = outlinedTextFieldColors()
                 )
                 
                 // 标题输入
@@ -129,7 +134,8 @@ fun EditScheduleDialog(
                     onValueChange = { title = it },
                     label = { Text("标题") },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    colors = outlinedTextFieldColors()
                 )
                 
                 // 描述输入
@@ -139,7 +145,8 @@ fun EditScheduleDialog(
                     label = { Text("描述（可选）") },
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 3,
-                    maxLines = 5
+                    maxLines = 5,
+                    colors = outlinedTextFieldColors()
                 )
                 
                 // 提醒设置
@@ -149,7 +156,12 @@ fun EditScheduleDialog(
                 ) {
                     Checkbox(
                         checked = reminderEnabled,
-                        onCheckedChange = { reminderEnabled = it }
+                        onCheckedChange = { reminderEnabled = it },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = customColors.buttonPrimaryBackground,
+                            uncheckedColor = customColors.outline,
+                            checkmarkColor = customColors.buttonPrimaryText
+                        )
                     )
                     Text("启用提醒")
                 }
@@ -174,11 +186,7 @@ fun EditScheduleDialog(
                                 }
                             )
                         },
-                        colors = androidx.compose.material3.TextFieldDefaults.colors(
-                            disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        colors = outlinedTextFieldColors()
                     )
                 }
                 
@@ -193,12 +201,20 @@ fun EditScheduleDialog(
                             onClick = {
                                 onDelete()
                                 onDismiss()
-                            }
+                            },
+                            colors = ButtonDefaults.textButtonColors(
+                                contentColor = customColors.error
+                            )
                         ) {
-                            Text("删除", color = MaterialTheme.colorScheme.error)
+                            Text("删除")
                         }
                     } else {
-                        TextButton(onClick = onDismiss) {
+                        TextButton(
+                            onClick = onDismiss,
+                            colors = ButtonDefaults.textButtonColors(
+                                contentColor = customColors.textSecondary
+                            )
+                        ) {
                             Text("取消")
                         }
                     }
@@ -207,7 +223,12 @@ fun EditScheduleDialog(
                         horizontalArrangement = Arrangement.spacedBy(Dimensions.Spacing.small)
                     ) {
                         if (onDelete != null) {
-                            TextButton(onClick = onDismiss) {
+                            TextButton(
+                                onClick = onDismiss,
+                                colors = ButtonDefaults.textButtonColors(
+                                    contentColor = customColors.textSecondary
+                                )
+                            ) {
                                 Text("取消")
                             }
                         }
@@ -231,7 +252,11 @@ fun EditScheduleDialog(
                                     onDismiss()
                                 }
                             },
-                            enabled = title.isNotBlank()
+                            enabled = title.isNotBlank(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = customColors.buttonPrimaryBackground,
+                                contentColor = customColors.buttonPrimaryText
+                            )
                         ) {
                             Text("保存")
                         }
@@ -261,18 +286,47 @@ fun EditScheduleDialog(
                                 .toLocalDate()
                         }
                         showDatePicker = false
-                    }
+                    },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = customColors.buttonPrimaryBackground
+                    )
                 ) {
                     Text("确定")
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) {
+                TextButton(
+                    onClick = { showDatePicker = false },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = customColors.textSecondary
+                    )
+                ) {
                     Text("取消")
                 }
-            }
+            },
+            colors = DatePickerDefaults.colors(
+                containerColor = customColors.surface
+            )
         ) {
-            DatePicker(state = datePickerState)
+            DatePicker(
+                state = datePickerState,
+                colors = DatePickerDefaults.colors(
+                    containerColor = customColors.surface,
+                    titleContentColor = customColors.textPrimary,
+                    headlineContentColor = customColors.textPrimary,
+                    weekdayContentColor = customColors.textSecondary,
+                    navigationContentColor = customColors.textPrimary,
+                    yearContentColor = customColors.textPrimary,
+                    currentYearContentColor = customColors.buttonPrimaryBackground,
+                    selectedYearContentColor = customColors.buttonPrimaryText,
+                    selectedYearContainerColor = customColors.buttonPrimaryBackground,
+                    dayContentColor = customColors.textPrimary,
+                    selectedDayContentColor = customColors.buttonPrimaryText,
+                    selectedDayContainerColor = customColors.buttonPrimaryBackground,
+                    todayContentColor = customColors.buttonPrimaryBackground,
+                    todayDateBorderColor = customColors.buttonPrimaryBackground
+                )
+            )
         }
     }
     
@@ -298,18 +352,47 @@ fun EditScheduleDialog(
                         showReminderDatePicker = false
                         // 打开时间选择器
                         showReminderTimePicker = true
-                    }
+                    },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = customColors.buttonPrimaryBackground
+                    )
                 ) {
                     Text("下一步")
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showReminderDatePicker = false }) {
+                TextButton(
+                    onClick = { showReminderDatePicker = false },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = customColors.textSecondary
+                    )
+                ) {
                     Text("取消")
                 }
-            }
+            },
+            colors = DatePickerDefaults.colors(
+                containerColor = customColors.surface
+            )
         ) {
-            DatePicker(state = datePickerState)
+            DatePicker(
+                state = datePickerState,
+                colors = DatePickerDefaults.colors(
+                    containerColor = customColors.surface,
+                    titleContentColor = customColors.textPrimary,
+                    headlineContentColor = customColors.textPrimary,
+                    weekdayContentColor = customColors.textSecondary,
+                    navigationContentColor = customColors.textPrimary,
+                    yearContentColor = customColors.textPrimary,
+                    currentYearContentColor = customColors.buttonPrimaryBackground,
+                    selectedYearContentColor = customColors.buttonPrimaryText,
+                    selectedYearContainerColor = customColors.buttonPrimaryBackground,
+                    dayContentColor = customColors.textPrimary,
+                    selectedDayContentColor = customColors.buttonPrimaryText,
+                    selectedDayContainerColor = customColors.buttonPrimaryBackground,
+                    todayContentColor = customColors.buttonPrimaryBackground,
+                    todayDateBorderColor = customColors.buttonPrimaryBackground
+                )
+            )
         }
     }
     
@@ -331,18 +414,45 @@ fun EditScheduleDialog(
                             timePickerState.minute
                         )
                         showReminderTimePicker = false
-                    }
+                    },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = customColors.buttonPrimaryBackground
+                    )
                 ) {
                     Text("确定")
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showReminderTimePicker = false }) {
+                TextButton(
+                    onClick = { showReminderTimePicker = false },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = customColors.textSecondary
+                    )
+                ) {
                     Text("取消")
                 }
             },
+            containerColor = customColors.surface,
             text = {
-                TimePicker(state = timePickerState)
+                TimePicker(
+                    state = timePickerState,
+                    colors = TimePickerDefaults.colors(
+                        clockDialColor = customColors.surfaceVariant,
+                        clockDialSelectedContentColor = customColors.buttonPrimaryText,
+                        clockDialUnselectedContentColor = customColors.textPrimary,
+                        selectorColor = customColors.buttonPrimaryBackground,
+                        containerColor = customColors.surface,
+                        periodSelectorBorderColor = customColors.outline,
+                        periodSelectorSelectedContainerColor = customColors.buttonPrimaryBackground,
+                        periodSelectorUnselectedContainerColor = customColors.surface,
+                        periodSelectorSelectedContentColor = customColors.buttonPrimaryText,
+                        periodSelectorUnselectedContentColor = customColors.textPrimary,
+                        timeSelectorSelectedContainerColor = customColors.primaryContainer,
+                        timeSelectorUnselectedContainerColor = customColors.surfaceVariant,
+                        timeSelectorSelectedContentColor = customColors.buttonPrimaryBackground,
+                        timeSelectorUnselectedContentColor = customColors.textPrimary
+                    )
+                )
             }
         )
     }

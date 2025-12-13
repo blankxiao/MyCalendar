@@ -22,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -75,17 +76,28 @@ fun DataManagementScreen(
     }
     
     Scaffold(
+        containerColor = customColors.background,
         topBar = {
             TopAppBar(
-                title = { Text("日程导入导出") },
+                title = { 
+                    Text(
+                        "日程导入导出",
+                        color = customColors.textPrimary
+                    ) 
+                },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回"
+                            contentDescription = "返回",
+                            tint = customColors.textPrimary
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = customColors.surface,
+                    titleContentColor = customColors.textPrimary
+                )
             )
         }
     ) { paddingValues ->
@@ -106,7 +118,7 @@ fun DataManagementScreen(
                 
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = Dimensions.Padding.large),
-                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                    color = customColors.outlineVariant
                 )
                 
                 // 导入

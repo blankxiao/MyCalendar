@@ -8,230 +8,337 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 /**
- * 业务语义化颜色系统
+ * 业务语义化颜色系统（Design Tokens - Semantic）
+ * 
+ * 设计理念：简约 · 精致 · 细节
+ * - 低饱和度的蓝灰色调为主
+ * - 柔和的强调色
+ * - 丰富的灰度层次
  */
 
 @Immutable
 data class CustomColors(
+    
+    // ==================== 通用基础颜色 ====================
+    
+    // 主色调 - 柔和的蓝灰色
+    val primary: Color,
+    val onPrimary: Color,
+    val primaryContainer: Color,
+    val onPrimaryContainer: Color,
+    
+    // 表面颜色
+    val surface: Color,
+    val onSurface: Color,
+    val surfaceVariant: Color,
+    val onSurfaceVariant: Color,
+    
+    // 背景颜色
+    val background: Color,
+    val onBackground: Color,
+    
+    // 边框和分隔线
+    val outline: Color,
+    val outlineVariant: Color,
+    
+    // 错误/危险状态
+    val error: Color,
+    val onError: Color,
+    val errorContainer: Color,
+    val onErrorContainer: Color,
+    
+    // 成功状态
+    val success: Color,
+    val onSuccess: Color,
+    
+    // 警告状态
+    val warning: Color,
+    val onWarning: Color,
+    
+    // 遮罩层
+    val scrim: Color,
+    
+    // 禁用状态
+    val disabled: Color,
+    val onDisabled: Color,
+    
+    // 表单输入框
+    val inputText: Color,
+    val inputLabel: Color,
+    val inputIcon: Color,
+    
+    // 按钮
+    val buttonPrimaryBackground: Color,
+    val buttonPrimaryText: Color,
+    val buttonSecondaryBackground: Color,
+    val buttonSecondaryText: Color,
+    
     // ==================== 日历相关颜色 ====================
     
-    // 选中状态
-    val calendarSelectedBackground: Color,      // 选中日期的背景色
-    val calendarSelectedText: Color,            // 选中日期的文字色
+    // 选中状态 - 使用点缀蓝
+    val calendarSelectedBackground: Color,
+    val calendarSelectedText: Color,
     
-    // 今天标记
-    val calendarTodayBackground: Color,         // 今天日期的背景色
-    val calendarTodayBorder: Color,             // 今天日期的边框色
-    val calendarTodayText: Color,               // 今天日期的文字色
+    // 今天标记 - 柔和的强调
+    val calendarTodayBackground: Color,
+    val calendarTodayBorder: Color,
+    val calendarTodayText: Color,
     
     // 普通日期
-    val calendarNormalText: Color,              // 普通日期的文字色
-    val calendarOtherMonthText: Color,          // 非当前月日期的文字色
-    val calendarWeekendText: Color,             // 周末日期的文字色
+    val calendarNormalText: Color,
+    val calendarOtherMonthText: Color,
+    val calendarWeekendText: Color,
     
     // 日历标题和导航
-    val calendarHeaderText: Color,              // 月份标题文字
-    val calendarWeekLabelText: Color,           // 星期标题文字
-    val calendarNavigationIcon: Color,          // 导航箭头颜色
+    val calendarHeaderText: Color,
+    val calendarWeekLabelText: Color,
+    val calendarNavigationIcon: Color,
     
     // 日历背景和分割线
-    val calendarBackground: Color,              // 日历整体背景
-    val calendarDivider: Color,                 // 分割线颜色
+    val calendarBackground: Color,
+    val calendarDivider: Color,
     
     // 日历待办指示点
-    val calendarScheduleDot: Color,                 // 待办事项指示点颜色
+    val calendarScheduleDot: Color,
     
-    // ==================== ScheduleRelate 相关颜色 ====================
+    // 日历拖动手柄
+    val calendarDragHandle: Color,
     
-    // ScheduleRelate 项状态
-    val scheduleUncompletedText: Color,             // 未完成任务的文字色
-    val scheduleCompletedText: Color,               // 已完成任务的文字色
-    val scheduleDateText: Color,                    // 任务日期文字色
+    // ==================== 日程相关颜色 ====================
     
-    // ScheduleRelate 复选框
-    val scheduleCheckboxChecked: Color,             // 复选框选中颜色
-    val scheduleCheckboxUnchecked: Color,           // 复选框未选中颜色
-    val scheduleCheckboxCheckmark: Color,           // 复选框未选中颜色
+    // 日程项状态
+    val scheduleUncompletedText: Color,
+    val scheduleCompletedText: Color,
+    val scheduleDateText: Color,
+    
+    // 日程复选框 - 使用点缀蓝
+    val scheduleCheckboxChecked: Color,
+    val scheduleCheckboxUnchecked: Color,
+    val scheduleCheckboxCheckmark: Color,
 
-    // ScheduleRelate 卡片
-    val scheduleCardBackground: Color,              // ScheduleRelate 卡片背景
-    val scheduleCardElevation: Color,               // ScheduleRelate 卡片阴影（可选）
+    // 日程卡片
+    val scheduleCardBackground: Color,
     
-    // ScheduleRelate 优先级
-    val scheduleUrgent: Color,                      // 紧急任务标记
-    val scheduleImportant: Color,                   // 重要任务标记
-    val scheduleNormal: Color,                      // 普通任务标记
+    // 日程优先级
+    val scheduleUrgent: Color,
+    val scheduleImportant: Color,
+    val scheduleNormal: Color,
 
-    // ScheduleList 整体
-    val scheduleListBackground: Color,              // ScheduleList 整体背景
-    val scheduleListTitleText: Color,               // ScheduleList 标题文字
-    val scheduleListEmptyText: Color,               // 空状态提示文字
-
-    // ==================== 通用 UI 颜色 ====================
+    // 日程列表
+    val scheduleListBackground: Color,
+    val scheduleListTitleText: Color,
+    val scheduleListEmptyText: Color,
     
-    // 按钮状态
-    val buttonPrimaryBackground: Color,         // 主要按钮背景
-    val buttonPrimaryText: Color,               // 主要按钮文字
-    val buttonSecondaryBackground: Color,       // 次要按钮背景
-    val buttonSecondaryText: Color,             // 次要按钮文字
+    // 滑动删除
+    val scheduleSwipeDeleteBackground: Color,
+    val scheduleSwipeDeleteIcon: Color,
     
-    // 底部导航/抽屉
-    val bottomSheetBackground: Color,           // 底部抽屉背景
-    val bottomSheetHandle: Color,               // 抽屉拖拽条颜色
+    // ==================== 文字层次 ====================
     
-    // 通用状态
-    val successColor: Color,                    // 成功状态
-    val warningColor: Color,                    // 警告状态
-    val errorColor: Color,                      // 错误状态
+    val textPrimary: Color,
+    val textSecondary: Color,
+    val textTertiary: Color,
+    val textDisabled: Color,
 )
 
-// ==================== 浅色主题自定义颜色 ====================
+// ==================== 浅色主题 - 简约精致风格 ====================
+
 val LightCustomColors = CustomColors(
-    // 日历 - 选中状态（最醒目：深色背景 + 白色文字）
-    calendarSelectedBackground = SkyBlue,           // 天蓝色背景
-    calendarSelectedText = FixedWhite,              // 白色文字（高对比度）
+    // 通用基础颜色
+    primary = Blue300,                          // 柔和蓝灰
+    onPrimary = White,
+    primaryContainer = Blue50,
+    onPrimaryContainer = Blue600,
     
-    // 日历 - 今天标记
-    // Schedule 显示问题
-    calendarTodayBackground = LightSkyBlue,         // 极浅蓝背景
-    calendarTodayBorder = SkyBlue,                  // 天蓝色边框（突出）
-    calendarTodayText = DeepSkyBlue,                // 深蓝色文字（高对比度）
+    surface = White,
+    onSurface = Slate700,
+    surfaceVariant = Slate50,
+    onSurfaceVariant = Slate500,
     
-    // 日历 - 普通日期（标准：透明背景 + 深色文字）
-    calendarNormalText = CharcoalGray,              // 炭灰色（清晰可读）
-    calendarOtherMonthText = SilverGray,            // 银灰色（明显弱化）
-    calendarWeekendText = MediumGray,               // 中灰色（周末）
+    background = Slate50,
+    onBackground = Slate700,
     
-    // 日历 - 标题和导航
-    calendarHeaderText = CharcoalGray,              // 炭灰色（标题）
-    calendarWeekLabelText = MediumGray,             // 中灰色（星期标签）
-    calendarNavigationIcon = SkyBlue,               // 天蓝色（导航箭头）
+    outline = Slate200,
+    outlineVariant = Slate150,
     
-    // 日历 - 背景和分割线
-    calendarBackground = PureWhite,                 // 纯白背景
-    calendarDivider = PaleBorderGray,               // 极浅灰分割线
+    error = Rose400,
+    onError = White,
+    errorContainer = Rose50,
+    onErrorContainer = Rose600,
     
-    // 日历 - 待办指示点（低调的灰色）
-    calendarScheduleDot = MediumGray,                   // 中灰色小点（低调）
+    success = Green300,
+    onSuccess = White,
     
-    // ScheduleRelate - 任务状态
-    scheduleUncompletedText = CharcoalGray,             // 炭灰色（醒目）
-    scheduleCompletedText = MediumGray,                 // 中灰色（弱化）
-    scheduleDateText = MediumGray,                      // 中灰色（日期）
+    warning = Amber300,
+    onWarning = Slate800,
     
-    // ScheduleRelate - 复选框
-    scheduleCheckboxChecked = SkyBlue,                  // 天蓝色（选中）
-    scheduleCheckboxUnchecked = LightBorderGray,        // 浅边框灰（未选中）
-    scheduleCheckboxCheckmark = FixedWhite,           // 白色
+    scrim = ScrimLight,
+    
+    disabled = Slate200,
+    onDisabled = Slate400,
+    
+    inputText = Slate700,
+    inputLabel = Slate500,
+    inputIcon = Slate400,
+    
+    buttonPrimaryBackground = AccentBlue,       // 点缀蓝按钮
+    buttonPrimaryText = White,
+    buttonSecondaryBackground = Slate100,
+    buttonSecondaryText = Slate600,
+    
+    // 日历颜色
+    calendarSelectedBackground = AccentBlue,    // 选中用点缀蓝
+    calendarSelectedText = White,
+    
+    calendarTodayBackground = AccentBlueLight,  // 今天用浅点缀蓝
+    calendarTodayBorder = AccentBlue,
+    calendarTodayText = AccentBlue,
+    
+    calendarNormalText = Slate700,
+    calendarOtherMonthText = Slate300,
+    calendarWeekendText = Slate400,
+    
+    calendarHeaderText = Slate700,
+    calendarWeekLabelText = Slate500,
+    calendarNavigationIcon = Slate500,
+    
+    calendarBackground = White,
+    calendarDivider = Slate150,
+    
+    calendarScheduleDot = AccentBlue,           // 待办点用点缀蓝
+    
+    calendarDragHandle = Slate300,
+    
+    // 日程颜色
+    scheduleUncompletedText = Slate700,
+    scheduleCompletedText = Slate400,
+    scheduleDateText = Slate500,
+    
+    scheduleCheckboxChecked = AccentBlue,
+    scheduleCheckboxUnchecked = Slate300,
+    scheduleCheckboxCheckmark = White,
 
-    // ScheduleRelate - 卡片
-    scheduleCardBackground = PureWhite,                 // 纯白背景
-    scheduleCardElevation = SilverGray,                 // 银灰色（轻阴影）
+    scheduleCardBackground = White,
     
-    // ScheduleRelate - 优先级
-    scheduleUrgent = SoftRed,                           // 柔和红（紧急）
-    scheduleImportant = WarmOrange,                     // 暖橙色（重要）
-    scheduleNormal = MintGreen,                         // 薄荷绿（普通）
+    scheduleUrgent = Rose400,
+    scheduleImportant = Amber300,
+    scheduleNormal = Green300,
     
-    // ScheduleList - 整体
-    scheduleListBackground = SoftBackground,            // 柔和浅灰背景（区别于卡片的纯白）
-    scheduleListTitleText = CharcoalGray,               // 炭灰色（标题）
-    scheduleListEmptyText = MediumGray,                 // 中灰色（空状态提示）
+    scheduleListBackground = Slate50,
+    scheduleListTitleText = Slate700,
+    scheduleListEmptyText = Slate400,
     
-    // 通用 - 按钮
-    buttonPrimaryBackground = SkyBlue,              // 天蓝色（主按钮）
-    buttonPrimaryText = FixedWhite,                 // 白色文字
-    buttonSecondaryBackground = WhisperGray,        // 轻灰色（次按钮）
-    buttonSecondaryText = MediumGray,               // 中灰色文字
+    scheduleSwipeDeleteBackground = Rose400,
+    scheduleSwipeDeleteIcon = White,
     
-    // 通用 - 底部抽屉
-    bottomSheetBackground = PureWhite,              // 纯白背景
-    bottomSheetHandle = SilverGray,                 // 银灰色（拖拽条）
-    
-    // 通用 - 状态颜色
-    successColor = MintGreen,                       // 薄荷绿（成功）
-    warningColor = WarmOrange,                      // 暖橙色（警告）
-    errorColor = SoftRed,                           // 柔和红（错误）
+    // 文字层次
+    textPrimary = Slate700,
+    textSecondary = Slate500,
+    textTertiary = Slate400,
+    textDisabled = Slate300,
 )
 
-// ==================== 深色主题配色方案 ====================
-val DarkCustomColors = CustomColors(
-    // 日历 - 选中状态（最醒目：亮色背景 + 深色文字）
-    calendarSelectedBackground = BrightBlue,        // 明亮蓝背景
-    calendarSelectedText = DeepCharcoal,            // 深炭色文字（高对比度）
-    
-    // 日历 - 今天标记（次醒目：深色背景 + 亮色文字 + 边框）
-    calendarTodayBackground = DarkBlue,             // 深蓝背景
-    calendarTodayBorder = BrightBlue,               // 明亮蓝边框（突出）
-    calendarTodayText = LightGray,                  // 浅灰文字（高对比度）
-    
-    // 日历 - 普通日期（标准：透明背景 + 浅色文字）
-    calendarNormalText = LightGray,                 // 浅灰色（清晰可读）
-    calendarOtherMonthText = DimGray,               // 暗灰色（明显弱化）
-    calendarWeekendText = NeutralGray,              // 中性灰（周末）
-    
-    // 日历 - 标题和导航
-    calendarHeaderText = LightGray,                 // 浅灰色（标题）
-    calendarWeekLabelText = NeutralGray,            // 中性灰（星期标签）
-    calendarNavigationIcon = BrightBlue,            // 明亮蓝（导航箭头）
-    
-    // 日历 - 背景和分割线
-    calendarBackground = DarkCharcoal,              // 深灰背景
-    calendarDivider = DeepBorderGray,               // 深边框灰分割线
-    
-    // 日历 - 待办指示点（柔和的灰色）
-    calendarScheduleDot = NeutralGray,                  // 中性灰小点（柔和）
-    
-    // ScheduleRelate - 任务状态
-    scheduleUncompletedText = LightGray,                // 浅灰色（醒目）
-    scheduleCompletedText = NeutralGray,                // 中性灰（弱化）
-    scheduleDateText = NeutralGray,                     // 中性灰（日期）
-    
-    // ScheduleRelate - 复选框
-    scheduleCheckboxChecked = BrightBlue,               // 明亮蓝（选中）
-    scheduleCheckboxUnchecked = DarkBorderGray,         // 深边框灰（未选中）
-    scheduleCheckboxCheckmark = FixedBlack,           // 白色
+// ==================== 深色主题 - 简约精致风格 ====================
 
-    // ScheduleRelate - 卡片
-    scheduleCardBackground = DarkCharcoal,              // 深灰背景
-    scheduleCardElevation = DeepCharcoal,               // 深炭色（中等阴影）
+val DarkCustomColors = CustomColors(
+    // 通用基础颜色
+    primary = Blue200,
+    onPrimary = Blue700,
+    primaryContainer = Blue600,
+    onPrimaryContainer = Blue100,
     
-    // ScheduleRelate - 优先级
-    scheduleUrgent = SoftRed,                           // 柔和红（紧急）
-    scheduleImportant = BrightOrange,                   // 明亮橙（重要）
-    scheduleNormal = LimeGreen,                         // 柠檬绿（普通）
+    surface = Dark200,
+    onSurface = Dark800,
+    surfaceVariant = Dark300,
+    onSurfaceVariant = Dark700,
     
-    // ScheduleList - 整体
-    scheduleListBackground = SlateGray,                 // 石板灰背景（区别于卡片的深灰）
-    scheduleListTitleText = LightGray,                  // 浅灰色（标题）
-    scheduleListEmptyText = NeutralGray,                // 中性灰（空状态提示）
+    background = Dark100,
+    onBackground = Dark800,
     
-    // 通用 - 按钮
-    buttonPrimaryBackground = BrightBlue,           // 明亮蓝（主按钮）
-    buttonPrimaryText = DeepCharcoal,               // 深炭色文字
-    buttonSecondaryBackground = SlateGray,          // 石板灰（次按钮）
-    buttonSecondaryText = NeutralGray,              // 中性灰文字
+    outline = Dark500,
+    outlineVariant = Dark400,
     
-    // 通用 - 底部抽屉
-    bottomSheetBackground = DarkCharcoal,           // 深灰背景
-    bottomSheetHandle = DimGray,                    // 暗灰色（拖拽条）
+    error = Rose300,
+    onError = Rose700,
+    errorContainer = Rose700,
+    onErrorContainer = Rose100,
     
-    // 通用 - 状态颜色
-    successColor = LimeGreen,                       // 柠檬绿（成功）
-    warningColor = BrightOrange,                    // 明亮橙（警告）
-    errorColor = SoftRed,                           // 柔和红（错误）
+    success = Green300,
+    onSuccess = Green700,
+    
+    warning = Amber300,
+    onWarning = Amber700,
+    
+    scrim = ScrimDark,
+    
+    disabled = Dark500,
+    onDisabled = Dark600,
+    
+    inputText = Dark800,
+    inputLabel = Dark700,
+    inputIcon = Dark600,
+    
+    buttonPrimaryBackground = AccentBlue,
+    buttonPrimaryText = White,
+    buttonSecondaryBackground = Dark400,
+    buttonSecondaryText = Dark800,
+    
+    // 日历颜色
+    calendarSelectedBackground = AccentBlue,
+    calendarSelectedText = White,
+    
+    calendarTodayBackground = Blue600,
+    calendarTodayBorder = AccentBlue,
+    calendarTodayText = AccentBlue,
+    
+    calendarNormalText = Dark800,
+    calendarOtherMonthText = Dark600,
+    calendarWeekendText = Dark700,
+    
+    calendarHeaderText = Dark800,
+    calendarWeekLabelText = Dark700,
+    calendarNavigationIcon = Dark700,
+    
+    calendarBackground = Dark200,
+    calendarDivider = Dark400,
+    
+    calendarScheduleDot = AccentBlue,
+    
+    calendarDragHandle = Dark600,
+    
+    // 日程颜色
+    scheduleUncompletedText = Dark800,
+    scheduleCompletedText = Dark600,
+    scheduleDateText = Dark700,
+    
+    scheduleCheckboxChecked = AccentBlue,
+    scheduleCheckboxUnchecked = Dark500,
+    scheduleCheckboxCheckmark = White,
+
+    scheduleCardBackground = Dark300,
+    
+    scheduleUrgent = Rose300,
+    scheduleImportant = Amber300,
+    scheduleNormal = Green300,
+    
+    scheduleListBackground = Dark200,
+    scheduleListTitleText = Dark800,
+    scheduleListEmptyText = Dark600,
+    
+    scheduleSwipeDeleteBackground = Rose400,
+    scheduleSwipeDeleteIcon = White,
+    
+    // 文字层次
+    textPrimary = Dark800,
+    textSecondary = Dark700,
+    textTertiary = Dark600,
+    textDisabled = Dark500,
 )
 
 // ==================== CompositionLocal ====================
 
-/**
- * 提供自定义颜色的 CompositionLocal
- */
 val LocalCustomColors = staticCompositionLocalOf { LightCustomColors }
 
-/**
- * MaterialTheme 扩展属性，便捷访问自定义颜色
- */
 val MaterialTheme.customColors: CustomColors
     @Composable
     @ReadOnlyComposable

@@ -41,7 +41,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cn.szu.blankxiao.mycalendar.data.schedule.ScheduleItemData
 import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
@@ -143,8 +142,10 @@ fun ScheduleItem(
 private fun SwipeBackground(
 	swipeDirection: SwipeToDismissBoxValue
 ) {
-	val color = when (swipeDirection) {
-		SwipeToDismissBoxValue.EndToStart -> Color(0xFFF44336) // 红色
+	val customColors = MaterialTheme.customColors
+	
+	val backgroundColor = when (swipeDirection) {
+		SwipeToDismissBoxValue.EndToStart -> customColors.scheduleSwipeDeleteBackground
 		else -> Color.Transparent
 	}
 	
@@ -156,16 +157,16 @@ private fun SwipeBackground(
 	Box(
 		modifier = Modifier
 			.fillMaxSize()
-			.background(color, RoundedCornerShape(Dimensions.CornerRadius.medium))
-			.padding(horizontal = 24.dp),
+			.background(backgroundColor, RoundedCornerShape(Dimensions.CornerRadius.medium))
+			.padding(horizontal = Dimensions.Padding.extraLarge),
 		contentAlignment = Alignment.CenterEnd
 	) {
 		icon?.let {
 			Icon(
 				imageVector = it,
 				contentDescription = "删除",
-				tint = Color.White,
-				modifier = Modifier.padding(16.dp)
+				tint = customColors.scheduleSwipeDeleteIcon,
+				modifier = Modifier.padding(Dimensions.Padding.standard)
 			)
 		}
 	}
@@ -208,7 +209,7 @@ private fun ScheduleItemContent(
 		Row(
 			modifier = Modifier
 				.fillMaxWidth()
-				.padding(12.dp),
+				.padding(Dimensions.Padding.medium),
 			horizontalArrangement = Arrangement.Start,
 			verticalAlignment = Alignment.CenterVertically
 		) {
@@ -261,7 +262,7 @@ private fun ScheduleItemContent(
 			if (itemData.reminderEnabled && onReminderTest != null) {
 				androidx.compose.material3.IconButton(
 					onClick = onReminderTest,
-					modifier = Modifier.padding(start = 8.dp)
+					modifier = Modifier.padding(start = Dimensions.Padding.small)
 				) {
 					Icon(
 						imageVector = Icons.Default.Notifications,

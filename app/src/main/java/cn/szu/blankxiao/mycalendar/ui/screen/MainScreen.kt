@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,7 +34,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import cn.szu.blankxiao.mycalendar.data.calendar.CalendarMode
 import cn.szu.blankxiao.mycalendar.data.calendar.DayPosition
 import cn.szu.blankxiao.mycalendar.data.calendar.rememberCustomCalendarState
@@ -139,7 +139,7 @@ fun MainScreen(
 				horizontalArrangement = Arrangement.SpaceBetween
 			) {
 				// 左侧占位（保持标题居中）
-				Box(modifier = Modifier.width(48.dp))
+				Box(modifier = Modifier.width(Dimensions.Spacing.huge))
 				
 				// 中间的标题
 				Column(
@@ -174,10 +174,16 @@ fun MainScreen(
 					// 下拉菜单
 					DropdownMenu(
 						expanded = showMenu,
-						onDismissRequest = { showMenu = false }
+						onDismissRequest = { showMenu = false },
+						containerColor = customColors.surface
 					) {
 						DropdownMenuItem(
-							text = { Text("设置") },
+							text = { 
+								Text(
+									"设置",
+									color = customColors.textPrimary
+								) 
+							},
 							onClick = {
 								showMenu = false
 								onNavigateToSettings()
@@ -185,9 +191,14 @@ fun MainScreen(
 							leadingIcon = {
 								Icon(
 									imageVector = Icons.Default.Settings,
-									contentDescription = null
+									contentDescription = null,
+									tint = customColors.textPrimary
 								)
-							}
+							},
+							colors = MenuDefaults.itemColors(
+								textColor = customColors.textPrimary,
+								leadingIconColor = customColors.textPrimary
+							)
 						)
 					}
 				}
@@ -252,7 +263,9 @@ fun MainScreen(
 			onClick = { showAddDialog = true },
 			modifier = Modifier
 				.align(Alignment.BottomEnd)
-				.padding(Dimensions.Padding.large)
+				.padding(Dimensions.Padding.large),
+			containerColor = customColors.buttonPrimaryBackground,
+			contentColor = customColors.buttonPrimaryText
 		) {
 			Icon(
 				imageVector = Icons.Default.Add,

@@ -49,6 +49,7 @@ import cn.szu.blankxiao.mycalendar.ui.calendar.common.DayCell
 import cn.szu.blankxiao.mycalendar.ui.calendar.common.DaysOfWeekTitle
 import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
 import cn.szu.blankxiao.mycalendar.ui.theme.MyCalendarTheme
+import cn.szu.blankxiao.mycalendar.ui.theme.customColors
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -250,6 +251,7 @@ fun DragHandle(
 		contentAlignment = Alignment.Center
 	) {
 		// 拖动手柄
+		val customColors = MaterialTheme.customColors
 		Column(
 			horizontalAlignment = Alignment.CenterHorizontally,
 			modifier = Modifier.padding(vertical = Dimensions.Padding.small)
@@ -259,7 +261,7 @@ fun DragHandle(
 					.fillMaxWidth(0.15f)
 					.height(Dimensions.Size.tiny)
 					.clip(RoundedCornerShape(Dimensions.CornerRadius.small))
-					.background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f))
+					.background(customColors.calendarDragHandle)
 			)
 		}
 	}

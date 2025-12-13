@@ -12,8 +12,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -80,7 +83,10 @@ fun ExportDialog(
             shape = RoundedCornerShape(Dimensions.CornerRadius.large),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(Dimensions.Padding.medium)
+                .padding(Dimensions.Padding.medium),
+            colors = CardDefaults.cardColors(
+                containerColor = customColors.surface
+            )
         ) {
             Column(
                 modifier = Modifier
@@ -117,7 +123,11 @@ fun ExportDialog(
                         onClick = {
                             useCustomPath = false
                             selectedUri = null
-                        }
+                        },
+                        colors = RadioButtonDefaults.colors(
+                            selectedColor = customColors.buttonPrimaryBackground,
+                            unselectedColor = customColors.outline
+                        )
                     )
                     Column(
                         modifier = Modifier
@@ -151,7 +161,11 @@ fun ExportDialog(
                         selected = useCustomPath && selectedUri != null,
                         onClick = {
                             createDocumentLauncher.launch(defaultFileName)
-                        }
+                        },
+                        colors = RadioButtonDefaults.colors(
+                            selectedColor = customColors.buttonPrimaryBackground,
+                            unselectedColor = customColors.outline
+                        )
                     )
                     Column(
                         modifier = Modifier
@@ -185,7 +199,12 @@ fun ExportDialog(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    TextButton(onClick = onDismiss) {
+                    TextButton(
+                        onClick = onDismiss,
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = customColors.textSecondary
+                        )
+                    ) {
                         Text("取消")
                     }
                     Button(
@@ -196,7 +215,11 @@ fun ExportDialog(
                                 ExportLocation.DefaultPath(downloadsDir)
                             }
                             onConfirm(location)
-                        }
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = customColors.buttonPrimaryBackground,
+                            contentColor = customColors.buttonPrimaryText
+                        )
                     ) {
                         Text("导出")
                     }

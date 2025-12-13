@@ -25,7 +25,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cn.szu.blankxiao.mycalendar.data.schedule.ScheduleItemData
 import cn.szu.blankxiao.mycalendar.data.schedule.exampleScheduleItemList
@@ -100,8 +99,8 @@ fun DayCell(
 				.clip(CircleShape)
 				.background(backgroundColor)
 				.border(
-					width = if (isToday && !isSelected) 1.dp else 0.dp,
-					color = customColors.calendarDivider,
+					width = if (isToday && !isSelected) Dimensions.Divider.thickness else Dimensions.Size.extraTiny,
+					color = if (isToday && !isSelected) customColors.calendarTodayBorder else Color.Transparent,
 					shape = CircleShape
 				)
 				.clickable(onClick = onClick),
@@ -193,7 +192,7 @@ private fun simpleScheduleItem(
 			else
 				textColor.copy(alpha = 0.7f),
 			maxLines = 1,
-			modifier = Modifier.padding(start = 2.dp)
+			modifier = Modifier.padding(start = Dimensions.Spacing.tiny)
 		)
 	}
 }

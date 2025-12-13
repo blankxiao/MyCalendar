@@ -17,6 +17,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -26,6 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -55,21 +57,35 @@ fun SettingsScreen(
     val context = LocalContext.current
     var showClearDataDialog by remember { mutableStateOf(false) }
     
+    val customColors = MaterialTheme.customColors
+    
     Scaffold(
+        containerColor = customColors.background,
         topBar = {
             TopAppBar(
-                title = { Text("设置") },
+                title = { 
+                    Text(
+                        "设置",
+                        color = customColors.textPrimary
+                    ) 
+                },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回"
+                            contentDescription = "返回",
+                            tint = customColors.textPrimary
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = customColors.surface,
+                    titleContentColor = customColors.textPrimary
+                )
             )
         }
     ) { paddingValues ->
+        
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -88,7 +104,7 @@ fun SettingsScreen(
                 
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = Dimensions.Padding.large),
-                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                    color = customColors.outlineVariant
                 )
                 
                 // 清空所有日程
@@ -103,7 +119,7 @@ fun SettingsScreen(
             // 分隔线
             HorizontalDivider(
                 modifier = Modifier.padding(horizontal = Dimensions.Padding.large),
-                color = MaterialTheme.colorScheme.outlineVariant
+                color = customColors.outline
             )
             
             // 关于设置组
@@ -145,7 +161,10 @@ private fun ClearDataConfirmDialog(
             shape = RoundedCornerShape(Dimensions.CornerRadius.large),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(Dimensions.Padding.medium)
+                .padding(Dimensions.Padding.medium),
+            colors = CardDefaults.cardColors(
+                containerColor = customColors.surface
+            )
         ) {
             Column(
                 modifier = Modifier
@@ -156,26 +175,32 @@ private fun ClearDataConfirmDialog(
                 Text(
                     text = "清空所有日程",
                     style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.error
+                    color = customColors.error
                 )
                 
                 Text(
                     text = "确定要删除所有日程数据吗？\n\n此操作不可恢复，建议先导出备份。",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = customColors.calendarNormalText
+                    color = customColors.textPrimary
                 )
                 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    TextButton(onClick = onDismiss) {
+                    TextButton(
+                        onClick = onDismiss,
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = customColors.textSecondary
+                        )
+                    ) {
                         Text("取消")
                     }
                     Button(
                         onClick = onConfirm,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.error
+                            containerColor = customColors.error,
+                            contentColor = customColors.onError
                         )
                     ) {
                         Text("确认清空")
@@ -254,14 +279,14 @@ private fun SettingsItem(
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodyLarge,
-                color = if (isDangerous) MaterialTheme.colorScheme.error else customColors.calendarNormalText
+                color = if (isDangerous) customColors.error else customColors.textPrimary
             )
             
             if (subtitle != null) {
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.bodySmall,
-                    color = if (isDangerous) MaterialTheme.colorScheme.error.copy(alpha = 0.7f) else customColors.scheduleDateText
+                    color = if (isDangerous) customColors.error else customColors.textSecondary
                 )
             }
         }

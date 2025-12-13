@@ -24,7 +24,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import cn.szu.blankxiao.mycalendar.data.schedule.ScheduleItemData
 import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
 import cn.szu.blankxiao.mycalendar.ui.theme.MyCalendarTheme
@@ -101,7 +100,7 @@ fun ScheduleList(
 
 		HorizontalDivider(
 			color = customColors.calendarDivider,
-			thickness = 1.dp
+			thickness = Dimensions.Divider.thickness
 		)
 
 		// 内容区域
@@ -165,7 +164,7 @@ private fun EmptyScheduleState(modifier: Modifier = Modifier) {
 	Box(
 		modifier = modifier
 			.fillMaxWidth()
-			.padding(vertical = 48.dp),
+			.padding(vertical = Dimensions.Spacing.huge),
 		contentAlignment = Alignment.Center
 	) {
 		Column(
@@ -176,7 +175,7 @@ private fun EmptyScheduleState(modifier: Modifier = Modifier) {
 				imageVector = Icons.Default.CheckCircle,
 				contentDescription = "无日程安排",
 				tint = customColors.scheduleListEmptyText,
-				modifier = Modifier.size(64.dp)
+				modifier = Modifier.size(Dimensions.IconSize.huge)
 			)
 
 			Text(
