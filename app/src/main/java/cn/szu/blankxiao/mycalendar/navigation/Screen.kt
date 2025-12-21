@@ -27,5 +27,14 @@ sealed class Screen(val route: String) {
     data object DayView : Screen("day_view/{date}") {
         fun createRoute(date: String) = "day_view/$date"
     }
+    
+    /**
+     * 登录页面
+     */
+    data object Login : Screen("login")
+    
+    /**
+     * 注册页面
+     */
+    data object Register : Screen("register")
 }
-

@@ -263,9 +263,9 @@ private fun ScheduleItemContent(
 				}
 				
 				// 描述（如有）
-				if (itemData.desc.isNotBlank()) {
+				if (itemData.description.isNotBlank()) {
 					Text(
-						text = itemData.desc,
+						text = itemData.description,
 						style = Typography.bodySmall,
 						color = customColors.textSecondary,
 						maxLines = 1
@@ -297,7 +297,7 @@ fun PreviewScheduleItem() {
 				itemData = ScheduleItemData(
 					title = "团队会议",
 					date = LocalDate.now(),
-					desc = "讨论项目进度和下周计划",
+					description = "讨论项目进度和下周计划",
 					isChecked = false
 				),
 				onChecked = {},
@@ -308,7 +308,7 @@ fun PreviewScheduleItem() {
 				itemData = ScheduleItemData(
 					title = "完成设计稿",
 					date = LocalDate.now(),
-					desc = "UI设计和交互稿",
+					description = "UI设计和交互稿",
 					isChecked = true
 				),
 				onChecked = {},

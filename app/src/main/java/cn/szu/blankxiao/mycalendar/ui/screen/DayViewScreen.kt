@@ -226,7 +226,7 @@ fun DayViewScreen(
                 val updatedSchedule = editingSchedule!!.copy(
                     title = title,
                     date = scheduleDate,
-                    desc = description,
+                    description = description,
                     reminderEnabled = reminderEnabled,
                     reminderTime = reminderDateTime
                 )
@@ -522,9 +522,9 @@ private fun ScheduleCard(
                         TextDecoration.None
                 )
                 
-                if (schedule.desc.isNotBlank()) {
+                if (schedule.description.isNotBlank()) {
                     Text(
-                        text = schedule.desc,
+                        text = schedule.description,
                         style = MaterialTheme.typography.bodySmall,
                         color = customColors.textSecondary,
                         maxLines = 2

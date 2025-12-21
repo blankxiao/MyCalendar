@@ -5,15 +5,19 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Cloud
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -31,6 +35,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,13 +46,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import cn.szu.blankxiao.mycalendar.auth.UserInfo
 import cn.szu.blankxiao.mycalendar.data.settings.ThemeMode
 import cn.szu.blankxiao.mycalendar.data.settings.ThemeSettingsManager
 import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
 import cn.szu.blankxiao.mycalendar.ui.theme.customColors
+import cn.szu.blankxiao.mycalendar.viewmodel.AuthUiState
+import cn.szu.blankxiao.mycalendar.viewmodel.AuthViewModel
 import cn.szu.blankxiao.mycalendar.viewmodel.ScheduleViewModel
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 /**
  * @author BlankXiao
@@ -60,16 +70,32 @@ fun SettingsScreen(
     viewModel: ScheduleViewModel,
     themeSettingsManager: ThemeSettingsManager,
     onNavigateBack: () -> Unit,
-    onNavigateToDataManagement: () -> Unit
+    onNavigateToDataManagement: () -> Unit,
+    onNavigateToLogin: () -> Unit,
+    authViewModel: AuthViewModel = koinViewModel()
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var showClearDataDialog by remember { mutableStateOf(false) }
     var showThemeDialog by remember { mutableStateOf(false) }
+    var showLogoutDialog by remember { mutableStateOf(false) }
     
     val currentThemeMode by themeSettingsManager.themeMode.collectAsState(initial = ThemeMode.SYSTEM)
     
+    // 登录状态
+    val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
+    val userInfo by authViewModel.userInfo.collectAsState()
+    val authUiState by authViewModel.uiState.collectAsState()
+    
     val customColors = MaterialTheme.customColors
+    
+    // 处理注销成功
+    LaunchedEffect(authUiState) {
+        if (authUiState is AuthUiState.LoggedOut) {
+            Toast.makeText(context, "已退出登录", Toast.LENGTH_SHORT).show()
+            authViewModel.resetState()
+        }
+    }
     
     Scaffold(
         containerColor = customColors.background,
@@ -104,6 +130,31 @@ fun SettingsScreen(
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
         ) {
+            // 云同步账号组
+            SettingsGroup(title = "云同步") {
+                if (isLoggedIn && userInfo != null) {
+                    // 已登录状态
+                    AccountInfoItem(
+                        userInfo = userInfo!!,
+                        onLogoutClick = { showLogoutDialog = true }
+                    )
+                } else {
+                    // 未登录状态
+                    SettingsItem(
+                        title = "登录/注册",
+                        subtitle = "登录后可将日程同步到云端",
+                        showArrow = true,
+                        onClick = onNavigateToLogin
+                    )
+                }
+            }
+            
+            // 分隔线
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = Dimensions.Padding.large),
+                color = customColors.outline
+            )
+            
             // 外观设置组
             SettingsGroup(title = "外观") {
                 SettingsItem(
@@ -190,6 +241,151 @@ fun SettingsScreen(
                 showThemeDialog = false
             }
         )
+    }
+    
+    // 退出登录确认对话框
+    if (showLogoutDialog) {
+        LogoutConfirmDialog(
+            onDismiss = { showLogoutDialog = false },
+            onConfirm = {
+                showLogoutDialog = false
+                authViewModel.logout()
+            }
+        )
+    }
+}
+
+/**
+ * 账号信息项
+ */
+@Composable
+private fun AccountInfoItem(
+    userInfo: UserInfo,
+    onLogoutClick: () -> Unit
+) {
+    val customColors = MaterialTheme.customColors
+    
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                horizontal = Dimensions.Padding.large,
+                vertical = Dimensions.Padding.medium
+            ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // 用户头像
+        Icon(
+            imageVector = Icons.Default.Person,
+            contentDescription = null,
+            modifier = Modifier.size(48.dp),
+            tint = customColors.buttonPrimaryBackground
+        )
+        
+        // 用户信息
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = Dimensions.Padding.medium)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = userInfo.username,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium,
+                    color = customColors.textPrimary
+                )
+                Spacer(modifier = Modifier.size(8.dp))
+                Icon(
+                    imageVector = Icons.Default.Cloud,
+                    contentDescription = "已同步",
+                    modifier = Modifier.size(16.dp),
+                    tint = customColors.success
+                )
+            }
+            Text(
+                text = userInfo.email,
+                style = MaterialTheme.typography.bodySmall,
+                color = customColors.textSecondary
+            )
+        }
+        
+        // 退出按钮
+        TextButton(
+            onClick = onLogoutClick,
+            colors = ButtonDefaults.textButtonColors(
+                contentColor = customColors.error
+            )
+        ) {
+            Text("退出")
+        }
+    }
+}
+
+/**
+ * 退出登录确认对话框
+ */
+@Composable
+private fun LogoutConfirmDialog(
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    val customColors = MaterialTheme.customColors
+    
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            shape = RoundedCornerShape(Dimensions.CornerRadius.large),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(Dimensions.Padding.medium),
+            colors = CardDefaults.cardColors(
+                containerColor = customColors.surface
+            )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(Dimensions.Padding.large),
+                verticalArrangement = Arrangement.spacedBy(Dimensions.Spacing.medium)
+            ) {
+                Text(
+                    text = "退出登录",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = customColors.textPrimary
+                )
+                
+                Text(
+                    text = "退出后将使用本地存储，云端数据不会丢失。",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = customColors.textPrimary
+                )
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(
+                        onClick = onDismiss,
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = customColors.textSecondary
+                        )
+                    ) {
+                        Text("取消")
+                    }
+                    Button(
+                        onClick = onConfirm,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = customColors.error,
+                            contentColor = customColors.onError
+                        )
+                    ) {
+                        Text("确认退出")
+                    }
+                }
+            }
+        }
     }
 }
 

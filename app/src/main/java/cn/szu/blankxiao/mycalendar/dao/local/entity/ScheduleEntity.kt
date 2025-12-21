@@ -67,10 +67,12 @@ data class ScheduleEntity(
             id = id,
             title = title,
             date = localDate,
-            desc = description,
+            description = description,
             isChecked = isChecked,
             reminderEnabled = reminderEnabled,
-            reminderTime = reminderDateTime
+            reminderTime = reminderDateTime,
+            createdAt = createdAt,
+            updatedAt = updatedAt
         )
     }
     
@@ -95,10 +97,12 @@ data class ScheduleEntity(
                 id = data.id,
                 title = data.title,
                 date = timestamp,
-                description = data.desc,
+                description = data.description,
                 isChecked = data.isChecked,
                 reminderEnabled = data.reminderEnabled,
-                reminderTime = reminderTimestamp
+                reminderTime = reminderTimestamp,
+                createdAt = data.createdAt,
+                updatedAt = data.updatedAt
             )
         }
     }

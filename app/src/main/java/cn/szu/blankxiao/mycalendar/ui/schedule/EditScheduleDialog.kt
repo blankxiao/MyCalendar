@@ -62,7 +62,7 @@ fun EditScheduleDialog(
     onDelete: (() -> Unit)? = null
 ) {
     var title by remember { mutableStateOf(scheduleData.title) }
-    var description by remember { mutableStateOf(scheduleData.desc) }
+    var description by remember { mutableStateOf(scheduleData.description) }
     var currentDate by remember { mutableStateOf(scheduleData.date) }
     var showDatePicker by remember { mutableStateOf(false) }
     

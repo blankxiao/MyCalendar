@@ -13,6 +13,8 @@ import cn.szu.blankxiao.mycalendar.ui.screen.DataManagementScreen
 import cn.szu.blankxiao.mycalendar.ui.screen.DayViewScreen
 import cn.szu.blankxiao.mycalendar.ui.screen.MainScreen
 import cn.szu.blankxiao.mycalendar.ui.screen.SettingsScreen
+import cn.szu.blankxiao.mycalendar.ui.screen.auth.LoginScreen
+import cn.szu.blankxiao.mycalendar.ui.screen.auth.RegisterScreen
 import java.time.LocalDate
 import cn.szu.blankxiao.mycalendar.viewmodel.ScheduleViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -58,6 +60,41 @@ fun AppNavHost(
                 },
                 onNavigateToDataManagement = {
                     navController.navigate(Screen.DataManagement.route)
+                },
+                onNavigateToLogin = {
+                    navController.navigate(Screen.Login.route)
+                }
+            )
+        }
+        
+        // 登录页面
+        composable(Screen.Login.route) {
+            LoginScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToRegister = {
+                    navController.navigate(Screen.Register.route)
+                },
+                onLoginSuccess = {
+                    // 登录成功后返回设置页面
+                    navController.popBackStack()
+                }
+            )
+        }
+        
+        // 注册页面
+        composable(Screen.Register.route) {
+            RegisterScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToLogin = {
+                    navController.popBackStack()
+                },
+                onRegisterSuccess = {
+                    // 注册成功后返回设置页面
+                    navController.popBackStack(Screen.Settings.route, inclusive = false)
                 }
             )
         }

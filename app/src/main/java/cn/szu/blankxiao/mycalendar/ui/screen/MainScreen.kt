@@ -269,7 +269,7 @@ fun MainScreen(
 				val scheduleData = ScheduleItemData(
 					title = title,
 					date = date,
-					desc = description,
+					description = description,
 					isChecked = false,
 					reminderEnabled = reminderEnabled,
 					reminderTime = reminderDateTime
@@ -304,7 +304,7 @@ fun MainScreen(
 					id = id,
 					title = title,
 					date = date,
-					desc = description,
+					description = description,
 					reminderEnabled = reminderEnabled,
 					reminderTime = reminderDateTime
 				)

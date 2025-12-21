@@ -51,7 +51,7 @@ object ReminderManager {
         val intent = Intent(context, ReminderReceiver::class.java).apply {
             putExtra("scheduleId", schedule.id)
             putExtra("scheduleTitle", schedule.title)
-            putExtra("scheduleDesc", schedule.desc)
+            putExtra("scheduleDesc", schedule.description)
         }
         
         val pendingIntent = PendingIntent.getBroadcast(
@@ -96,7 +96,7 @@ object ReminderManager {
             context = context,
             scheduleId = schedule.id,
             title = schedule.title,
-            description = schedule.desc
+            description = schedule.description
         )
     }
 

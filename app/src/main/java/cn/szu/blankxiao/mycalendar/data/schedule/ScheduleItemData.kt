@@ -4,11 +4,11 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 val eatExample: ScheduleItemData =
-	ScheduleItemData(title = "吃饭", date = LocalDate.of(2025, 11, 22), desc = "按时吃饭有利于健康")
+	ScheduleItemData(title = "吃饭", date = LocalDate.of(2025, 11, 22), description = "按时吃饭有利于健康")
 val runExample: ScheduleItemData =
-	ScheduleItemData(title = "跑步", date = LocalDate.of(2025, 11, 22), desc = "及时运动")
+	ScheduleItemData(title = "跑步", date = LocalDate.of(2025, 11, 22), description = "及时运动")
 val gameExample: ScheduleItemData =
-	ScheduleItemData(title = "游戏", date = LocalDate.of(2025, 11, 22), desc = "爽玩")
+	ScheduleItemData(title = "游戏", date = LocalDate.of(2025, 11, 22), description = "爽玩")
 
 val exampleScheduleItemList = listOf(eatExample, runExample, gameExample)
 
@@ -21,9 +21,11 @@ val exampleScheduleItemList = listOf(eatExample, runExample, gameExample)
 data class ScheduleItemData(
 	val title: String,
 	val date: LocalDate,
-	val desc: String,
+	val description: String,
     var isChecked: Boolean = false,
     val id: Long = 0,  // 数据库ID，0表示新建
     val reminderEnabled: Boolean = false,  // 是否启用提醒
-    val reminderTime: LocalDateTime? = null  // 提醒的完整日期时间
+    val reminderTime: LocalDateTime? = null,  // 提醒的完整日期时间
+    val createdAt: Long = System.currentTimeMillis(),  // 创建时间戳
+    val updatedAt: Long = System.currentTimeMillis()   // 更新时间戳
 )

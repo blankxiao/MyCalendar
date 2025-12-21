@@ -120,7 +120,7 @@ class ScheduleViewModel(
                 val scheduleData = ScheduleItemData(
                     title = title,
                     date = date,
-                    desc = description,
+                    description = description,
                     isChecked = false
                 )
                 repository.addSchedule(scheduleData)

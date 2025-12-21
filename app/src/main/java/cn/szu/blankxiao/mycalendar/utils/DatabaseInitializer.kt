@@ -56,37 +56,37 @@ object DatabaseInitializer {
             ScheduleItemData(
                 title = "团队周会",
                 date = today,
-                desc = "讨论本周工作进度和下周计划",
+                description = "讨论本周工作进度和下周计划",
                 isChecked = false
             ),
             ScheduleItemData(
                 title = "项目评审",
                 date = today,
-                desc = "产品需求评审会议",
+                description = "产品需求评审会议",
                 isChecked = false
             ),
             ScheduleItemData(
                 title = "健身运动",
                 date = today,
-                desc = "晚上7点健身房锻炼",
+                description = "晚上7点健身房锻炼",
                 isChecked = false
             ),
             ScheduleItemData(
                 title = "阅读学习",
                 date = today.plusDays(1),
-                desc = "完成技术书籍第三章",
+                description = "完成技术书籍第三章",
                 isChecked = false
             ),
             ScheduleItemData(
                 title = "朋友聚餐",
                 date = today.plusDays(2),
-                desc = "周末聚餐活动",
+                description = "周末聚餐活动",
                 isChecked = false
             ),
             ScheduleItemData(
                 title = "代码优化",
                 date = today.minusDays(1),
-                desc = "重构日历组件代码",
+                description = "重构日历组件代码",
                 isChecked = true
             )
         )

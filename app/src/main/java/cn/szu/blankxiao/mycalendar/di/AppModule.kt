@@ -1,11 +1,16 @@
 package cn.szu.blankxiao.mycalendar.di
 
+import cn.szu.blankxiao.mycalendar.auth.AuthRepository
 import cn.szu.blankxiao.mycalendar.dao.local.AppDatabase
+import cn.szu.blankxiao.mycalendar.dao.repository.RemoteScheduleRepository
 import cn.szu.blankxiao.mycalendar.dao.repository.ScheduleRepository
 import cn.szu.blankxiao.mycalendar.dao.repository.ScheduleRepositoryImpl
+import cn.szu.blankxiao.mycalendar.dao.repository.SyncScheduleRepository
+import cn.szu.blankxiao.mycalendar.viewmodel.AuthViewModel
 import cn.szu.blankxiao.mycalendar.viewmodel.ScheduleViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /**
@@ -41,10 +46,35 @@ val databaseModule = module {
  * 提供Repository层的依赖
  */
 val repositoryModule = module {
-    // 单例：ScheduleRepository
-    single<ScheduleRepository> {
+    // 本地ScheduleRepository（内部使用）
+    single<ScheduleRepository>(named("local")) {
         ScheduleRepositoryImpl(
             scheduleDao = get()
+        )
+    }
+    
+    // 远程ScheduleRepository（内部使用）
+    single {
+        RemoteScheduleRepository(
+            api = get()
+        )
+    }
+    
+    // 同步ScheduleRepository（对外暴露）
+    // 根据登录状态自动切换本地/云端数据源
+    single<ScheduleRepository> {
+        SyncScheduleRepository(
+            localRepository = get(named("local")),
+            remoteRepository = get(),
+            tokenManager = get()
+        )
+    }
+    
+    // AuthRepository
+    single {
+        AuthRepository(
+            authApi = get(),
+            tokenManager = get()
         )
     }
 }
@@ -60,6 +90,13 @@ val viewModelModule = module {
             repository = get()
         )
     }
+    
+    // ViewModel：AuthViewModel
+    viewModel {
+        AuthViewModel(
+            authRepository = get()
+        )
+    }
 }
 
 /**
@@ -69,6 +106,7 @@ val viewModelModule = module {
 val appModules = listOf(
     databaseModule,
     repositoryModule,
-    viewModelModule
+    viewModelModule,
+    networkModule
 )
 
