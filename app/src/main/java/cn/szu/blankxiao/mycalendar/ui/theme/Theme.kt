@@ -133,10 +133,10 @@ private val ChristmasColorScheme = lightColorScheme(
     errorContainer = ChristmasRed50,
     onErrorContainer = ChristmasRed600,
     
-    // 背景和表面 - 雪白
-    background = ChristmasSnow,
+    // 背景和表面 - 冰蓝白背景 + 纯白卡片
+    background = ChristmasIce,                      // 冰蓝白背景，与卡片区分
     onBackground = ChristmasGreen700,
-    surface = White,
+    surface = White,                                // 卡片用纯白
     onSurface = ChristmasGreen700,
     surfaceVariant = ChristmasGreen50,
     onSurfaceVariant = ChristmasGreen500,

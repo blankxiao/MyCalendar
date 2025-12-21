@@ -344,12 +344,12 @@ val ChristmasCustomColors = CustomColors(
     primaryContainer = ChristmasGreen100,
     onPrimaryContainer = ChristmasGreen600,
     
-    surface = ChristmasSnow,
+    surface = White,
     onSurface = ChristmasGreen700,
     surfaceVariant = ChristmasGreen50,
     onSurfaceVariant = ChristmasGreen500,
     
-    background = ChristmasSnow,
+    background = ChristmasIce,
     onBackground = ChristmasGreen700,
     
     outline = ChristmasGreen200,
@@ -396,7 +396,7 @@ val ChristmasCustomColors = CustomColors(
     calendarWeekLabelText = ChristmasGreen500,
     calendarNavigationIcon = ChristmasGreen500,
     
-    calendarBackground = ChristmasSnow,
+    calendarBackground = White,                     // 日历背景用纯白
     calendarDivider = ChristmasGreen100,
     
     calendarScheduleDot = ChristmasRed400,          // 待办点用圣诞红
@@ -412,13 +412,13 @@ val ChristmasCustomColors = CustomColors(
     scheduleCheckboxUnchecked = ChristmasGreen300,
     scheduleCheckboxCheckmark = White,
 
-    scheduleCardBackground = White,
+    scheduleCardBackground = White,                  // 日程卡片用纯白
     
     scheduleUrgent = ChristmasRed400,
     scheduleImportant = ChristmasGold400,
     scheduleNormal = ChristmasGreen400,
     
-    scheduleListBackground = ChristmasSnow,
+    scheduleListBackground = ChristmasIce,          // 列表背景用冰蓝白
     scheduleListTitleText = ChristmasGreen700,
     scheduleListEmptyText = ChristmasGreen400,
     
