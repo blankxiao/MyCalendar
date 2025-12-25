@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*'  # 当推送 v 开头的 tag 时触发
 
+permissions:
+  contents: write  # 授予创建 Release 的权限
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,11 +23,24 @@ jobs:
           distribution: 'temurin'
           cache: gradle
       
+      - name: Cache Gradle Wrapper
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+      
+      - name: Cache Android SDK
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.android/build-cache
+          key: ${{ runner.os }}-android-sdk
+      
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       
       - name: Build Release APK
-        run: ./gradlew assembleRelease
+        run: ./gradlew assembleRelease --build-cache --parallel
       
       - name: Sign APK
         uses: r0adkll/sign-android-release@v1
