@@ -25,12 +25,23 @@ android {
 	}
 
 	buildTypes {
+		debug {
+			// Debug 环境配置
+			buildConfigField("String", "BASE_URL", "\"https://api.blankxiao.online/\"")
+			buildConfigField("Boolean", "ENABLE_LOGGING", "true")
+		}
 		release {
-			isMinifyEnabled = false
+			// 代码混淆
+			isMinifyEnabled = true
+			// 资源压缩
+			isShrinkResources = true
 			proguardFiles(
 				getDefaultProguardFile("proguard-android-optimize.txt"),
 				"proguard-rules.pro"
 			)
+			// Release 环境配置
+			buildConfigField("String", "BASE_URL", "\"https://api.blankxiao.online/\"")
+			buildConfigField("Boolean", "ENABLE_LOGGING", "false")
 		}
 	}
 	compileOptions {
@@ -42,6 +53,7 @@ android {
 	}
 	buildFeatures {
 		compose = true
+		buildConfig = true  // 启用 BuildConfig 生成
 	}
 	
 	// 添加生成代码的kotlin目录为源码目录

@@ -1,5 +1,6 @@
 package cn.szu.blankxiao.mycalendar.di
 
+import cn.szu.blankxiao.mycalendar.BuildConfig
 import cn.szu.blankxiao.mycalendar.data.local.datastore.TokenManager
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.coroutines.runBlocking
@@ -60,7 +61,12 @@ val networkModule = module {
     // OkHttp Client（带Token拦截器）
     single {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
+            // 根据 BuildConfig 决定日志级别，Release 包不打印请求体
+            level = if (BuildConfig.ENABLE_LOGGING) {
+                HttpLoggingInterceptor.Level.BODY
+            } else {
+                HttpLoggingInterceptor.Level.NONE
+            }
         }
         
         val tokenInterceptor: Interceptor = get()
@@ -79,7 +85,7 @@ val networkModule = module {
         val contentType = "application/json".toMediaType()
         
         Retrofit.Builder()
-            .baseUrl("https://api.blankxiao.online/")
+            .baseUrl(BuildConfig.BASE_URL)  // 从 BuildConfig 读取，支持多环境
             .client(get())
             .addConverterFactory(get<Json>().asConverterFactory(contentType))
             .build()
