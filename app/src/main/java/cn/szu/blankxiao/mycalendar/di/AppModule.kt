@@ -1,0 +1,112 @@
+package cn.szu.blankxiao.mycalendar.di
+
+import cn.szu.blankxiao.mycalendar.data.local.AppDatabase
+import cn.szu.blankxiao.mycalendar.data.repository.AuthRepository
+import cn.szu.blankxiao.mycalendar.data.repository.RemoteScheduleRepository
+import cn.szu.blankxiao.mycalendar.data.repository.ScheduleRepository
+import cn.szu.blankxiao.mycalendar.data.repository.ScheduleRepositoryImpl
+import cn.szu.blankxiao.mycalendar.data.repository.SyncScheduleRepository
+import cn.szu.blankxiao.mycalendar.ui.screen.auth.AuthViewModel
+import cn.szu.blankxiao.mycalendar.ui.screen.main.ScheduleViewModel
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.dsl.viewModel
+import org.koin.core.qualifier.named
+import org.koin.dsl.module
+
+/**
+ * @author BlankXiao
+ * @description Koin依赖注入模块配置
+ * @date 2025-12-11
+ * 
+ * 配置应用所需的所有依赖注入
+ * - 数据库实例（单例）
+ * - DAO实例
+ * - Repository实例
+ * - ViewModel实例
+ */
+
+/**
+ * 数据库模块
+ * 提供Room数据库相关的依赖
+ */
+val databaseModule = module {
+    // 单例：数据库实例
+    single {
+        AppDatabase.getInstance(androidContext())
+    }
+    
+    // 单例：ScheduleDao
+    single {
+        get<AppDatabase>().scheduleDao()
+    }
+}
+
+/**
+ * 仓库模块
+ * 提供Repository层的依赖
+ */
+val repositoryModule = module {
+    // 本地ScheduleRepository
+    single<ScheduleRepository>(named("local")) {
+        ScheduleRepositoryImpl(
+            scheduleDao = get()
+        )
+    }
+    
+    // 远程ScheduleRepository
+    single {
+        RemoteScheduleRepository(
+            api = get()
+        )
+    }
+    
+    // 同步ScheduleRepository
+    // 根据登录状态自动切换本地/云端数据源
+    single<ScheduleRepository> {
+        SyncScheduleRepository(
+            localRepository = get(named("local")),
+            remoteRepository = get(),
+            tokenManager = get()
+        )
+    }
+    
+    // AuthRepository
+    single {
+        AuthRepository(
+            authApi = get(),
+            tokenManager = get()
+        )
+    }
+}
+
+/**
+ * ViewModel模块
+ * 提供ViewModel的依赖注入
+ */
+val viewModelModule = module {
+    // ViewModel：ScheduleViewModel
+    viewModel {
+        ScheduleViewModel(
+            repository = get()
+        )
+    }
+    
+    // ViewModel：AuthViewModel
+    viewModel {
+        AuthViewModel(
+            authRepository = get()
+        )
+    }
+}
+
+/**
+ * 应用所有模块的集合
+ * 在Application中使用
+ */
+val appModules = listOf(
+    databaseModule,
+    repositoryModule,
+    viewModelModule,
+    networkModule
+)
+
