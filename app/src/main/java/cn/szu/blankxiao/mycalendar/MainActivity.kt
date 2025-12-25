@@ -9,8 +9,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
-import cn.szu.blankxiao.mycalendar.data.settings.ThemeMode
-import cn.szu.blankxiao.mycalendar.data.settings.ThemeSettingsManager
+import cn.szu.blankxiao.mycalendar.model.settings.ThemeMode
+import cn.szu.blankxiao.mycalendar.model.settings.ThemeSettingsManager
 import cn.szu.blankxiao.mycalendar.navigation.AppNavHost
 import cn.szu.blankxiao.mycalendar.ui.theme.MyCalendarTheme
 

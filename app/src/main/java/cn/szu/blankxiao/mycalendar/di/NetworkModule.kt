@@ -1,6 +1,6 @@
 package cn.szu.blankxiao.mycalendar.di
 
-import cn.szu.blankxiao.mycalendar.auth.TokenManager
+import cn.szu.blankxiao.mycalendar.data.local.datastore.TokenManager
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
@@ -79,8 +79,7 @@ val networkModule = module {
         val contentType = "application/json".toMediaType()
         
         Retrofit.Builder()
-            .baseUrl("https://api.blankxiao.online/")  // Gateway端口: 8090
-            // 真机调试时使用电脑IP: "http://192.168.x.x:8090/"
+            .baseUrl("https://api.blankxiao.online/")
             .client(get())
             .addConverterFactory(get<Json>().asConverterFactory(contentType))
             .build()

@@ -1,10 +1,10 @@
 package cn.szu.blankxiao.mycalendar
 
 import android.app.Application
-import cn.szu.blankxiao.mycalendar.dao.repository.ScheduleRepository
+import cn.szu.blankxiao.mycalendar.data.repository.ScheduleRepository
 import cn.szu.blankxiao.mycalendar.di.appModules
-import cn.szu.blankxiao.mycalendar.reminder.NotificationHelper
-import cn.szu.blankxiao.mycalendar.utils.DatabaseInitializer
+import cn.szu.blankxiao.mycalendar.service.reminder.NotificationHelper
+import cn.szu.blankxiao.mycalendar.util.DatabaseInitializer
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -36,7 +36,7 @@ class MyCalendarApplication : Application() {
             modules(appModules)
         }
         
-        // 初始化数据库（添加示例数据）
+        // 初始化数据库
         val repository = koinApp.koin.get<ScheduleRepository>()
         DatabaseInitializer.initialize(this, repository)
         

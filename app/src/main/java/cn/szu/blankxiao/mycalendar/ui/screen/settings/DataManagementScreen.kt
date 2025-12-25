@@ -1,4 +1,4 @@
-package cn.szu.blankxiao.mycalendar.ui.screen
+package cn.szu.blankxiao.mycalendar.ui.screen.settings
 
 import android.net.Uri
 import android.widget.Toast
@@ -33,11 +33,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import cn.szu.blankxiao.mycalendar.ui.dialog.ExportDialog
-import cn.szu.blankxiao.mycalendar.ui.dialog.ExportLocation
+import cn.szu.blankxiao.mycalendar.ui.component.dialog.ExportDialog
+import cn.szu.blankxiao.mycalendar.ui.component.dialog.ExportLocation
+import cn.szu.blankxiao.mycalendar.ui.screen.main.ScheduleViewModel
 import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
 import cn.szu.blankxiao.mycalendar.ui.theme.customColors
-import cn.szu.blankxiao.mycalendar.viewmodel.ScheduleViewModel
 import kotlinx.coroutines.launch
 
 /**

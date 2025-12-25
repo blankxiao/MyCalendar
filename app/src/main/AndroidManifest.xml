@@ -36,7 +36,7 @@
 
         <!-- 提醒接收器 -->
         <receiver
-            android:name=".reminder.ReminderReceiver"
+            android:name=".service.reminder.ReminderReceiver"
             android:enabled="true"
             android:exported="false" />
     </application>

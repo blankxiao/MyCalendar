@@ -6,7 +6,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import cn.szu.blankxiao.mycalendar.data.settings.ThemeMode
+import cn.szu.blankxiao.mycalendar.model.settings.ThemeMode
 
 /**
  * 主题配置文件

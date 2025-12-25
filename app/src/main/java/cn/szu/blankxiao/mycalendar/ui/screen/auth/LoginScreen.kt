@@ -18,9 +18,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import cn.szu.blankxiao.mycalendar.auth.CodeType
-import cn.szu.blankxiao.mycalendar.viewmodel.AuthUiState
-import cn.szu.blankxiao.mycalendar.viewmodel.AuthViewModel
+import cn.szu.blankxiao.mycalendar.data.repository.CodeType
 import org.koin.androidx.compose.koinViewModel
 
 /**

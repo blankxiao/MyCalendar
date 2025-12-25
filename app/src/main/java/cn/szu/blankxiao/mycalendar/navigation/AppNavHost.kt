@@ -8,15 +8,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import cn.szu.blankxiao.mycalendar.data.settings.ThemeSettingsManager
-import cn.szu.blankxiao.mycalendar.ui.screen.DataManagementScreen
-import cn.szu.blankxiao.mycalendar.ui.screen.DayViewScreen
-import cn.szu.blankxiao.mycalendar.ui.screen.MainScreen
-import cn.szu.blankxiao.mycalendar.ui.screen.SettingsScreen
+import cn.szu.blankxiao.mycalendar.model.settings.ThemeSettingsManager
+import cn.szu.blankxiao.mycalendar.ui.screen.settings.DataManagementScreen
+import cn.szu.blankxiao.mycalendar.ui.screen.dayview.DayViewScreen
+import cn.szu.blankxiao.mycalendar.ui.screen.main.MainScreen
+import cn.szu.blankxiao.mycalendar.ui.screen.settings.SettingsScreen
 import cn.szu.blankxiao.mycalendar.ui.screen.auth.LoginScreen
 import cn.szu.blankxiao.mycalendar.ui.screen.auth.RegisterScreen
 import java.time.LocalDate
-import cn.szu.blankxiao.mycalendar.viewmodel.ScheduleViewModel
+import cn.szu.blankxiao.mycalendar.ui.screen.main.ScheduleViewModel
 import org.koin.androidx.compose.koinViewModel
 
 /**
