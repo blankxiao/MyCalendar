@@ -321,7 +321,7 @@ val DarkCustomColors = CustomColors(
     scheduleImportant = Amber300,
     scheduleNormal = Green300,
     
-    scheduleListBackground = Dark200,
+    scheduleListBackground = Dark100,
     scheduleListTitleText = Dark800,
     scheduleListEmptyText = Dark600,
     

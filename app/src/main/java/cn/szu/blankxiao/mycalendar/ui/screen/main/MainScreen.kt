@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
@@ -21,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -34,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.zIndex
 import cn.szu.blankxiao.mycalendar.model.calendar.CalendarMode
 import cn.szu.blankxiao.mycalendar.model.calendar.DayPosition
 import cn.szu.blankxiao.mycalendar.model.calendar.rememberCustomCalendarState
@@ -127,105 +130,123 @@ fun MainScreen(
 		Column(
 			modifier = Modifier.fillMaxSize()
 		) {
-			// 顶部标题区域（带设置按钮）
-			Row(
+			// 日历区域容器 - 添加阴影和圆角以区分下方列表
+			Surface(
 				modifier = Modifier
 					.fillMaxWidth()
-					.padding(
-						horizontal = Dimensions.Padding.large,
-						vertical = Dimensions.Padding.medium
-					),
-				verticalAlignment = Alignment.CenterVertically,
-				horizontalArrangement = Arrangement.SpaceBetween
+					.zIndex(1f), // 确保阴影在列表上方
+				shape = RoundedCornerShape(
+					bottomStart = Dimensions.CornerRadius.large,
+					bottomEnd = Dimensions.CornerRadius.large
+				),
+				shadowElevation = Dimensions.Elevation.medium,
+				color = customColors.calendarBackground
 			) {
-				// 左侧占位（保持标题居中）
-				Box(modifier = Modifier.width(Dimensions.Spacing.huge))
-				
-				// 中间的标题
 				Column(
-					modifier = Modifier.weight(1f),
-					horizontalAlignment = Alignment.CenterHorizontally
+					modifier = Modifier.fillMaxWidth()
 				) {
-					// 当前选中日期
-					Text(
-						text = calendarState.selectedDate.format(dateFormatter),
-						style = Typography.titleLarge,
-						fontWeight = FontWeight.Bold,
-						color = customColors.calendarNormalText
-					)
-					// 当前模式
-					Text(
-						text = "当前模式: ${if (calendarState.calendarMode == CalendarMode.MONTH) "月视图" else "周视图"}",
-						style = Typography.bodySmall,
-						color = customColors.calendarOtherMonthText
-					)
-				}
-
-				// 右侧的设置按钮
-				Box {
-					IconButton(onClick = { showMenu = true }) {
-						Icon(
-							imageVector = Icons.Default.MoreVert,
-							contentDescription = "更多选项",
-							tint = customColors.calendarNormalText
-						)
-					}
-					
-					// 下拉菜单
-					DropdownMenu(
-						expanded = showMenu,
-						onDismissRequest = { showMenu = false },
-						containerColor = customColors.surface
+					// 顶部标题区域（带设置按钮）
+					Row(
+						modifier = Modifier
+							.fillMaxWidth()
+							.padding(
+								horizontal = Dimensions.Padding.large,
+								vertical = Dimensions.Padding.medium
+							),
+						verticalAlignment = Alignment.CenterVertically,
+						horizontalArrangement = Arrangement.SpaceBetween
 					) {
-						DropdownMenuItem(
-							text = { 
-								Text(
-									"设置",
-									color = customColors.textPrimary
-								) 
-							},
-							onClick = {
-								showMenu = false
-								onNavigateToSettings()
-							},
-							colors = MenuDefaults.itemColors(
-								textColor = customColors.textPrimary,
-								leadingIconColor = customColors.textPrimary
+						// 左侧占位（保持标题居中）
+						Box(modifier = Modifier.width(Dimensions.Spacing.huge))
+						
+						// 中间的标题
+						Column(
+							modifier = Modifier.weight(1f),
+							horizontalAlignment = Alignment.CenterHorizontally
+						) {
+							// 当前选中日期
+							Text(
+								text = calendarState.selectedDate.format(dateFormatter),
+								style = Typography.titleLarge,
+								fontWeight = FontWeight.Bold,
+								color = customColors.calendarNormalText
 							)
+							// 当前模式
+							Text(
+								text = "当前模式: ${if (calendarState.calendarMode == CalendarMode.MONTH) "月视图" else "周视图"}",
+								style = Typography.bodySmall,
+								color = customColors.calendarOtherMonthText
+							)
+						}
+
+						// 右侧的设置按钮
+						Box {
+							IconButton(onClick = { showMenu = true }) {
+								Icon(
+									imageVector = Icons.Default.MoreVert,
+									contentDescription = "更多选项",
+									tint = customColors.calendarNormalText
+								)
+							}
+							
+							// 下拉菜单
+							DropdownMenu(
+								expanded = showMenu,
+								onDismissRequest = { showMenu = false },
+								containerColor = customColors.surface
+							) {
+								DropdownMenuItem(
+									text = { 
+										Text(
+											"设置",
+											color = customColors.textPrimary
+										) 
+									},
+									onClick = {
+										showMenu = false
+										onNavigateToSettings()
+									},
+									colors = MenuDefaults.itemColors(
+										textColor = customColors.textPrimary,
+										leadingIconColor = customColors.textPrimary
+									)
+								)
+							}
+						}
+					}
+
+					// 日历组件
+					AnimatableCustomCalendar(
+						state = calendarState,
+						modifier = Modifier.fillMaxWidth()
+							.padding(bottom = Dimensions.Padding.small)
+					) { day ->
+						val isSelected = day.date == calendarState.selectedDate
+						val isCurrentMonth = day.position == DayPosition.MonthDate
+
+						// 检查该日期是否有日程
+						val daySchedules = allSchedules.filter { it.date == day.date }
+						val hasSchedule = daySchedules.isNotEmpty() && !isSelected
+
+						DayCell(
+							day = day.date,
+							isSelected = isSelected,
+							isCurrentMonth = isCurrentMonth,
+							hasTodo = hasSchedule,
+							scheduleDataList = daySchedules.ifEmpty { null },
+							modifier = Modifier.weight(1f),
+							showScheduleContent = false,
+							onClick = {
+								coroutineScope.launch {
+									calendarState.scrollToDate(day.date)
+								}
+							},
+							onDoubleClick = {
+								onNavigateToDayView(day.date)
+							}
 						)
 					}
 				}
-			}
-
-			// 日历组件
-			AnimatableCustomCalendar(
-				state = calendarState,
-				modifier = Modifier.fillMaxWidth()
-			) { day ->
-				val isSelected = day.date == calendarState.selectedDate
-				val isCurrentMonth = day.position == DayPosition.MonthDate
-
-				// 检查该日期是否有日程
-				val daySchedules = allSchedules.filter { it.date == day.date }
-				val hasSchedule = daySchedules.isNotEmpty() && !isSelected
-
-				DayCell(
-					day = day.date,
-					isSelected = isSelected,
-					isCurrentMonth = isCurrentMonth,
-					hasTodo = hasSchedule,
-					scheduleDataList = daySchedules.ifEmpty { null },
-					modifier = Modifier.weight(1f),
-					showScheduleContent = false,
-					onClick = {
-						coroutineScope.launch {
-							calendarState.scrollToDate(day.date)
-						}
-					},
-					onDoubleClick = {
-						onNavigateToDayView(day.date)
-					}
-				)
 			}
 
 			// 日程列表
@@ -233,7 +254,8 @@ fun MainScreen(
 				scheduleDataList = selectedDateSchedules,
 				modifier = Modifier
 					.fillMaxWidth()
-					.weight(1f),
+					.weight(1f)
+					.background(customColors.scheduleListBackground), // 显式设置列表背景
 				onItemToggle = { viewModel.toggleScheduleStatus(it) },
 				onItemDelete = { viewModel.deleteSchedule(it) },
 				onItemLongPress = { item ->

@@ -127,6 +127,14 @@ dependencies {
 	androidTestImplementation(libs.androidx.compose.ui.test.junit4)
 	debugImplementation(libs.androidx.compose.ui.tooling)
 	debugImplementation(libs.androidx.compose.ui.test.manifest)
+	
+	// ============ 性能分析工具 ============
+	// LeakCanary - 内存泄漏检测
+	// debugImplementation("com.squareup.leakcanary:leakcanary-android:2.12")
+	
+	// Compose 性能分析
+	debugImplementation("androidx.compose.ui:ui-tooling:1.5.4")
+	debugImplementation("androidx.compose.ui:ui-test-manifest:1.5.4")
 }
 
 // ============ OpenAPI Generator 多服务配置 ============
