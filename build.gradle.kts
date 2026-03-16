@@ -5,4 +5,7 @@ plugins {
 	alias(libs.plugins.kotlin.compose) apply false
 	// KSP 插件（Room 需要）
 	id("com.google.devtools.ksp") version "2.2.20-2.0.3" apply false
+	alias(libs.plugins.kotlin.multiplatform) apply false
+	alias(libs.plugins.android.kotlin.multiplatform.library) apply false
+	alias(libs.plugins.android.lint) apply false
 }
