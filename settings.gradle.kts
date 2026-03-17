@@ -21,5 +21,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "MyCalendar"
-include(":app")
-include(":shared")
+include(":composeApp")
+include(":androidApp")
