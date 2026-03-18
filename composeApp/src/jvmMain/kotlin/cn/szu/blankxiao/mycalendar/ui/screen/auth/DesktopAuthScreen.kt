@@ -1,4 +1,4 @@
-package cn.szu.blankxiao.mycalendar.ui
+package cn.szu.blankxiao.mycalendar.ui.screen.auth
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,8 +23,8 @@ import androidx.compose.ui.unit.dp
 import cn.szu.blankxiao.mycalendar.data.repository.CodeType
 import cn.szu.blankxiao.mycalendar.ui.component.auth.LoginFormContent
 import cn.szu.blankxiao.mycalendar.ui.component.auth.RegisterFormContent
-import cn.szu.blankxiao.mycalendar.ui.screen.auth.AuthUiState
-import cn.szu.blankxiao.mycalendar.ui.screen.auth.AuthViewModel
+import cn.szu.blankxiao.mycalendar.viewmodel.AuthUiState
+import cn.szu.blankxiao.mycalendar.viewmodel.AuthViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 /**

@@ -54,9 +54,9 @@ import cn.szu.blankxiao.mycalendar.model.settings.ThemeSettingsManager
 import cn.szu.blankxiao.mycalendar.ui.component.settings.ThemeSelectionContent
 import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
 import cn.szu.blankxiao.mycalendar.ui.theme.customColors
-import cn.szu.blankxiao.mycalendar.ui.screen.auth.AuthUiState
-import cn.szu.blankxiao.mycalendar.ui.screen.auth.AuthViewModel
-import cn.szu.blankxiao.mycalendar.ui.screen.main.ScheduleViewModel
+import cn.szu.blankxiao.mycalendar.viewmodel.AuthUiState
+import cn.szu.blankxiao.mycalendar.viewmodel.AuthViewModel
+import cn.szu.blankxiao.mycalendar.viewmodel.ScheduleViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 

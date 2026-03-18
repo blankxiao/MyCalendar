@@ -45,7 +45,7 @@ import cn.szu.blankxiao.mycalendar.model.schedule.ScheduleItemData
 import cn.szu.blankxiao.mycalendar.util.formatForDisplay
 import cn.szu.blankxiao.mycalendar.ui.component.dialog.AddScheduleDialog
 import cn.szu.blankxiao.mycalendar.ui.component.dialog.EditScheduleDialog
-import cn.szu.blankxiao.mycalendar.ui.screen.main.ScheduleViewModel
+import cn.szu.blankxiao.mycalendar.viewmodel.ScheduleViewModel
 import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
 import cn.szu.blankxiao.mycalendar.ui.theme.customColors
 import com.nlf.calendar.Lunar

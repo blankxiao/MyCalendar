@@ -1,4 +1,4 @@
-package cn.szu.blankxiao.mycalendar.ui
+package cn.szu.blankxiao.mycalendar.ui.screen.main
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -36,9 +36,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import cn.szu.blankxiao.mycalendar.model.calendar.YearMonth
 import cn.szu.blankxiao.mycalendar.model.schedule.ScheduleItemData
-import cn.szu.blankxiao.mycalendar.ui.screen.auth.AuthViewModel
-import cn.szu.blankxiao.mycalendar.ui.screen.main.ScheduleViewModel
+import cn.szu.blankxiao.mycalendar.ui.component.DesktopMonthView
+import cn.szu.blankxiao.mycalendar.ui.dialog.DesktopAddScheduleDialog
+import cn.szu.blankxiao.mycalendar.ui.dialog.DesktopEditScheduleDialog
+import cn.szu.blankxiao.mycalendar.ui.screen.settings.DesktopSettingsScreen
 import cn.szu.blankxiao.mycalendar.util.formatForDisplay
+import cn.szu.blankxiao.mycalendar.viewmodel.AuthViewModel
+import cn.szu.blankxiao.mycalendar.viewmodel.ScheduleViewModel
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone

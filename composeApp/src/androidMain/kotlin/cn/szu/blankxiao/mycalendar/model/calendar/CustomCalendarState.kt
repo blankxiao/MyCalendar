@@ -16,7 +16,6 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import cn.szu.blankxiao.mycalendar.model.calendar.CalendarDataCacheManager
 import cn.szu.blankxiao.mycalendar.util.CalendarDataCalculator
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
@@ -189,7 +188,7 @@ class CustomCalendarState internal constructor(
     }
 
     suspend fun scrollToDate(date: LocalDate, animate: Boolean = false) {
-        if (date < _startDate || date > _endDate) return
+        if (date !in _startDate.._endDate) return
 
         selectedDate = date
         val targetPageIndex = calCurrentPage(_calendarMode, date)

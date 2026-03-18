@@ -18,13 +18,6 @@ enum class WindowWidthClass {
 }
 
 /**
- * 根据当前配置的屏幕宽度获取 WindowWidthClass
- * 使用 expect/actual 实现，Android 用 LocalConfiguration，JVM 用窗口尺寸
- */
-@Composable
-expect fun currentWindowWidthClass(): WindowWidthClass
-
-/**
  * 根据宽度 Dp 计算 WindowWidthClass（用于 BoxWithConstraints 等场景）
  * 使用 value 比较以兼容 Compose Multiplatform JVM
  */
@@ -41,12 +34,6 @@ fun windowWidthClassFrom(widthDp: Dp): WindowWidthClass {
  * 是否为紧凑布局
  */
 fun WindowWidthClass.isCompact(): Boolean = this == WindowWidthClass.Compact
-
-/**
- * 是否为可显示 Master-Detail 的宽度（Medium 或 Expanded）
- */
-fun WindowWidthClass.isWideEnoughForDetail(): Boolean =
-    this == WindowWidthClass.Medium || this == WindowWidthClass.Expanded
 
 /**
  * 根据可用宽度自适应布局

@@ -1,4 +1,4 @@
-package cn.szu.blankxiao.mycalendar.ui
+package cn.szu.blankxiao.mycalendar.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -33,7 +33,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cn.szu.blankxiao.mycalendar.model.calendar.DayPosition
+import cn.szu.blankxiao.mycalendar.model.calendar.OutDateStyle
+import cn.szu.blankxiao.mycalendar.model.calendar.YearMonth
 import cn.szu.blankxiao.mycalendar.model.schedule.ScheduleItemData
+import cn.szu.blankxiao.mycalendar.ui.theme.customColors
 import cn.szu.blankxiao.mycalendar.util.CalendarDataCalculator
 import cn.szu.blankxiao.mycalendar.util.formatForDisplay
 import kotlinx.datetime.Clock
@@ -41,9 +44,6 @@ import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import cn.szu.blankxiao.mycalendar.model.calendar.OutDateStyle
-import cn.szu.blankxiao.mycalendar.model.calendar.YearMonth
-import cn.szu.blankxiao.mycalendar.ui.theme.customColors
 
 /**
  * PC 端月历网格视图

@@ -1,4 +1,4 @@
-package cn.szu.blankxiao.mycalendar.ui
+package cn.szu.blankxiao.mycalendar.ui.screen.settings
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

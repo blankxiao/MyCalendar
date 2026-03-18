@@ -23,6 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cn.szu.blankxiao.mycalendar.data.repository.CodeType
 import cn.szu.blankxiao.mycalendar.ui.component.auth.RegisterFormContent
+import cn.szu.blankxiao.mycalendar.viewmodel.AuthViewModel
+import cn.szu.blankxiao.mycalendar.viewmodel.AuthUiState
 import org.koin.androidx.compose.koinViewModel
 
 /**

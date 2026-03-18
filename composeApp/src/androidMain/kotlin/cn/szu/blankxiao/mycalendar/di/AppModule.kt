@@ -12,8 +12,8 @@ import cn.szu.blankxiao.mycalendar.service.export.JsonScheduleSerializer
 import cn.szu.blankxiao.mycalendar.service.export.ScheduleStringSerializer
 import cn.szu.blankxiao.mycalendar.service.reminder.ReminderManager
 import cn.szu.blankxiao.mycalendar.service.reminder.ReminderScheduler
-import cn.szu.blankxiao.mycalendar.ui.screen.auth.AuthViewModel
-import cn.szu.blankxiao.mycalendar.ui.screen.main.ScheduleViewModel
+import cn.szu.blankxiao.mycalendar.viewmodel.AuthViewModel
+import cn.szu.blankxiao.mycalendar.viewmodel.ScheduleViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named

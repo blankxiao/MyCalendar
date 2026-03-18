@@ -1,4 +1,4 @@
-package cn.szu.blankxiao.mycalendar.ui
+package cn.szu.blankxiao.mycalendar.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.hoverable

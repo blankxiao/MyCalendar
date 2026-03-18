@@ -3,13 +3,13 @@ package cn.szu.blankxiao.mycalendar.di
 import cn.szu.blankxiao.mycalendar.data.TokenManagerDesktop
 import cn.szu.blankxiao.mycalendar.data.local.AppDatabase
 import cn.szu.blankxiao.mycalendar.data.local.createAppDatabase
+import cn.szu.blankxiao.mycalendar.data.local.datastore.ThemeStorage
 import cn.szu.blankxiao.mycalendar.data.local.datastore.TokenStorage
 import cn.szu.blankxiao.mycalendar.data.repository.AuthRepository
 import cn.szu.blankxiao.mycalendar.data.repository.RemoteScheduleRepository
 import cn.szu.blankxiao.mycalendar.data.repository.ScheduleRepositoryEx
 import cn.szu.blankxiao.mycalendar.data.repository.ScheduleRepositoryImpl
 import cn.szu.blankxiao.mycalendar.data.repository.SyncScheduleRepository
-import cn.szu.blankxiao.mycalendar.data.local.datastore.ThemeStorage
 import cn.szu.blankxiao.mycalendar.model.settings.ThemeSettingsDesktop
 import cn.szu.blankxiao.mycalendar.remote.AuthTokenPlugin
 import cn.szu.blankxiao.mycalendar.remote.auth.AuthApiClient
@@ -19,8 +19,8 @@ import cn.szu.blankxiao.mycalendar.service.export.JsonScheduleSerializer
 import cn.szu.blankxiao.mycalendar.service.export.ScheduleStringSerializer
 import cn.szu.blankxiao.mycalendar.service.reminder.NoOpReminderScheduler
 import cn.szu.blankxiao.mycalendar.service.reminder.ReminderScheduler
-import cn.szu.blankxiao.mycalendar.ui.screen.auth.AuthViewModel
-import cn.szu.blankxiao.mycalendar.ui.screen.main.ScheduleViewModel
+import cn.szu.blankxiao.mycalendar.viewmodel.AuthViewModel
+import cn.szu.blankxiao.mycalendar.viewmodel.ScheduleViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -37,7 +37,6 @@ import org.koin.dsl.module
  * Desktop 平台的 API 配置
  */
 object DesktopConfig {
-    // 勿加尾部 /，路径拼接为 "$baseUrl/auth/xxx" 会变成 //auth
 const val BASE_URL = "https://api.blankxiao.online"
     const val ENABLE_LOGGING = true
 }

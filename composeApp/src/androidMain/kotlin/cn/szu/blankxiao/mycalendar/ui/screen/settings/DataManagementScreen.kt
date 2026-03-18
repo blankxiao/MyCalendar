@@ -35,7 +35,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import cn.szu.blankxiao.mycalendar.ui.component.dialog.ExportDialog
 import cn.szu.blankxiao.mycalendar.ui.component.dialog.ExportLocation
-import cn.szu.blankxiao.mycalendar.ui.screen.main.ScheduleViewModel
+import cn.szu.blankxiao.mycalendar.viewmodel.ScheduleViewModel
 import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
 import cn.szu.blankxiao.mycalendar.ui.theme.customColors
 import kotlinx.coroutines.launch

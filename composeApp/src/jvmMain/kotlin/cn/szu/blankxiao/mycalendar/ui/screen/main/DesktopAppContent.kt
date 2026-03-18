@@ -1,4 +1,4 @@
-package cn.szu.blankxiao.mycalendar.ui
+package cn.szu.blankxiao.mycalendar.ui.screen.main
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,9 +12,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import cn.szu.blankxiao.mycalendar.ui.screen.auth.AuthViewModel
 import androidx.compose.ui.window.WindowScope
 import androidx.compose.ui.window.WindowState
+import cn.szu.blankxiao.mycalendar.ui.component.DesktopAppTitleBar
+import cn.szu.blankxiao.mycalendar.ui.screen.auth.DesktopAuthScreen
+import cn.szu.blankxiao.mycalendar.viewmodel.AuthViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 /**

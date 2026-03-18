@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.Dp
 import cn.szu.blankxiao.mycalendar.model.schedule.ScheduleItemData
 import cn.szu.blankxiao.mycalendar.ui.component.schedule.ScheduleDetailContent
 import cn.szu.blankxiao.mycalendar.ui.component.schedule.ScheduleItemCard
-import cn.szu.blankxiao.mycalendar.ui.screen.main.ScheduleViewModel
+import cn.szu.blankxiao.mycalendar.viewmodel.ScheduleViewModel
 import cn.szu.blankxiao.mycalendar.ui.util.AdaptiveLayout
 import cn.szu.blankxiao.mycalendar.util.formatForDisplay
 import kotlinx.datetime.Clock

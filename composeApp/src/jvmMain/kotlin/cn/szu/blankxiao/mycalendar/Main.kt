@@ -19,7 +19,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import cn.szu.blankxiao.mycalendar.di.desktopModules
-import cn.szu.blankxiao.mycalendar.ui.DesktopAppContent
+import cn.szu.blankxiao.mycalendar.ui.screen.main.DesktopAppContent
 import cn.szu.blankxiao.mycalendar.ui.theme.DesktopTheme
 import org.koin.core.context.startKoin
 

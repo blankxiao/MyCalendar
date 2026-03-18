@@ -1,4 +1,4 @@
-package cn.szu.blankxiao.mycalendar.ui.screen.auth
+package cn.szu.blankxiao.mycalendar.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

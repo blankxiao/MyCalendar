@@ -15,7 +15,7 @@ import cn.szu.blankxiao.mycalendar.ui.screen.main.MainScreen
 import cn.szu.blankxiao.mycalendar.ui.screen.settings.SettingsScreen
 import cn.szu.blankxiao.mycalendar.ui.screen.auth.LoginScreen
 import cn.szu.blankxiao.mycalendar.ui.screen.auth.RegisterScreen
-import cn.szu.blankxiao.mycalendar.ui.screen.main.ScheduleViewModel
+import cn.szu.blankxiao.mycalendar.viewmodel.ScheduleViewModel
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone

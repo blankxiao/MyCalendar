@@ -52,6 +52,7 @@ import cn.szu.blankxiao.mycalendar.ui.theme.MyCalendarTheme
 import cn.szu.blankxiao.mycalendar.ui.theme.Typography
 import cn.szu.blankxiao.mycalendar.ui.theme.customColors
 import cn.szu.blankxiao.mycalendar.util.formatForDisplay
+import cn.szu.blankxiao.mycalendar.viewmodel.ScheduleViewModel
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DayOfWeek

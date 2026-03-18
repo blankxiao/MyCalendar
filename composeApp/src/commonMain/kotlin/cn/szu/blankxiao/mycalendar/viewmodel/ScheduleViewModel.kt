@@ -1,4 +1,4 @@
-package cn.szu.blankxiao.mycalendar.ui.screen.main
+package cn.szu.blankxiao.mycalendar.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -29,9 +29,9 @@ import kotlinx.datetime.toLocalDateTime
  * 导出/导入：提供字符串接口，文件 I/O 由 UI 层负责（平台相关）
  */
 class ScheduleViewModel(
-    private val repository: ScheduleRepositoryEx,
-    private val jsonSerializer: ScheduleStringSerializer,
-    private val icsSerializer: ScheduleStringSerializer
+	private val repository: ScheduleRepositoryEx,
+	private val jsonSerializer: ScheduleStringSerializer,
+	private val icsSerializer: ScheduleStringSerializer
 ) : ViewModel() {
 
     // ==================== 状态管理 ====================
@@ -55,7 +55,7 @@ class ScheduleViewModel(
             }
             .stateIn(
                 scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000),
+                started = SharingStarted.Companion.WhileSubscribed(5000),
                 initialValue = emptyList()
             )
 
@@ -81,19 +81,19 @@ class ScheduleViewModel(
     }
 
     fun addSchedule(
-        title: String,
-        date: LocalDate,
-        description: String = ""
+		title: String,
+		date: LocalDate,
+		description: String = ""
     ) {
         viewModelScope.launch {
             try {
                 _isLoading.value = true
                 val scheduleData = ScheduleItemData(
-                    title = title,
-                    date = date,
-                    description = description,
-                    isChecked = false
-                )
+					title = title,
+					date = date,
+					description = description,
+					isChecked = false
+				)
                 repository.addSchedule(scheduleData)
                 _errorMessage.value = null
             } catch (e: Exception) {
@@ -253,7 +253,7 @@ class ScheduleViewModel(
      * 生成导出文件名（带时间戳）
      */
     fun getExportFileName(extension: String): String {
-        val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+        val now = Clock.System.now().toLocalDateTime(TimeZone.Companion.currentSystemDefault())
         val timestamp = "${now.year}${now.monthNumber.toString().padStart(2, '0')}${now.dayOfMonth.toString().padStart(2, '0')}_${now.hour.toString().padStart(2, '0')}${now.minute.toString().padStart(2, '0')}${now.second.toString().padStart(2, '0')}"
         return "MyCalendar_Export_$timestamp.$extension"
     }
