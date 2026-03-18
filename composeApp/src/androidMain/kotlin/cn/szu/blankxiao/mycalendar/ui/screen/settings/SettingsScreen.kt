@@ -51,6 +51,7 @@ import androidx.compose.ui.window.Dialog
 import cn.szu.blankxiao.mycalendar.data.local.datastore.UserInfo
 import cn.szu.blankxiao.mycalendar.model.settings.ThemeMode
 import cn.szu.blankxiao.mycalendar.model.settings.ThemeSettingsManager
+import cn.szu.blankxiao.mycalendar.ui.component.settings.ThemeSelectionContent
 import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
 import cn.szu.blankxiao.mycalendar.ui.theme.customColors
 import cn.szu.blankxiao.mycalendar.ui.screen.auth.AuthUiState
@@ -455,7 +456,7 @@ private fun ClearDataConfirmDialog(
 }
 
 /**
- * 主题选择对话框
+ * 主题选择对话框（复用 ThemeSelectionContent）
  */
 @Composable
 private fun ThemeSelectionDialog(
@@ -464,7 +465,7 @@ private fun ThemeSelectionDialog(
     onSelect: (ThemeMode) -> Unit
 ) {
     val customColors = MaterialTheme.customColors
-    
+
     Dialog(onDismissRequest = onDismiss) {
         Card(
             shape = RoundedCornerShape(Dimensions.CornerRadius.large),
@@ -486,88 +487,13 @@ private fun ThemeSelectionDialog(
                     style = MaterialTheme.typography.titleLarge,
                     color = customColors.textPrimary
                 )
-                
-                // 主题选项
-                ThemeOption(
-                    title = "浅色模式",
-                    subtitle = "始终使用浅色主题",
-                    isSelected = currentMode == ThemeMode.LIGHT,
-                    onClick = { onSelect(ThemeMode.LIGHT) }
-                )
-                
-                ThemeOption(
-                    title = "深色模式",
-                    subtitle = "始终使用深色主题",
-                    isSelected = currentMode == ThemeMode.DARK,
-                    onClick = { onSelect(ThemeMode.DARK) }
-                )
-                
-                ThemeOption(
-                    title = "跟随系统",
-                    subtitle = "根据系统设置自动切换",
-                    isSelected = currentMode == ThemeMode.SYSTEM,
-                    onClick = { onSelect(ThemeMode.SYSTEM) }
-                )
-                
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = Dimensions.Padding.small),
-                    color = customColors.outlineVariant
-                )
-                
-                ThemeOption(
-                    title = "圣诞主题",
-                    subtitle = "节日限定红绿配色",
-                    isSelected = currentMode == ThemeMode.CHRISTMAS,
-                    onClick = { onSelect(ThemeMode.CHRISTMAS) }
+
+                ThemeSelectionContent(
+                    currentMode = currentMode,
+                    onSelect = onSelect,
+                    useCompactLabels = false
                 )
             }
-        }
-    }
-}
-
-/**
- * 主题选项
- */
-@Composable
-private fun ThemeOption(
-    title: String,
-    subtitle: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    val customColors = MaterialTheme.customColors
-    
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = Dimensions.Padding.small),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        RadioButton(
-            selected = isSelected,
-            onClick = onClick,
-            colors = RadioButtonDefaults.colors(
-                selectedColor = customColors.buttonPrimaryBackground,
-                unselectedColor = customColors.outline
-            )
-        )
-        
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = Dimensions.Padding.small)
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge,
-                color = customColors.textPrimary
-            )
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.bodySmall,
-                color = customColors.textSecondary
-            )
         }
     }
 }

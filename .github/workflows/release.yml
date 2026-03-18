@@ -1,4 +1,4 @@
-name: Build and Release APK
+name: Build and Release APK + Windows MSI
 
 on:
   push:
@@ -9,59 +9,107 @@ permissions:
   contents: write  # 授予创建 Release 的权限
 
 jobs:
-  build:
+  build-apk:
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: gradle
-      
+
       - name: Cache Gradle Wrapper
         uses: actions/cache@v4
         with:
           path: ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-      
+
       - name: Cache Android SDK
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.android/build-cache
+          path: ~/.android/build-cache
           key: ${{ runner.os }}-android-sdk
-      
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-      
+
       - name: Build Release APK
-        run: ./gradlew assembleRelease --build-cache --parallel
-      
+        run: ./gradlew :androidApp:assembleRelease --build-cache --parallel
+
       - name: Sign APK
         uses: r0adkll/sign-android-release@v1
         id: sign_app
         with:
-          releaseDirectory: app/build/outputs/apk/release
+          releaseDirectory: androidApp/build/outputs/apk/release
           signingKeyBase64: ${{ secrets.SIGNING_KEY }}
           alias: ${{ secrets.KEY_ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
           keyPassword: ${{ secrets.KEY_PASSWORD }}
         env:
           BUILD_TOOLS_VERSION: "34.0.0"
-      
+
       - name: Rename APK
         run: |
-          mv ${{ steps.sign_app.outputs.signedReleaseFile }} app/build/outputs/apk/release/MyCalendar-${{ github.ref_name }}.apk
-      
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
+          mv ${{ steps.sign_app.outputs.signedReleaseFile }} androidApp/build/outputs/apk/release/MyCalendar-${{ github.ref_name }}.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
         with:
-          files: app/build/outputs/apk/release/MyCalendar-${{ github.ref_name }}.apk
+          name: apk
+          path: androidApp/build/outputs/apk/release/MyCalendar-${{ github.ref_name }}.apk
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Cache Gradle Wrapper
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+
+      - name: Build Windows MSI
+        run: .\gradlew.bat :composeApp:packageMsi --no-daemon
+
+      - name: Upload MSI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-msi
+          path: composeApp/build/compose/binaries/main/msi/*.msi
+
+  release:
+    needs: [build-apk, build-windows]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download APK
+        uses: actions/download-artifact@v4
+        with:
+          name: apk
+
+      - name: Download MSI
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-msi
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            apk/MyCalendar-${{ github.ref_name }}.apk
+            windows-msi/*.msi
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

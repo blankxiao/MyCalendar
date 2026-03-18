@@ -52,22 +52,21 @@ fun LoginFormContent(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(48.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "欢迎回来",
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
-        )
-        Text(
-            text = "登录以同步您的日程",
+            text = "登录同步日程，或跳过使用本地",
             fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 8.dp)
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
-        Spacer(modifier = Modifier.height(48.dp))
+        if (onSkipLogin != null) {
+            TextButton(onClick = onSkipLogin, modifier = Modifier.padding(top = 4.dp)) {
+                Text("跳过登录，仅使用本地 →", fontSize = 14.sp, fontWeight = FontWeight.Medium)
+            }
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
 
         // 邮箱输入
         OutlinedTextField(
@@ -79,7 +78,7 @@ fun LoginFormContent(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         // 登录方式切换
         androidx.compose.foundation.layout.Row(
@@ -136,7 +135,7 @@ fun LoginFormContent(
             )
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         // 登录按钮
         Button(
@@ -156,7 +155,7 @@ fun LoginFormContent(
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         // 注册链接
         androidx.compose.foundation.layout.Row(
@@ -168,12 +167,5 @@ fun LoginFormContent(
             }
         }
 
-        // 跳过登录（可选，PC 端使用）
-        if (onSkipLogin != null) {
-            Spacer(modifier = Modifier.height(16.dp))
-            TextButton(onClick = onSkipLogin, modifier = Modifier.fillMaxWidth()) {
-                Text("跳过登录（仅本地）")
-            }
-        }
     }
 }

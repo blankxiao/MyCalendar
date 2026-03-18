@@ -1,29 +1,21 @@
 package cn.szu.blankxiao.mycalendar.ui.component.dialog
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
@@ -35,14 +27,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Dialog
 import cn.szu.blankxiao.mycalendar.model.schedule.ScheduleItemData
-import cn.szu.blankxiao.mycalendar.util.formatForDisplay
 import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
 import cn.szu.blankxiao.mycalendar.ui.theme.customColors
-import cn.szu.blankxiao.mycalendar.ui.theme.outlinedTextFieldColors
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -51,9 +40,7 @@ import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
 
 /**
- * @author BlankXiao
- * @description 编辑日程对话框
- * @date 2025-12-11
+ * 编辑日程对话框（复用 AddEditScheduleFormContent）
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,7 +68,12 @@ fun EditScheduleDialog(
     var showReminderDatePicker by remember { mutableStateOf(false) }
     var showReminderTimePicker by remember { mutableStateOf(false) }
     val customColors = MaterialTheme.customColors
-    
+    val timeZone = TimeZone.currentSystemDefault()
+
+    val reminderDateTime = if (reminderEnabled) {
+        LocalDateTime(reminderDate.year, reminderDate.monthNumber, reminderDate.dayOfMonth, reminderHour, reminderMinute)
+    } else null
+
     Dialog(onDismissRequest = onDismiss) {
         Card(
             shape = RoundedCornerShape(Dimensions.CornerRadius.large),
@@ -98,102 +90,30 @@ fun EditScheduleDialog(
                     .padding(Dimensions.Padding.large),
                 verticalArrangement = Arrangement.spacedBy(Dimensions.Spacing.medium)
             ) {
-                // 标题
                 Text(
                     text = "编辑日程",
                     style = MaterialTheme.typography.titleLarge,
                     color = customColors.calendarNormalText
                 )
-                
-                // 日期选择（可点击）
-                OutlinedTextField(
-                    value = currentDate.formatForDisplay("yyyy年MM月dd日"),
-                    onValueChange = { },
-                    label = { Text("日期") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { showDatePicker = true },
-                    enabled = false,
-                    readOnly = true,
-                    trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.DateRange,
-                            contentDescription = "选择日期",
-                            modifier = Modifier.clickable { showDatePicker = true }
-                        )
-                    },
-                    colors = outlinedTextFieldColors()
+
+                AddEditScheduleFormContent(
+                    title = title,
+                    onTitleChange = { title = it },
+                    description = description,
+                    onDescriptionChange = { description = it },
+                    date = currentDate,
+                    onDateClick = { showDatePicker = true },
+                    reminderEnabled = reminderEnabled,
+                    onReminderToggle = { reminderEnabled = it },
+                    reminderDateTime = reminderDateTime,
+                    onReminderClick = { showReminderDatePicker = true },
+                    showReminder = true
                 )
-                
-                // 标题输入
-                OutlinedTextField(
-                    value = title,
-                    onValueChange = { title = it },
-                    label = { Text("标题") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    colors = outlinedTextFieldColors()
-                )
-                
-                // 描述输入
-                OutlinedTextField(
-                    value = description,
-                    onValueChange = { description = it },
-                    label = { Text("描述（可选）") },
-                    modifier = Modifier.fillMaxWidth(),
-                    minLines = 3,
-                    maxLines = 5,
-                    colors = outlinedTextFieldColors()
-                )
-                
-                // 提醒设置
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Checkbox(
-                        checked = reminderEnabled,
-                        onCheckedChange = { reminderEnabled = it },
-                        colors = CheckboxDefaults.colors(
-                            checkedColor = customColors.buttonPrimaryBackground,
-                            uncheckedColor = customColors.outline,
-                            checkmarkColor = customColors.buttonPrimaryText
-                        )
-                    )
-                    Text("启用提醒")
-                }
-                
-                // 提醒日期时间选择
-                if (reminderEnabled) {
-                    val reminderLdt = LocalDateTime(reminderDate.year, reminderDate.monthNumber, reminderDate.dayOfMonth, reminderHour, reminderMinute)
-                    OutlinedTextField(
-                        value = reminderLdt.formatForDisplay("MM月dd日 HH:mm"),
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("提醒时间") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { showReminderDatePicker = true },
-                        enabled = false,
-                        trailingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Notifications,
-                                contentDescription = "设置提醒时间",
-                                modifier = Modifier.clickable { 
-                                    showReminderDatePicker = true 
-                                }
-                            )
-                        },
-                        colors = outlinedTextFieldColors()
-                    )
-                }
-                
-                // 按钮行
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    // 删除按钮（如果提供）
                     if (onDelete != null) {
                         TextButton(
                             onClick = {
@@ -216,7 +136,7 @@ fun EditScheduleDialog(
                             Text("取消")
                         }
                     }
-                    
+
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(Dimensions.Spacing.small)
                     ) {
@@ -230,21 +150,18 @@ fun EditScheduleDialog(
                                 Text("取消")
                             }
                         }
-                        
+
                         Button(
                             onClick = {
                                 if (title.isNotBlank()) {
-                                    val reminderDateTime = if (reminderEnabled) {
-                                        LocalDateTime(reminderDate.year, reminderDate.monthNumber, reminderDate.dayOfMonth, reminderHour, reminderMinute)
-                                    } else null
-
+                                    val reminder = if (reminderEnabled) reminderDateTime else null
                                     onConfirm(
                                         scheduleData.id,
                                         title.trim(),
                                         currentDate,
                                         description.trim(),
                                         reminderEnabled,
-                                        reminderDateTime
+                                        reminder
                                     )
                                     onDismiss()
                                 }
@@ -262,14 +179,11 @@ fun EditScheduleDialog(
             }
         }
     }
-    
-    val timeZone = TimeZone.currentSystemDefault()
 
     if (showDatePicker) {
         val datePickerState = rememberDatePickerState(
             initialSelectedDateMillis = currentDate.atStartOfDayIn(timeZone).toEpochMilliseconds()
         )
-
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
             confirmButton = {
@@ -322,12 +236,11 @@ fun EditScheduleDialog(
             )
         }
     }
-    
+
     if (showReminderDatePicker) {
         val datePickerState = rememberDatePickerState(
             initialSelectedDateMillis = reminderDate.atStartOfDayIn(timeZone).toEpochMilliseconds()
         )
-
         DatePickerDialog(
             onDismissRequest = { showReminderDatePicker = false },
             confirmButton = {
@@ -381,14 +294,13 @@ fun EditScheduleDialog(
             )
         }
     }
-    
+
     if (showReminderTimePicker) {
         val timePickerState = rememberTimePickerState(
             initialHour = reminderHour,
             initialMinute = reminderMinute,
             is24Hour = true
         )
-
         AlertDialog(
             onDismissRequest = { showReminderTimePicker = false },
             confirmButton = {
@@ -440,4 +352,3 @@ fun EditScheduleDialog(
         )
     }
 }
-

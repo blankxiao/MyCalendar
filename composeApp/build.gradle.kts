@@ -79,6 +79,7 @@ kotlin {
                 implementation("io.insert-koin:koin-compose:4.1.1")
                 implementation("io.insert-koin:koin-compose-viewmodel:4.1.1")
                 implementation("io.insert-koin:koin-core-viewmodel:4.1.1")
+                implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3")
             }
         }
 
