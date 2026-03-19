@@ -9,7 +9,7 @@ import org.koin.dsl.module
 val androidConfigModule = module {
     single {
         AndroidConfig(
-            baseUrl = BuildConfig.BASE_URL,
+            baseUrl = BuildKonfig.BASE_URL,
             enableLogging = BuildConfig.ENABLE_LOGGING
         )
     }

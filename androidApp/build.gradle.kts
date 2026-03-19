@@ -28,7 +28,6 @@ android {
 
     buildTypes {
         debug {
-            buildConfigField("String", "BASE_URL", "\"https://api.blankxiao.online\"")
             buildConfigField("Boolean", "ENABLE_LOGGING", "true")
         }
         release {
@@ -38,7 +37,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            buildConfigField("String", "BASE_URL", "\"https://api.blankxiao.online\"")
             buildConfigField("Boolean", "ENABLE_LOGGING", "false")
         }
     }

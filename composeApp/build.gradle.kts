@@ -1,3 +1,4 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -6,8 +7,20 @@ plugins {
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.androidx.room)
+    alias(libs.plugins.buildkonfig)
     id("com.google.devtools.ksp") version "2.3.0"
     id("org.jetbrains.kotlin.plugin.serialization") version "2.3.0"
+}
+
+val baseUrl = project.findProperty("BASE_URL")?.toString() ?: "https://api.blankxiao.online"
+
+buildkonfig {
+    packageName = "cn.szu.blankxiao.mycalendar.di"
+    exposeObjectWithName = "BuildKonfig"
+
+    defaultConfigs {
+        buildConfigField(FieldSpec.Type.STRING, "BASE_URL", baseUrl)
+    }
 }
 
 kotlin {

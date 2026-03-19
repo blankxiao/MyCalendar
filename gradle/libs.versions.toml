@@ -24,6 +24,8 @@ kotlinxCoroutines = "1.9.0"
 # 0.7.1-0.6.x-compat 解决 Clock$System ClassNotFoundException，保持 0.6.x API
 kotlinxDatetime = "0.7.1-0.6.x-compat"
 #calendar = "2.9.0"
+# BuildKonfig - KMP BuildConfig 生成
+buildkonfig = "0.17.1"
 
 
 [libraries]
@@ -80,4 +82,5 @@ android-lint = { id = "com.android.lint", version.ref = "agp" }
 androidx-room = { id = "androidx.room", version.ref = "room" }
 compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
 

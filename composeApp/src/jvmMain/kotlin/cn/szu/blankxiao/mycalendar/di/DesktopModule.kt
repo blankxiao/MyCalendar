@@ -37,7 +37,6 @@ import org.koin.dsl.module
  * Desktop 平台的 API 配置
  */
 object DesktopConfig {
-const val BASE_URL = "https://api.blankxiao.online"
     const val ENABLE_LOGGING = true
 }
 
@@ -129,14 +128,14 @@ val networkModuleDesktop = module {
 
     single {
         AuthApiClient(
-            baseUrl = DesktopConfig.BASE_URL,
+            baseUrl = BuildKonfig.BASE_URL,
             httpClient = get()
         )
     }
 
     single {
         ScheduleApiClient(
-            baseUrl = DesktopConfig.BASE_URL,
+            baseUrl = BuildKonfig.BASE_URL,
             httpClient = get()
         )
     }
