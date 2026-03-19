@@ -94,23 +94,24 @@ jobs:
     needs: [build-apk, build-windows]
     runs-on: ubuntu-latest
     steps:
-      - name: Download APK
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          name: apk
+          path: artifacts
 
-      - name: Download MSI
-        uses: actions/download-artifact@v4
-        with:
-          name: windows-msi
+      - name: Prepare release files
+        run: |
+          mkdir -p release
+          find artifacts -name "*.apk" -exec cp {} release/ \;
+          find artifacts -name "*.msi" -exec cp {} release/ \;
+          ls -la release/
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            apk/MyCalendar-${{ github.ref_name }}.apk
-            windows-msi/*.msi
+          files: release/*
           generate_release_notes: true
+          fail_on_unmatched_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
