@@ -36,7 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.tooling.preview.Preview
+import cn.szu.blankxiao.mycalendar.ui.Preview
 import androidx.compose.ui.unit.dp
 import cn.szu.blankxiao.mycalendar.model.calendar.CalendarMode
 import cn.szu.blankxiao.mycalendar.model.calendar.CustomCalendarData

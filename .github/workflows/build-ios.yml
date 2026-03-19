@@ -1,0 +1,53 @@
+name: Build iOS Framework
+
+on:
+  workflow_dispatch:  # 仅手动触发，用于开发调试
+
+jobs:
+  build-ios:
+    runs-on: macos-14  # macOS 环境，自带 Xcode
+    env:
+      GRADLE_OPTS: -Xmx6g -XX:MaxMetaspaceSize=512m  # Kotlin/Native 编译 iOS 需较大堆内存
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('gradle/**', '**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build iOS XCFramework (Debug)
+        run: ./gradlew :composeApp:assembleComposeAppDebugXCFramework --no-daemon
+
+      - name: Package iOS XCFramework
+        run: |
+          XCFRAMEWORK="composeApp/build/XCFrameworks/debug/composeApp.xcframework"
+          if [ ! -d "$XCFRAMEWORK" ]; then
+            echo "XCFramework not found at $XCFRAMEWORK, listing:"
+            find composeApp/build -name "*.xcframework" -type d 2>/dev/null || true
+            exit 1
+          fi
+          cd composeApp/build/XCFrameworks/debug && zip -r ../../../../ios-framework-simulator.zip composeApp.xcframework && cd -
+          ls -la ios-framework-simulator.zip
+
+      - name: Upload iOS Framework artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-framework-simulator
+          path: ios-framework-simulator.zip

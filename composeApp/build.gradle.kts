@@ -1,5 +1,6 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -37,6 +38,21 @@ kotlin {
 
     jvm()
 
+    // XCFramework 同时包含 iosSimulatorArm64(Apple Silicon) + iosX64(Intel) + iosArm64(真机)
+    // 解决 Intel Mac 模拟器报错: "architectures (arm64) include none that iPhone 15 Pro can execute (Intel 64-bit)"
+    val xcf = XCFramework("composeApp")
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { target ->
+        target.binaries.framework {
+            baseName = "composeApp"
+            isStatic = true
+            xcf.add(this)
+        }
+    }
+
     sourceSets {
         commonMain {
             dependencies {
@@ -50,7 +66,10 @@ kotlin {
                 implementation("io.ktor:ktor-client-core:3.4.1")
                 implementation("io.ktor:ktor-client-content-negotiation:3.4.1")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:3.4.1")
-                implementation(libs.androidx.lifecycle.viewmodelCompose)
+                implementation("io.insert-koin:koin-compose:4.1.1")
+                implementation("io.insert-koin:koin-compose-viewmodel:4.1.1")
+                implementation("io.insert-koin:koin-core-viewmodel:4.1.1")
+                implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3")
                 // Compose Multiplatform
                 implementation(libs.compose.runtime)
                 implementation(libs.compose.foundation)
@@ -67,6 +86,7 @@ kotlin {
 
         androidMain {
             dependencies {
+                implementation(libs.compose.uiTooling)
                 implementation(libs.compose.uiToolingPreview)
                 implementation("cn.6tail:lunar:1.7.0")
                 implementation(libs.androidx.core.ktx)
@@ -79,6 +99,19 @@ kotlin {
                 implementation("androidx.navigation:navigation-compose:2.7.6")
                 implementation("androidx.datastore:datastore-preferences:1.1.1")
                 implementation("androidx.compose.material:material-icons-extended:1.5.4")
+            }
+        }
+
+        iosMain {
+            dependencies {
+                implementation(libs.compose.runtime)
+                implementation(libs.compose.foundation)
+                implementation(libs.compose.material3)
+                implementation(libs.compose.ui)
+                implementation("io.ktor:ktor-client-darwin:3.4.1")
+                implementation("io.insert-koin:koin-compose:4.1.1")
+                implementation("io.insert-koin:koin-compose-viewmodel:4.1.1")
+                implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3")
             }
         }
 
@@ -106,6 +139,9 @@ room {
 dependencies {
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspJvm", libs.androidx.room.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+    add("kspIosArm64", libs.androidx.room.compiler)
+    add("kspIosX64", libs.androidx.room.compiler)
     add("androidRuntimeClasspath", libs.compose.uiTooling)
 }
 

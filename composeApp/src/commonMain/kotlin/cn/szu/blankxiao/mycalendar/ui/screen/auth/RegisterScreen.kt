@@ -25,7 +25,7 @@ import cn.szu.blankxiao.mycalendar.data.repository.CodeType
 import cn.szu.blankxiao.mycalendar.ui.component.auth.RegisterFormContent
 import cn.szu.blankxiao.mycalendar.viewmodel.AuthViewModel
 import cn.szu.blankxiao.mycalendar.viewmodel.AuthUiState
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 /**
  * 注册页面（复用 RegisterFormContent）

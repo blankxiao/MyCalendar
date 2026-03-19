@@ -47,7 +47,7 @@ import androidx.compose.ui.unit.sp
 import cn.szu.blankxiao.mycalendar.data.repository.CodeType
 import cn.szu.blankxiao.mycalendar.viewmodel.AuthUiState
 import cn.szu.blankxiao.mycalendar.viewmodel.AuthViewModel
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 /**
  * 登录页面

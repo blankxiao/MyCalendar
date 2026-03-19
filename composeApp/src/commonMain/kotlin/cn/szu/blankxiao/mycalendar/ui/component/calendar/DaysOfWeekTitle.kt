@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import cn.szu.blankxiao.mycalendar.ui.Preview
 import cn.szu.blankxiao.mycalendar.ui.theme.Typography
 import cn.szu.blankxiao.mycalendar.ui.theme.customColors
 

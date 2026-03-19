@@ -30,7 +30,8 @@ abstract class AppDatabase : RoomDatabase() {
 }
 
 /**
- * Room 编译器会生成 actual 实现
+ * Room 编译器会为各平台（含 Android / JVM / iOS）生成 actual 实现。
+ * 使用 @Suppress 消除「无 actual」的 IDE 警告，切勿在 iosMain 等下手写 actual。
  */
 @Suppress("KotlinNoActualForExpect")
 expect object AppDatabaseConstructor : RoomDatabaseConstructor<AppDatabase> {

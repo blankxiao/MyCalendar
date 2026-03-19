@@ -1,6 +1,5 @@
 package cn.szu.blankxiao.mycalendar.ui.screen.settings
 
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -44,13 +43,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import cn.szu.blankxiao.mycalendar.data.local.datastore.UserInfo
 import cn.szu.blankxiao.mycalendar.model.settings.ThemeMode
-import cn.szu.blankxiao.mycalendar.model.settings.ThemeSettingsManager
+import cn.szu.blankxiao.mycalendar.data.local.datastore.ThemeStorage
 import cn.szu.blankxiao.mycalendar.ui.component.settings.ThemeSelectionContent
 import cn.szu.blankxiao.mycalendar.ui.theme.Dimensions
 import cn.szu.blankxiao.mycalendar.ui.theme.customColors
@@ -58,7 +56,7 @@ import cn.szu.blankxiao.mycalendar.viewmodel.AuthUiState
 import cn.szu.blankxiao.mycalendar.viewmodel.AuthViewModel
 import cn.szu.blankxiao.mycalendar.viewmodel.ScheduleViewModel
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 /**
  * @author BlankXiao
@@ -69,19 +67,20 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun SettingsScreen(
     viewModel: ScheduleViewModel,
-    themeSettingsManager: ThemeSettingsManager,
+    themeStorage: ThemeStorage,
     onNavigateBack: () -> Unit,
     onNavigateToDataManagement: () -> Unit,
     onNavigateToLogin: () -> Unit,
+    onShowMessage: (String) -> Unit = {},
+    showDataManagement: Boolean = true,
     authViewModel: AuthViewModel = koinViewModel()
 ) {
-    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var showClearDataDialog by remember { mutableStateOf(false) }
     var showThemeDialog by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
     
-    val currentThemeMode by themeSettingsManager.themeMode.collectAsState(initial = ThemeMode.SYSTEM)
+    val currentThemeMode by themeStorage.themeMode.collectAsState(initial = ThemeMode.SYSTEM)
     
     // 登录状态
     val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
@@ -93,7 +92,7 @@ fun SettingsScreen(
     // 处理注销成功
     LaunchedEffect(authUiState) {
         if (authUiState is AuthUiState.LoggedOut) {
-            Toast.makeText(context, "已退出登录", Toast.LENGTH_SHORT).show()
+            onShowMessage("已退出登录")
             authViewModel.resetState()
         }
     }
@@ -179,19 +178,19 @@ fun SettingsScreen(
             
             // 数据管理设置组
             SettingsGroup(title = "数据管理") {
-                // 日程导入导出
-                SettingsItem(
-                    title = "日程导入导出",
-                    subtitle = "导入或导出日程数据",
-                    showArrow = true,
-                    onClick = onNavigateToDataManagement
-                )
-                
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = Dimensions.Padding.large),
-                    color = customColors.outlineVariant
-                )
-                
+                // 日程导入导出（iOS 首版暂不支持）
+                if (showDataManagement) {
+                    SettingsItem(
+                        title = "日程导入导出",
+                        subtitle = "导入或导出日程数据",
+                        showArrow = true,
+                        onClick = onNavigateToDataManagement
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = Dimensions.Padding.large),
+                        color = customColors.outlineVariant
+                    )
+                }
                 // 清空所有日程
                 SettingsItem(
                     title = "清空所有日程",
@@ -225,7 +224,7 @@ fun SettingsScreen(
             onConfirm = {
                 showClearDataDialog = false
                 viewModel.deleteAllSchedules()
-                Toast.makeText(context, "已清空所有日程数据", Toast.LENGTH_SHORT).show()
+                onShowMessage("已清空所有日程数据")
             }
         )
     }
@@ -237,7 +236,7 @@ fun SettingsScreen(
             onDismiss = { showThemeDialog = false },
             onSelect = { mode ->
                 scope.launch {
-                    themeSettingsManager.setThemeMode(mode)
+                    themeStorage.setThemeMode(mode)
                 }
                 showThemeDialog = false
             }

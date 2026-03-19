@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
 				AppNavHost(
 					navController = navController,
 					modifier = Modifier.fillMaxSize(),
-					themeSettingsManager = themeSettingsManager
+					themeStorage = themeSettingsManager
 				)
 			}
 		}

@@ -8,7 +8,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import cn.szu.blankxiao.mycalendar.model.settings.ThemeSettingsManager
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+import cn.szu.blankxiao.mycalendar.data.local.datastore.ThemeStorage
 import cn.szu.blankxiao.mycalendar.ui.screen.settings.DataManagementScreen
 import cn.szu.blankxiao.mycalendar.ui.screen.dayview.DayViewScreen
 import cn.szu.blankxiao.mycalendar.ui.screen.main.MainScreen
@@ -32,8 +34,12 @@ fun AppNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
     viewModel: ScheduleViewModel = koinViewModel(),
-    themeSettingsManager: ThemeSettingsManager
+    themeStorage: ThemeStorage
 ) {
+    val context = LocalContext.current
+    val onShowMessage: (String) -> Unit = { msg ->
+        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+    }
     NavHost(
         navController = navController,
         startDestination = Screen.Main.route,
@@ -57,7 +63,7 @@ fun AppNavHost(
         composable(Screen.Settings.route) {
             SettingsScreen(
                 viewModel = viewModel,
-                themeSettingsManager = themeSettingsManager,
+                themeStorage = themeStorage,
                 onNavigateBack = {
                     navController.popBackStack()
                 },
@@ -66,7 +72,8 @@ fun AppNavHost(
                 },
                 onNavigateToLogin = {
                     navController.navigate(Screen.Login.route)
-                }
+                },
+                onShowMessage = onShowMessage
             )
         }
         
